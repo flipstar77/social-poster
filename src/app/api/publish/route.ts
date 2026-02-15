@@ -67,7 +67,7 @@ export async function POST(request: Request) {
     if (!res.ok) {
       console.error('[Publish] upload-post.com error:', res.status, responseText)
       return NextResponse.json(
-        { error: 'Publishing failed', status: res.status, details: responseData },
+        { error: `upload-post.com returned ${res.status}`, status: res.status, details: responseData },
         { status: 502 }
       )
     }

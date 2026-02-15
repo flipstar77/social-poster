@@ -526,7 +526,8 @@ export default function Home() {
         if (data.success) {
           setPosts(prev => prev.map(p => p.id === post.id ? { ...p, status: 'posted' as const } : p))
         } else {
-          setPublishErrors(prev => [...prev, `${post.platform}: ${data.error || 'Failed'}`])
+          const detail = data.details?.error || data.details?.message || data.details?.raw || JSON.stringify(data.details || '')
+          setPublishErrors(prev => [...prev, `${post.platform}: ${data.error || 'Failed'} — ${detail}`])
         }
       } catch (err) {
         setPublishErrors(prev => [...prev, `${post.platform}: Network error`])
