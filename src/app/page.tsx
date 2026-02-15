@@ -291,6 +291,11 @@ export default function Home() {
   const [generating, setGenerating] = useState<Set<string>>(new Set())
   const [businessType, setBusinessType] = useState('ice cream shop')
   const [tone, setTone] = useState('friendly and fun')
+  const [igAccount, setIgAccount] = useState('')
+  const [ttAccount, setTtAccount] = useState('')
+  const [publishing, setPublishing] = useState(false)
+  const [publishProgress, setPublishProgress] = useState(0)
+  const [publishErrors, setPublishErrors] = useState<string[]>([])
   const [dragOver, setDragOver] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -383,8 +388,55 @@ export default function Home() {
     setStep(4)
   }
 
-  const publishAll = () => {
-    setPosts(prev => prev.map(p => ({ ...p, status: 'posted' as const })))
+  const publishAll = async () => {
+    setPublishing(true)
+    setPublishProgress(0)
+    setPublishErrors([])
+
+    let completed = 0
+    for (const post of posts) {
+      const photo = photos.find(p => p.id === post.photoId)
+      if (!photo) {
+        setPublishErrors(prev => [...prev, `Photo not found for post ${post.id}`])
+        completed++
+        setPublishProgress(completed)
+        continue
+      }
+
+      const account = post.platform === 'instagram' ? igAccount : ttAccount
+      if (!account) {
+        setPublishErrors(prev => [...prev, `No ${post.platform} account configured`])
+        completed++
+        setPublishProgress(completed)
+        continue
+      }
+
+      const formData = new FormData()
+      formData.append('photo', photo.file)
+      formData.append('caption', post.caption)
+      formData.append('hashtags', post.hashtags.join(','))
+      formData.append('platform', post.platform)
+      formData.append('scheduledDate', post.scheduledDate)
+      formData.append('scheduledTime', post.scheduledTime)
+      formData.append('account', account)
+
+      try {
+        const res = await fetch('/api/publish', { method: 'POST', body: formData })
+        const data = await res.json()
+        if (data.success) {
+          setPosts(prev => prev.map(p => p.id === post.id ? { ...p, status: 'posted' as const } : p))
+        } else {
+          setPublishErrors(prev => [...prev, `${post.platform}: ${data.error || 'Failed'}`])
+        }
+      } catch (err) {
+        setPublishErrors(prev => [...prev, `${post.platform}: Network error`])
+      }
+
+      completed++
+      setPublishProgress(completed)
+    }
+
+    setPublishing(false)
   }
 
   const allScheduled = posts.length > 0 && posts.every(p => p.scheduledDate)
@@ -409,7 +461,7 @@ export default function Home() {
       {step === 1 && (
         <div className="fade-in">
           {/* Business config */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-sm text-[var(--text-muted)] mb-1.5">Business Type</label>
               <input
@@ -425,6 +477,32 @@ export default function Home() {
                 value={tone}
                 onChange={e => setTone(e.target.value)}
                 placeholder="e.g. friendly, professional, playful..."
+                className="w-full px-4 py-2.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-sm focus:border-[var(--accent)] focus:outline-none transition-colors"
+              />
+            </div>
+          </div>
+
+          {/* Connected accounts */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+            <div>
+              <label className="text-sm text-[var(--text-muted)] mb-1.5 flex items-center gap-1.5">
+                <IgIcon size={14} /> Instagram Account
+              </label>
+              <input
+                value={igAccount}
+                onChange={e => setIgAccount(e.target.value)}
+                placeholder="your@email.com (from upload-post.com)"
+                className="w-full px-4 py-2.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-sm focus:border-[var(--accent)] focus:outline-none transition-colors"
+              />
+            </div>
+            <div>
+              <label className="text-sm text-[var(--text-muted)] mb-1.5 flex items-center gap-1.5">
+                <TtIcon size={14} /> TikTok Account
+              </label>
+              <input
+                value={ttAccount}
+                onChange={e => setTtAccount(e.target.value)}
+                placeholder="your@email.com (from upload-post.com)"
                 className="w-full px-4 py-2.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-sm focus:border-[var(--accent)] focus:outline-none transition-colors"
               />
             </div>
@@ -670,22 +748,59 @@ export default function Home() {
               </div>
             </div>
 
+            {/* Publishing progress */}
+            {publishing && (
+              <div className="mb-6">
+                <div className="flex items-center justify-between text-sm mb-2">
+                  <span className="flex items-center gap-2">
+                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full loading-spin" />
+                    Publishing...
+                  </span>
+                  <span>{publishProgress} / {posts.length}</span>
+                </div>
+                <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-[var(--accent)] rounded-full transition-all"
+                    style={{ width: `${(publishProgress / posts.length) * 100}%` }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Publish errors */}
+            {publishErrors.length > 0 && (
+              <div className="mb-6 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-left">
+                <p className="text-sm font-medium text-red-400 mb-1">Some posts failed:</p>
+                {publishErrors.map((err, i) => (
+                  <p key={i} className="text-xs text-red-300/80">{err}</p>
+                ))}
+              </div>
+            )}
+
             <div className="flex gap-3 justify-center">
               {!posts.every(p => p.status === 'posted') && (
                 <button
                   onClick={publishAll}
-                  className="px-6 py-2.5 rounded-xl bg-[var(--success)] hover:brightness-110 font-medium text-sm transition-all"
+                  disabled={publishing || (!igAccount && !ttAccount)}
+                  className="px-6 py-2.5 rounded-xl bg-[var(--success)] hover:brightness-110 font-medium text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Publish Now
+                  {publishing ? 'Publishing...' : 'Publish Now'}
                 </button>
               )}
               <button
-                onClick={() => { setStep(1); setPhotos([]); setPosts([]) }}
-                className="px-6 py-2.5 rounded-xl bg-[var(--card)] border border-[var(--border)] hover:border-[var(--accent)] font-medium text-sm transition-colors"
+                onClick={() => { setStep(1); setPhotos([]); setPosts([]); setPublishErrors([]) }}
+                disabled={publishing}
+                className="px-6 py-2.5 rounded-xl bg-[var(--card)] border border-[var(--border)] hover:border-[var(--accent)] font-medium text-sm transition-colors disabled:opacity-50"
               >
                 New Batch
               </button>
             </div>
+
+            {!igAccount && !ttAccount && !posts.every(p => p.status === 'posted') && (
+              <p className="text-xs text-[var(--text-muted)] mt-3">
+                Add your account info in Step 1 to enable publishing via upload-post.com
+              </p>
+            )}
           </div>
         </div>
       )}
