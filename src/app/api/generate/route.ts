@@ -1,12 +1,16 @@
 import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
-  const { description, businessType, tone, platform } = await request.json()
+  const { description, businessType, tone, platform, exampleCaptions } = await request.json()
 
   const apiKey = process.env.XAI_API_KEY
   if (!apiKey) {
     return NextResponse.json({ error: 'API key not configured' }, { status: 500 })
   }
+
+  const exampleBlock = exampleCaptions
+    ? `\n\nHere are example captions the user likes — match this writing style, voice, and structure closely:\n---\n${exampleCaptions}\n---\n`
+    : ''
 
   const systemPrompt = `You are a social media expert for a ${businessType || 'small business'}.
 Generate engaging social media captions and hashtags.
@@ -18,7 +22,7 @@ Rules:
 - For TikTok: shorter, punchier, 5-10 trending hashtags
 - Include emojis naturally
 - Add a call-to-action when appropriate
-- Match the requested tone
+- Match the requested tone${exampleBlock}
 
 Return ONLY valid JSON (no markdown, no code blocks) in this exact format:
 {"caption": "the caption text here", "hashtags": ["tag1", "tag2", ...]}

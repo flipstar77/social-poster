@@ -145,10 +145,10 @@ function CalendarScheduler({
   onUpdatePost: (id: string, updates: Partial<GeneratedPost>) => void
   onAutoDistribute: () => void
 }) {
-  // Show 7 days starting from tomorrow
+  // Show 30 days starting from tomorrow
   const today = toDateStr(new Date())
   const startDate = addDays(today, 1)
-  const days = Array.from({ length: 7 }, (_, i) => addDays(startDate, i))
+  const days = Array.from({ length: 30 }, (_, i) => addDays(startDate, i))
 
   const [draggedPost, setDraggedPost] = useState<string | null>(null)
   const [dropTarget, setDropTarget] = useState<string | null>(null)
@@ -193,18 +193,35 @@ function CalendarScheduler({
         </div>
       )}
 
-      {/* Calendar grid — 7 days */}
-      <div className="grid grid-cols-7 gap-2">
+      {/* Calendar header — weekdays */}
+      <div className="grid grid-cols-7 gap-1 mb-1">
+        {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => (
+          <div key={d} className="text-center text-[10px] uppercase tracking-wide text-[var(--text-muted)] py-1">{d}</div>
+        ))}
+      </div>
+
+      {/* Calendar grid — 30 days in 7-column weeks */}
+      <div className="grid grid-cols-7 gap-1">
+        {/* Leading empty cells to align first day to correct weekday */}
+        {(() => {
+          const firstDay = new Date(days[0] + 'T12:00:00').getDay()
+          const offset = firstDay === 0 ? 6 : firstDay - 1 // Mon=0, Sun=6
+          return Array.from({ length: offset }, (_, i) => (
+            <div key={`empty-${i}`} className="min-h-[100px]" />
+          ))
+        })()}
         {days.map(dateStr => {
-          const { weekday, day, month } = formatDay(dateStr)
+          const { day, month } = formatDay(dateStr)
+          const weekday = new Date(dateStr + 'T12:00:00').getDay()
           const dayPosts = posts.filter(p => p.scheduledDate === dateStr)
           const isDropping = dropTarget === dateStr
-          const isWeekend = weekday === 'Sat' || weekday === 'Sun'
+          const isWeekend = weekday === 0 || weekday === 6
+          const isFirstOfMonth = day === 1
 
           return (
             <div
               key={dateStr}
-              className={`min-h-[160px] rounded-xl p-2 transition-all ${
+              className={`min-h-[100px] rounded-lg p-1 transition-all ${
                 isDropping
                   ? 'bg-[var(--accent)]/15 border-2 border-[var(--accent)]'
                   : isWeekend
@@ -222,26 +239,20 @@ function CalendarScheduler({
                 }
               }}
             >
-              {/* Day header */}
-              <div className="text-center mb-2">
-                <div className={`text-[10px] uppercase tracking-wide ${isWeekend ? 'text-[var(--text-muted)]/60' : 'text-[var(--text-muted)]'}`}>
-                  {weekday}
-                </div>
-                <div className={`text-lg font-bold leading-tight ${isWeekend ? 'text-[var(--text-muted)]' : ''}`}>
-                  {day}
-                </div>
-                <div className="text-[10px] text-[var(--text-muted)]">{month}</div>
+              {/* Day number */}
+              <div className={`text-xs font-medium mb-1 px-0.5 ${isWeekend ? 'text-[var(--text-muted)]' : ''}`}>
+                {isFirstOfMonth ? `${day} ${month}` : day}
               </div>
 
               {/* Posts in this day */}
-              <div className="space-y-1.5">
+              <div className="space-y-1">
                 {dayPosts.map(post => (
                   <div
                     key={post.id}
                     draggable
                     onDragStart={() => setDraggedPost(post.id)}
                     onDragEnd={() => { setDraggedPost(null); setDropTarget(null) }}
-                    className={`group relative rounded-lg overflow-hidden cursor-grab active:cursor-grabbing transition-all hover:ring-1 hover:ring-[var(--accent)]/50 ${
+                    className={`group relative rounded overflow-hidden cursor-grab active:cursor-grabbing transition-all hover:ring-1 hover:ring-[var(--accent)]/50 ${
                       draggedPost === post.id ? 'opacity-30' : ''
                     }`}
                   >
@@ -249,25 +260,25 @@ function CalendarScheduler({
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
 
                     {/* Platform icon */}
-                    <div className="absolute top-1 left-1">
-                      <PlatformIcon platform={post.platform} size={16} />
+                    <div className="absolute top-0.5 left-0.5">
+                      <PlatformIcon platform={post.platform} size={12} />
                     </div>
 
                     {/* Time picker */}
-                    <div className="absolute bottom-0 left-0 right-0 px-1 pb-1">
+                    <div className="absolute bottom-0 left-0 right-0 px-0.5 pb-0.5">
                       <input
                         type="time"
                         value={post.scheduledTime}
                         onChange={e => onUpdatePost(post.id, { scheduledTime: e.target.value })}
                         onClick={e => e.stopPropagation()}
-                        className="w-full text-[10px] bg-black/60 border-none text-white text-center rounded px-0.5 py-0 focus:outline-none focus:ring-1 focus:ring-[var(--accent)] [color-scheme:dark]"
+                        className="w-full text-[9px] bg-black/60 border-none text-white text-center rounded px-0 py-0 focus:outline-none focus:ring-1 focus:ring-[var(--accent)] [color-scheme:dark]"
                       />
                     </div>
 
                     {/* Remove from day */}
                     <button
                       onClick={() => onUpdatePost(post.id, { scheduledDate: '' })}
-                      className="absolute top-0.5 right-0.5 w-4 h-4 bg-black/60 text-[8px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-full"
+                      className="absolute top-0 right-0 w-3.5 h-3.5 bg-black/60 text-[7px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-full"
                     >
                       &times;
                     </button>
@@ -291,6 +302,7 @@ export default function Home() {
   const [generating, setGenerating] = useState<Set<string>>(new Set())
   const [businessType, setBusinessType] = useState('ice cream shop')
   const [tone, setTone] = useState('friendly and fun')
+  const [exampleCaptions, setExampleCaptions] = useState('')
   const [igAccount, setIgAccount] = useState('')
   const [ttAccount, setTtAccount] = useState('')
   const [publishing, setPublishing] = useState(false)
@@ -336,6 +348,7 @@ export default function Home() {
           businessType,
           tone,
           platform,
+          exampleCaptions,
         }),
       })
 
@@ -480,6 +493,20 @@ export default function Home() {
                 className="w-full px-4 py-2.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-sm focus:border-[var(--accent)] focus:outline-none transition-colors"
               />
             </div>
+          </div>
+
+          {/* Example captions */}
+          <div className="mb-4">
+            <label className="block text-sm text-[var(--text-muted)] mb-1.5">
+              Example Captions <span className="text-[var(--text-muted)]/60">(optional — paste captions you like so the AI matches the style)</span>
+            </label>
+            <textarea
+              value={exampleCaptions}
+              onChange={e => setExampleCaptions(e.target.value)}
+              placeholder={"Paste 2-3 example captions you've written before or found inspiring...\n\nExample:\n\"Sommerzeit ist Eiszeit! Unsere neue Mango-Sorbet Kreation wartet auf euch...\"\n\"Wer sagt, man kann kein Eis zum Frühstück essen? 🍦☀️\""}
+              rows={4}
+              className="w-full px-4 py-2.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-sm focus:border-[var(--accent)] focus:outline-none transition-colors resize-y"
+            />
           </div>
 
           {/* Connected accounts */}
