@@ -28,16 +28,23 @@ export async function POST(request: Request) {
       : ''
     const title = `${caption}\n\n${hashtagStr}`.trim()
 
+    // Fetch the user's profile username from upload-post.com
+    const profilesRes = await fetch('https://api.upload-post.com/api/uploadposts/users', {
+      headers: { 'Authorization': `Apikey ${apiKey}` },
+    })
+    const profilesData = await profilesRes.json()
+    const username = profilesData.profiles?.[0]?.username
+    if (!username) {
+      return NextResponse.json(
+        { error: 'No profile found on upload-post.com. Create a profile first.' },
+        { status: 400 }
+      )
+    }
+
     // Build the form data for upload-post.com
     const uploadForm = new FormData()
     uploadForm.append('photos[]', photo, photo.name)
-    // Derive user from API key JWT payload (email field)
-    try {
-      const payload = JSON.parse(atob(apiKey.split('.')[1]))
-      uploadForm.append('user', payload.email || 'default')
-    } catch {
-      uploadForm.append('user', 'default')
-    }
+    uploadForm.append('user', username)
     uploadForm.append('platform[]', platform)
     uploadForm.append('title', title)
 
