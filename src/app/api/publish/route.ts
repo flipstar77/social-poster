@@ -14,11 +14,10 @@ export async function POST(request: Request) {
     const platform = formData.get('platform') as string // instagram | tiktok
     const scheduledDate = formData.get('scheduledDate') as string // YYYY-MM-DD
     const scheduledTime = formData.get('scheduledTime') as string // HH:mm
-    const account = formData.get('account') as string // connected account in upload-post.com
 
-    if (!photo || !caption || !platform || !account) {
+    if (!photo || !caption || !platform) {
       return NextResponse.json(
-        { error: 'Missing required fields: photo, caption, platform, account' },
+        { error: 'Missing required fields: photo, caption, platform' },
         { status: 400 }
       )
     }
@@ -32,7 +31,13 @@ export async function POST(request: Request) {
     // Build the form data for upload-post.com
     const uploadForm = new FormData()
     uploadForm.append('photos[]', photo, photo.name)
-    uploadForm.append('user', account)
+    // Derive user from API key JWT payload (email field)
+    try {
+      const payload = JSON.parse(atob(apiKey.split('.')[1]))
+      uploadForm.append('user', payload.email || 'default')
+    } catch {
+      uploadForm.append('user', 'default')
+    }
     uploadForm.append('platform[]', platform)
     uploadForm.append('title', title)
 

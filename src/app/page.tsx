@@ -145,10 +145,16 @@ function CalendarScheduler({
   posts,
   onUpdatePost,
   onAutoDistribute,
+  deleteConfirm,
+  onDeleteConfirm,
+  onDeletePost,
 }: {
   posts: GeneratedPost[]
   onUpdatePost: (id: string, updates: Partial<GeneratedPost>) => void
   onAutoDistribute: () => void
+  deleteConfirm: string | null
+  onDeleteConfirm: (id: string | null) => void
+  onDeletePost: (id: string) => void
 }) {
   // Show 30 days starting from tomorrow
   const today = toDateStr(new Date())
@@ -280,13 +286,34 @@ function CalendarScheduler({
                       />
                     </div>
 
-                    {/* Remove from day */}
+                    {/* Delete post */}
                     <button
-                      onClick={() => onUpdatePost(post.id, { scheduledDate: '' })}
-                      className="absolute top-0 right-0 w-3.5 h-3.5 bg-black/60 text-[7px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-full"
+                      onClick={e => { e.stopPropagation(); onDeleteConfirm(post.id) }}
+                      className="absolute top-0 right-0 w-3.5 h-3.5 bg-black/60 text-[7px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-full hover:bg-red-500/80"
                     >
                       &times;
                     </button>
+
+                    {/* Delete confirmation */}
+                    {deleteConfirm === post.id && (
+                      <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center gap-1 rounded z-10">
+                        <p className="text-[8px] text-white">Delete?</p>
+                        <div className="flex gap-1">
+                          <button
+                            onClick={e => { e.stopPropagation(); onDeletePost(post.id) }}
+                            className="px-1.5 py-0.5 text-[8px] bg-red-500 rounded text-white"
+                          >
+                            Yes
+                          </button>
+                          <button
+                            onClick={e => { e.stopPropagation(); onDeleteConfirm(null) }}
+                            className="px-1.5 py-0.5 text-[8px] bg-white/20 rounded text-white"
+                          >
+                            No
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -309,9 +336,8 @@ export default function Home() {
   const [businessType, setBusinessType] = useState('ice cream shop')
   const [tone, setTone] = useState('friendly and fun')
   const [exampleCaptions, setExampleCaptions] = useState('')
-  const [igAccount, setIgAccount] = useState('')
-  const [ttAccount, setTtAccount] = useState('')
   const [publishing, setPublishing] = useState(false)
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
   const [publishProgress, setPublishProgress] = useState(0)
   const [publishErrors, setPublishErrors] = useState<string[]>([])
   const [dragOver, setDragOver] = useState(false)
@@ -414,6 +440,11 @@ export default function Home() {
     setPosts(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p))
   }
 
+  const deletePost = (id: string) => {
+    setPosts(prev => prev.filter(p => p.id !== id))
+    setDeleteConfirm(null)
+  }
+
   const handleAutoDistribute = () => {
     setPosts(prev => autoDistribute(prev))
   }
@@ -438,14 +469,6 @@ export default function Home() {
         continue
       }
 
-      const account = post.platform === 'instagram' ? igAccount : ttAccount
-      if (!account) {
-        setPublishErrors(prev => [...prev, `No ${post.platform} account configured`])
-        completed++
-        setPublishProgress(completed)
-        continue
-      }
-
       const formData = new FormData()
       formData.append('photo', photo.file)
       formData.append('caption', post.caption)
@@ -453,7 +476,6 @@ export default function Home() {
       formData.append('platform', post.platform)
       formData.append('scheduledDate', post.scheduledDate)
       formData.append('scheduledTime', post.scheduledTime)
-      formData.append('account', account)
 
       try {
         const res = await fetch('/api/publish', { method: 'POST', body: formData })
@@ -531,31 +553,6 @@ export default function Home() {
             />
           </div>
 
-          {/* Connected accounts */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-            <div>
-              <label className="text-sm text-[var(--text-muted)] mb-1.5 flex items-center gap-1.5">
-                <IgIcon size={14} /> Instagram Account
-              </label>
-              <input
-                value={igAccount}
-                onChange={e => setIgAccount(e.target.value)}
-                placeholder="your@email.com (from upload-post.com)"
-                className="w-full px-4 py-2.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-sm focus:border-[var(--accent)] focus:outline-none transition-colors"
-              />
-            </div>
-            <div>
-              <label className="text-sm text-[var(--text-muted)] mb-1.5 flex items-center gap-1.5">
-                <TtIcon size={14} /> TikTok Account
-              </label>
-              <input
-                value={ttAccount}
-                onChange={e => setTtAccount(e.target.value)}
-                placeholder="your@email.com (from upload-post.com)"
-                className="w-full px-4 py-2.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-sm focus:border-[var(--accent)] focus:outline-none transition-colors"
-              />
-            </div>
-          </div>
 
           {/* Drop zone */}
           <div
@@ -773,6 +770,9 @@ export default function Home() {
             posts={posts}
             onUpdatePost={updatePost}
             onAutoDistribute={handleAutoDistribute}
+            deleteConfirm={deleteConfirm}
+            onDeleteConfirm={setDeleteConfirm}
+            onDeletePost={deletePost}
           />
 
           {allScheduled && (
@@ -874,7 +874,7 @@ export default function Home() {
               {!posts.every(p => p.status === 'posted') && (
                 <button
                   onClick={publishAll}
-                  disabled={publishing || (!igAccount && !ttAccount)}
+                  disabled={publishing}
                   className="px-6 py-2.5 rounded-xl bg-[var(--success)] hover:brightness-110 font-medium text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {publishing ? 'Publishing...' : 'Publish Now'}
@@ -889,11 +889,6 @@ export default function Home() {
               </button>
             </div>
 
-            {!igAccount && !ttAccount && !posts.every(p => p.status === 'posted') && (
-              <p className="text-xs text-[var(--text-muted)] mt-3">
-                Add your account info in Step 1 to enable publishing via upload-post.com
-              </p>
-            )}
           </div>
         </div>
       )}
