@@ -11,6 +11,11 @@ interface UploadedPhoto {
   description: string
 }
 
+interface CaptionVariant {
+  caption: string
+  hashtags: string[]
+}
+
 interface GeneratedPost {
   id: string
   photoId: string
@@ -299,6 +304,7 @@ export default function Home() {
   const [step, setStep] = useState(1)
   const [photos, setPhotos] = useState<UploadedPhoto[]>([])
   const [posts, setPosts] = useState<GeneratedPost[]>([])
+  const [variants, setVariants] = useState<Record<string, CaptionVariant[]>>({})
   const [generating, setGenerating] = useState<Set<string>>(new Set())
   const [businessType, setBusinessType] = useState('ice cream shop')
   const [tone, setTone] = useState('friendly and fun')
@@ -355,19 +361,10 @@ export default function Home() {
       const data = await res.json()
       if (data.error) throw new Error(data.error)
 
-      const newPost: GeneratedPost = {
-        id: crypto.randomUUID(),
-        photoId: photo.id,
-        preview: photo.preview,
-        caption: data.caption,
-        hashtags: data.hashtags || [],
-        platform,
-        scheduledDate: '', // unscheduled — calendar will distribute
-        scheduledTime: platform === 'instagram' ? '11:00' : '18:00',
-        status: 'draft',
-      }
+      const newVariants: CaptionVariant[] = (data.variants || [{ caption: data.caption, hashtags: data.hashtags }])
+        .filter((v: CaptionVariant) => v.caption)
 
-      setPosts(prev => [...prev, newPost])
+      setVariants(prev => ({ ...prev, [key]: newVariants }))
     } catch (err) {
       console.error('Generation failed:', err)
     } finally {
@@ -377,6 +374,31 @@ export default function Home() {
         return next
       })
     }
+  }
+
+  const selectVariant = (photo: UploadedPhoto, platform: 'instagram' | 'tiktok', variant: CaptionVariant) => {
+    const key = `${photo.id}-${platform}`
+    // Remove any existing post for this photo+platform
+    setPosts(prev => [
+      ...prev.filter(p => !(p.photoId === photo.id && p.platform === platform)),
+      {
+        id: crypto.randomUUID(),
+        photoId: photo.id,
+        preview: photo.preview,
+        caption: variant.caption,
+        hashtags: variant.hashtags || [],
+        platform,
+        scheduledDate: '',
+        scheduledTime: platform === 'instagram' ? '11:00' : '18:00',
+        status: 'draft',
+      },
+    ])
+    // Clear variants for this key (selection made)
+    setVariants(prev => {
+      const next = { ...prev }
+      delete next[key]
+      return next
+    })
   }
 
   const generateAll = async () => {
@@ -632,48 +654,86 @@ export default function Home() {
                     <p className="text-sm font-medium mb-2 truncate">{photo.description || photo.file.name}</p>
 
                     <div className="flex gap-2 mb-3">
-                      <button
-                        onClick={() => generateCaption(photo, 'instagram')}
-                        disabled={generating.has(`${photo.id}-instagram`)}
-                        className="platform-badge flex items-center gap-1.5 disabled:opacity-50"
-                        style={posts.some(p => p.photoId === photo.id && p.platform === 'instagram') ? { borderColor: 'var(--accent)', background: 'rgba(99,102,241,0.15)' } : {}}
-                      >
-                        {generating.has(`${photo.id}-instagram`) ? (
-                          <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full loading-spin" />
-                        ) : (
-                          <IgIcon size={14} />
-                        )}
-                        Instagram
-                        {posts.some(p => p.photoId === photo.id && p.platform === 'instagram') && ' ✓'}
-                      </button>
-
-                      <button
-                        onClick={() => generateCaption(photo, 'tiktok')}
-                        disabled={generating.has(`${photo.id}-tiktok`)}
-                        className="platform-badge flex items-center gap-1.5 disabled:opacity-50"
-                        style={posts.some(p => p.photoId === photo.id && p.platform === 'tiktok') ? { borderColor: 'var(--accent)', background: 'rgba(99,102,241,0.15)' } : {}}
-                      >
-                        {generating.has(`${photo.id}-tiktok`) ? (
-                          <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full loading-spin" />
-                        ) : (
-                          <TtIcon size={14} />
-                        )}
-                        TikTok
-                        {posts.some(p => p.photoId === photo.id && p.platform === 'tiktok') && ' ✓'}
-                      </button>
+                      {(['instagram', 'tiktok'] as const).map(plat => {
+                        const key = `${photo.id}-${plat}`
+                        const hasVariants = !!variants[key]
+                        const hasPost = posts.some(p => p.photoId === photo.id && p.platform === plat)
+                        const isGen = generating.has(key)
+                        return (
+                          <button
+                            key={plat}
+                            onClick={() => generateCaption(photo, plat)}
+                            disabled={isGen}
+                            className="platform-badge flex items-center gap-1.5 disabled:opacity-50"
+                            style={(hasPost || hasVariants) ? { borderColor: 'var(--accent)', background: 'rgba(99,102,241,0.15)' } : {}}
+                          >
+                            {isGen ? (
+                              <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full loading-spin" />
+                            ) : (
+                              <PlatformIcon platform={plat} size={14} />
+                            )}
+                            {plat === 'instagram' ? 'Instagram' : 'TikTok'}
+                            {hasPost && ' ✓'}
+                            {hasVariants && !hasPost && ' ●'}
+                          </button>
+                        )
+                      })}
                     </div>
 
-                    {posts.filter(p => p.photoId === photo.id).map(post => (
-                      <div key={post.id} className="text-xs bg-white/5 rounded-lg p-2.5 mb-2">
-                        <div className="flex items-center gap-1.5 mb-1 text-[var(--text-muted)]">
-                          <PlatformIcon platform={post.platform} size={12} /> {post.platform}
+                    {/* Variant selection */}
+                    {(['instagram', 'tiktok'] as const).map(plat => {
+                      const key = `${photo.id}-${plat}`
+                      const variantList = variants[key]
+                      const selectedPost = posts.find(p => p.photoId === photo.id && p.platform === plat)
+
+                      if (!variantList && !selectedPost) return null
+
+                      return (
+                        <div key={plat} className="mb-3">
+                          <div className="flex items-center gap-1.5 mb-1.5 text-[var(--text-muted)] text-xs">
+                            <PlatformIcon platform={plat} size={12} /> {plat}
+                            {selectedPost && <span className="text-[var(--success)] ml-1">&#10003; selected</span>}
+                          </div>
+
+                          {/* Show variants to pick from */}
+                          {variantList && variantList.length > 0 && (
+                            <div className="space-y-1.5">
+                              {variantList.map((v, vi) => (
+                                <button
+                                  key={vi}
+                                  onClick={() => selectVariant(photo, plat, v)}
+                                  className="w-full text-left text-xs bg-white/5 hover:bg-white/10 rounded-lg p-2.5 border border-transparent hover:border-[var(--accent)]/50 transition-all"
+                                >
+                                  <div className="flex items-start gap-2">
+                                    <span className="shrink-0 w-5 h-5 rounded-full bg-[var(--accent)]/20 text-[var(--accent)] flex items-center justify-center text-[10px] font-bold mt-0.5">
+                                      {vi + 1}
+                                    </span>
+                                    <div className="min-w-0">
+                                      <p className="line-clamp-2">{v.caption}</p>
+                                      <p className="text-[var(--accent)] mt-1 truncate">
+                                        {(v.hashtags || []).slice(0, 5).map(h => `#${h}`).join(' ')}
+                                        {(v.hashtags || []).length > 5 && ` +${v.hashtags.length - 5}`}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </button>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Show selected caption */}
+                          {selectedPost && !variantList && (
+                            <div className="text-xs bg-[var(--accent)]/10 rounded-lg p-2.5 border border-[var(--accent)]/30">
+                              <p className="line-clamp-2">{selectedPost.caption}</p>
+                              <p className="text-[var(--accent)] mt-1 truncate">
+                                {selectedPost.hashtags.slice(0, 5).map(h => `#${h}`).join(' ')}
+                                {selectedPost.hashtags.length > 5 && ` +${selectedPost.hashtags.length - 5}`}
+                              </p>
+                            </div>
+                          )}
                         </div>
-                        <p className="line-clamp-2">{post.caption}</p>
-                        <p className="text-[var(--accent)] mt-1 truncate">
-                          {post.hashtags.map(h => `#${h}`).join(' ')}
-                        </p>
-                      </div>
-                    ))}
+                      )
+                    })}
                   </div>
                 </div>
               </div>
@@ -681,10 +741,16 @@ export default function Home() {
           </div>
 
           {posts.length > 0 && (
-            <div className="flex justify-center mt-6">
+            <div className="flex flex-col items-center mt-6 gap-2">
+              {Object.keys(variants).length > 0 && (
+                <p className="text-xs text-[var(--text-muted)]">
+                  Select a caption for each platform before scheduling ({Object.keys(variants).length} pending)
+                </p>
+              )}
               <button
                 onClick={() => { handleAutoDistribute(); setStep(3) }}
-                className="px-8 py-3 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] font-medium transition-colors"
+                disabled={Object.keys(variants).length > 0}
+                className="px-8 py-3 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Schedule {posts.length} posts &rarr;
               </button>
@@ -815,7 +881,7 @@ export default function Home() {
                 </button>
               )}
               <button
-                onClick={() => { setStep(1); setPhotos([]); setPosts([]); setPublishErrors([]) }}
+                onClick={() => { setStep(1); setPhotos([]); setPosts([]); setVariants({}); setPublishErrors([]) }}
                 disabled={publishing}
                 className="px-6 py-2.5 rounded-xl bg-[var(--card)] border border-[var(--border)] hover:border-[var(--accent)] font-medium text-sm transition-colors disabled:opacity-50"
               >

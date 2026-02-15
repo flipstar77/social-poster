@@ -25,14 +25,14 @@ Rules:
 - Match the requested tone${exampleBlock}
 
 Return ONLY valid JSON (no markdown, no code blocks) in this exact format:
-{"caption": "the caption text here", "hashtags": ["tag1", "tag2", ...]}
+{"variants": [{"caption": "caption 1", "hashtags": ["tag1", "tag2"]}, {"caption": "caption 2", "hashtags": ["tag1", "tag2"]}, {"caption": "caption 3", "hashtags": ["tag1", "tag2"]}]}
 `
 
   const userPrompt = `Platform: ${platform || 'Instagram'}
 Tone: ${tone || 'friendly and inviting'}
 Photo/content description: ${description}
 
-Generate a caption and hashtags for this post.`
+Generate 3 different caption variants with hashtags for this post. Each should have a distinct style/angle.`
 
   try {
     const res = await fetch('https://api.x.ai/v1/chat/completions', {
@@ -67,7 +67,12 @@ Generate a caption and hashtags for this post.`
     }
 
     const parsed = JSON.parse(jsonMatch[0])
-    return NextResponse.json(parsed)
+
+    // Normalize: if old single-caption format, wrap in variants array
+    if (parsed.variants && Array.isArray(parsed.variants)) {
+      return NextResponse.json({ variants: parsed.variants })
+    }
+    return NextResponse.json({ variants: [{ caption: parsed.caption, hashtags: parsed.hashtags }] })
   } catch (err) {
     console.error('[Generate] Error:', err)
     return NextResponse.json({ error: 'Generation failed' }, { status: 500 })
