@@ -104,6 +104,36 @@ function StepIndicator({ current }: { current: number }) {
   )
 }
 
+// --- Platform Icons ---
+
+function IgIcon({ size = 14 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <rect x="2" y="2" width="20" height="20" rx="6" stroke="url(#ig)" strokeWidth="2"/>
+      <circle cx="12" cy="12" r="5" stroke="url(#ig)" strokeWidth="2"/>
+      <circle cx="17.5" cy="6.5" r="1.5" fill="url(#ig)"/>
+      <defs>
+        <linearGradient id="ig" x1="2" y1="22" x2="22" y2="2">
+          <stop stopColor="#F58529"/><stop offset=".5" stopColor="#DD2A7B"/><stop offset="1" stopColor="#8134AF"/>
+        </linearGradient>
+      </defs>
+    </svg>
+  )
+}
+
+function TtIcon({ size = 14 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <path d="M9 12a4 4 0 1 0 4 4V3c1.5 2 4 3 6 3" stroke="#00f2ea" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M9 12a4 4 0 1 0 4 4V3c1.5 2 4 3 6 3" stroke="#ff0050" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" transform="translate(-0.5 -0.5)" opacity="0.5"/>
+    </svg>
+  )
+}
+
+function PlatformIcon({ platform, size = 14 }: { platform: 'instagram' | 'tiktok'; size?: number }) {
+  return platform === 'instagram' ? <IgIcon size={size} /> : <TtIcon size={size} />
+}
+
 // --- Calendar View ---
 
 function CalendarScheduler({
@@ -115,10 +145,10 @@ function CalendarScheduler({
   onUpdatePost: (id: string, updates: Partial<GeneratedPost>) => void
   onAutoDistribute: () => void
 }) {
-  // Show 14 days starting from tomorrow
+  // Show 7 days starting from tomorrow
   const today = toDateStr(new Date())
   const startDate = addDays(today, 1)
-  const days = Array.from({ length: 14 }, (_, i) => addDays(startDate, i))
+  const days = Array.from({ length: 7 }, (_, i) => addDays(startDate, i))
 
   const [draggedPost, setDraggedPost] = useState<string | null>(null)
   const [dropTarget, setDropTarget] = useState<string | null>(null)
@@ -155,7 +185,7 @@ function CalendarScheduler({
                 className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] cursor-grab active:cursor-grabbing text-xs hover:border-[var(--accent)]/50 transition-colors"
               >
                 <img src={post.preview} alt="" className="w-6 h-6 rounded object-cover" />
-                <span>{post.platform === 'instagram' ? '📷' : '🎵'}</span>
+                <PlatformIcon platform={post.platform} size={12} />
                 <span className="max-w-[100px] truncate">{post.caption.slice(0, 20)}</span>
               </div>
             ))}
@@ -163,8 +193,8 @@ function CalendarScheduler({
         </div>
       )}
 
-      {/* Calendar grid */}
-      <div className="grid grid-cols-7 gap-1.5">
+      {/* Calendar grid — 7 days */}
+      <div className="grid grid-cols-7 gap-2">
         {days.map(dateStr => {
           const { weekday, day, month } = formatDay(dateStr)
           const dayPosts = posts.filter(p => p.scheduledDate === dateStr)
@@ -174,7 +204,7 @@ function CalendarScheduler({
           return (
             <div
               key={dateStr}
-              className={`min-h-[120px] rounded-xl p-2 transition-all ${
+              className={`min-h-[160px] rounded-xl p-2 transition-all ${
                 isDropping
                   ? 'bg-[var(--accent)]/15 border-2 border-[var(--accent)]'
                   : isWeekend
@@ -193,18 +223,18 @@ function CalendarScheduler({
               }}
             >
               {/* Day header */}
-              <div className="text-center mb-1.5">
-                <div className={`text-[10px] ${isWeekend ? 'text-[var(--text-muted)]/60' : 'text-[var(--text-muted)]'}`}>
+              <div className="text-center mb-2">
+                <div className={`text-[10px] uppercase tracking-wide ${isWeekend ? 'text-[var(--text-muted)]/60' : 'text-[var(--text-muted)]'}`}>
                   {weekday}
                 </div>
-                <div className={`text-sm font-bold ${isWeekend ? 'text-[var(--text-muted)]' : ''}`}>
+                <div className={`text-lg font-bold leading-tight ${isWeekend ? 'text-[var(--text-muted)]' : ''}`}>
                   {day}
                 </div>
                 <div className="text-[10px] text-[var(--text-muted)]">{month}</div>
               </div>
 
               {/* Posts in this day */}
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 {dayPosts.map(post => (
                   <div
                     key={post.id}
@@ -216,19 +246,28 @@ function CalendarScheduler({
                     }`}
                   >
                     <img src={post.preview} alt="" className="w-full aspect-square object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px]">
-                          {post.platform === 'instagram' ? '📷' : '🎵'}
-                        </span>
-                        <span className="text-[10px] text-white/80">{post.scheduledTime}</span>
-                      </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+
+                    {/* Platform icon */}
+                    <div className="absolute top-1 left-1">
+                      <PlatformIcon platform={post.platform} size={16} />
                     </div>
+
+                    {/* Time picker */}
+                    <div className="absolute bottom-0 left-0 right-0 px-1 pb-1">
+                      <input
+                        type="time"
+                        value={post.scheduledTime}
+                        onChange={e => onUpdatePost(post.id, { scheduledTime: e.target.value })}
+                        onClick={e => e.stopPropagation()}
+                        className="w-full text-[10px] bg-black/60 border-none text-white text-center rounded px-0.5 py-0 focus:outline-none focus:ring-1 focus:ring-[var(--accent)] [color-scheme:dark]"
+                      />
+                    </div>
+
                     {/* Remove from day */}
                     <button
                       onClick={() => onUpdatePost(post.id, { scheduledDate: '' })}
-                      className="absolute top-0 right-0 w-4 h-4 bg-black/60 text-[8px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-bl"
+                      className="absolute top-0.5 right-0.5 w-4 h-4 bg-black/60 text-[8px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-full"
                     >
                       &times;
                     </button>
@@ -238,13 +277,6 @@ function CalendarScheduler({
             </div>
           )
         })}
-      </div>
-
-      {/* Week 2 label */}
-      <div className="flex items-center gap-3 mt-1 mb-1">
-        <div className="flex-1 h-px bg-[var(--border)]" />
-        <span className="text-[10px] text-[var(--text-muted)]">Week 2</span>
-        <div className="flex-1 h-px bg-[var(--border)]" />
       </div>
     </div>
   )
@@ -504,7 +536,7 @@ export default function Home() {
                         {generating.has(`${photo.id}-instagram`) ? (
                           <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full loading-spin" />
                         ) : (
-                          <span>📷</span>
+                          <IgIcon size={14} />
                         )}
                         Instagram
                         {posts.some(p => p.photoId === photo.id && p.platform === 'instagram') && ' ✓'}
@@ -519,7 +551,7 @@ export default function Home() {
                         {generating.has(`${photo.id}-tiktok`) ? (
                           <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full loading-spin" />
                         ) : (
-                          <span>🎵</span>
+                          <TtIcon size={14} />
                         )}
                         TikTok
                         {posts.some(p => p.photoId === photo.id && p.platform === 'tiktok') && ' ✓'}
@@ -529,7 +561,7 @@ export default function Home() {
                     {posts.filter(p => p.photoId === photo.id).map(post => (
                       <div key={post.id} className="text-xs bg-white/5 rounded-lg p-2.5 mb-2">
                         <div className="flex items-center gap-1.5 mb-1 text-[var(--text-muted)]">
-                          {post.platform === 'instagram' ? '📷' : '🎵'} {post.platform}
+                          <PlatformIcon platform={post.platform} size={12} /> {post.platform}
                         </div>
                         <p className="line-clamp-2">{post.caption}</p>
                         <p className="text-[var(--accent)] mt-1 truncate">
@@ -605,12 +637,12 @@ export default function Home() {
 
             <div className="grid grid-cols-2 gap-3 mb-6">
               <div className="bg-white/5 rounded-xl p-4">
-                <div className="text-2xl mb-1">📷</div>
+                <div className="mb-1 flex justify-center"><IgIcon size={28} /></div>
                 <div className="text-lg font-bold">{posts.filter(p => p.platform === 'instagram').length}</div>
                 <div className="text-xs text-[var(--text-muted)]">Instagram Posts</div>
               </div>
               <div className="bg-white/5 rounded-xl p-4">
-                <div className="text-2xl mb-1">🎵</div>
+                <div className="mb-1 flex justify-center"><TtIcon size={28} /></div>
                 <div className="text-lg font-bold">{posts.filter(p => p.platform === 'tiktok').length}</div>
                 <div className="text-xs text-[var(--text-muted)]">TikTok Posts</div>
               </div>
@@ -624,7 +656,7 @@ export default function Home() {
                     <span className={`w-2 h-2 rounded-full ${post.status === 'posted' ? 'bg-[var(--success)]' : 'bg-[var(--accent)]'}`} />
                     <span className="text-[var(--text-muted)] w-24">{post.scheduledDate}</span>
                     <span className="w-12">{post.scheduledTime}</span>
-                    <span>{post.platform === 'instagram' ? '📷' : '🎵'}</span>
+                    <span><PlatformIcon platform={post.platform} size={12} /></span>
                     <span className="truncate flex-1">{post.caption.slice(0, 40)}...</span>
                     <span className={`text-xs px-2 py-0.5 rounded-full ${
                       post.status === 'posted' ? 'bg-[var(--success)]/20 text-[var(--success)]' :
