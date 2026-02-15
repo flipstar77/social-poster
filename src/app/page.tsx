@@ -614,10 +614,17 @@ export default function Home() {
                 <option value="Europe/Rome">Europe/Rome (CET)</option>
                 <option value="Europe/Zurich">Europe/Zurich (CET)</option>
                 <option value="Europe/Vienna">Europe/Vienna (CET)</option>
+                <option value="Asia/Kuala_Lumpur">Asia/Kuala Lumpur (MYT)</option>
+                <option value="Asia/Singapore">Asia/Singapore (SGT)</option>
+                <option value="Asia/Tokyo">Asia/Tokyo (JST)</option>
+                <option value="Asia/Dubai">Asia/Dubai (GST)</option>
+                <option value="Asia/Bangkok">Asia/Bangkok (ICT)</option>
+                <option value="Australia/Sydney">Australia/Sydney (AEST)</option>
                 <option value="America/New_York">US Eastern (EST)</option>
                 <option value="America/Chicago">US Central (CST)</option>
                 <option value="America/Denver">US Mountain (MST)</option>
                 <option value="America/Los_Angeles">US Pacific (PST)</option>
+                <option value="America/Sao_Paulo">America/Sao Paulo (BRT)</option>
               </select>
             </div>
           </div>
