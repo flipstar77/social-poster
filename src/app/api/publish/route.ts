@@ -14,6 +14,7 @@ export async function POST(request: Request) {
     const platform = formData.get('platform') as string // instagram | tiktok
     const scheduledDate = formData.get('scheduledDate') as string // YYYY-MM-DD
     const scheduledTime = formData.get('scheduledTime') as string // HH:mm
+    const tz = formData.get('timezone') as string || 'Europe/Berlin'
 
     if (!photo || !caption || !platform) {
       return NextResponse.json(
@@ -52,7 +53,7 @@ export async function POST(request: Request) {
     if (scheduledDate && scheduledTime) {
       const isoDate = `${scheduledDate}T${scheduledTime}:00`
       uploadForm.append('scheduled_date', isoDate)
-      uploadForm.append('timezone', 'Europe/Berlin')
+      uploadForm.append('timezone', tz)
     }
 
     const res = await fetch('https://api.upload-post.com/api/upload_photos', {

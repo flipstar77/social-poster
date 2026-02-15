@@ -337,6 +337,7 @@ export default function Home() {
   const [tone, setTone] = useState('friendly and fun')
   const [exampleCaptions, setExampleCaptions] = useState('')
   const [language, setLanguage] = useState('Deutsch')
+  const [timezone, setTimezone] = useState('Europe/Berlin')
   const [publishing, setPublishing] = useState(false)
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
   const [publishProgress, setPublishProgress] = useState(0)
@@ -519,6 +520,7 @@ export default function Home() {
       formData.append('platform', post.platform)
       formData.append('scheduledDate', post.scheduledDate)
       formData.append('scheduledTime', post.scheduledTime)
+      formData.append('timezone', timezone)
 
       try {
         const res = await fetch('/api/publish', { method: 'POST', body: formData })
@@ -562,7 +564,7 @@ export default function Home() {
       {step === 1 && (
         <div className="fade-in">
           {/* Business config */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-sm text-[var(--text-muted)] mb-1.5">Business Type</label>
               <input
@@ -581,6 +583,8 @@ export default function Home() {
                 className="w-full px-4 py-2.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-sm focus:border-[var(--accent)] focus:outline-none transition-colors"
               />
             </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-sm text-[var(--text-muted)] mb-1.5">Language</label>
               <select
@@ -594,6 +598,26 @@ export default function Home() {
                 <option value="Français">Français</option>
                 <option value="Italiano">Italiano</option>
                 <option value="Português">Português</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm text-[var(--text-muted)] mb-1.5">Timezone</label>
+              <select
+                value={timezone}
+                onChange={e => setTimezone(e.target.value)}
+                className="w-full px-4 py-2.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-sm focus:border-[var(--accent)] focus:outline-none transition-colors"
+              >
+                <option value="Europe/Berlin">Europe/Berlin (CET)</option>
+                <option value="Europe/London">Europe/London (GMT)</option>
+                <option value="Europe/Paris">Europe/Paris (CET)</option>
+                <option value="Europe/Madrid">Europe/Madrid (CET)</option>
+                <option value="Europe/Rome">Europe/Rome (CET)</option>
+                <option value="Europe/Zurich">Europe/Zurich (CET)</option>
+                <option value="Europe/Vienna">Europe/Vienna (CET)</option>
+                <option value="America/New_York">US Eastern (EST)</option>
+                <option value="America/Chicago">US Central (CST)</option>
+                <option value="America/Denver">US Mountain (MST)</option>
+                <option value="America/Los_Angeles">US Pacific (PST)</option>
               </select>
             </div>
           </div>
