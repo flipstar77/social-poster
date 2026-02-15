@@ -23,6 +23,55 @@ interface GeneratedPost {
   status: 'draft' | 'scheduled' | 'posted'
 }
 
+// --- Helpers ---
+
+function toDateStr(d: Date) {
+  return d.toISOString().split('T')[0]
+}
+
+function addDays(dateStr: string, n: number) {
+  const d = new Date(dateStr + 'T12:00:00')
+  d.setDate(d.getDate() + n)
+  return toDateStr(d)
+}
+
+function formatDay(dateStr: string) {
+  const d = new Date(dateStr + 'T12:00:00')
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  return { weekday: days[d.getDay()], day: d.getDate(), month: months[d.getMonth()] }
+}
+
+/** Distribute posts evenly: 1 post per platform per day, IG at 11:00, TT at 18:00 */
+function autoDistribute(posts: GeneratedPost[]): GeneratedPost[] {
+  const today = toDateStr(new Date())
+  const startDate = addDays(today, 1)
+
+  // Group by photo: pair IG + TikTok for same photo on same day
+  const byPhoto = new Map<string, GeneratedPost[]>()
+  for (const p of posts) {
+    if (!byPhoto.has(p.photoId)) byPhoto.set(p.photoId, [])
+    byPhoto.get(p.photoId)!.push(p)
+  }
+
+  const result: GeneratedPost[] = []
+  let dayOffset = 0
+
+  for (const photoPosts of byPhoto.values()) {
+    const date = addDays(startDate, dayOffset)
+    for (const p of photoPosts) {
+      result.push({
+        ...p,
+        scheduledDate: date,
+        scheduledTime: p.platform === 'instagram' ? '11:00' : '18:00',
+      })
+    }
+    dayOffset++
+  }
+
+  return result
+}
+
 // --- Step Indicator ---
 
 function StepIndicator({ current }: { current: number }) {
@@ -51,6 +100,152 @@ function StepIndicator({ current }: { current: number }) {
           )}
         </div>
       ))}
+    </div>
+  )
+}
+
+// --- Calendar View ---
+
+function CalendarScheduler({
+  posts,
+  onUpdatePost,
+  onAutoDistribute,
+}: {
+  posts: GeneratedPost[]
+  onUpdatePost: (id: string, updates: Partial<GeneratedPost>) => void
+  onAutoDistribute: () => void
+}) {
+  // Show 14 days starting from tomorrow
+  const today = toDateStr(new Date())
+  const startDate = addDays(today, 1)
+  const days = Array.from({ length: 14 }, (_, i) => addDays(startDate, i))
+
+  const [draggedPost, setDraggedPost] = useState<string | null>(null)
+  const [dropTarget, setDropTarget] = useState<string | null>(null)
+
+  // Unscheduled posts (no date or date before start)
+  const unscheduled = posts.filter(p => !p.scheduledDate || p.scheduledDate <= today)
+
+  return (
+    <div>
+      {/* Controls */}
+      <div className="flex items-center justify-between mb-4">
+        <span className="text-sm text-[var(--text-muted)]">
+          Drag posts to dates or use auto-distribute
+        </span>
+        <button
+          onClick={onAutoDistribute}
+          className="px-4 py-2 rounded-lg bg-[var(--accent)]/20 text-[var(--accent-hover)] text-sm font-medium hover:bg-[var(--accent)]/30 transition-colors"
+        >
+          Auto-Distribute Evenly
+        </button>
+      </div>
+
+      {/* Unscheduled pool */}
+      {unscheduled.length > 0 && (
+        <div className="mb-4 p-3 rounded-xl border border-dashed border-[var(--border)] bg-white/[0.02]">
+          <p className="text-xs text-[var(--text-muted)] mb-2">Unscheduled ({unscheduled.length})</p>
+          <div className="flex flex-wrap gap-2">
+            {unscheduled.map(post => (
+              <div
+                key={post.id}
+                draggable
+                onDragStart={() => setDraggedPost(post.id)}
+                onDragEnd={() => { setDraggedPost(null); setDropTarget(null) }}
+                className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] cursor-grab active:cursor-grabbing text-xs hover:border-[var(--accent)]/50 transition-colors"
+              >
+                <img src={post.preview} alt="" className="w-6 h-6 rounded object-cover" />
+                <span>{post.platform === 'instagram' ? '📷' : '🎵'}</span>
+                <span className="max-w-[100px] truncate">{post.caption.slice(0, 20)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Calendar grid */}
+      <div className="grid grid-cols-7 gap-1.5">
+        {days.map(dateStr => {
+          const { weekday, day, month } = formatDay(dateStr)
+          const dayPosts = posts.filter(p => p.scheduledDate === dateStr)
+          const isDropping = dropTarget === dateStr
+          const isWeekend = weekday === 'Sat' || weekday === 'Sun'
+
+          return (
+            <div
+              key={dateStr}
+              className={`min-h-[120px] rounded-xl p-2 transition-all ${
+                isDropping
+                  ? 'bg-[var(--accent)]/15 border-2 border-[var(--accent)]'
+                  : isWeekend
+                    ? 'bg-white/[0.02] border border-[var(--border)]/50'
+                    : 'bg-[var(--card)] border border-[var(--border)]'
+              }`}
+              onDragOver={e => { e.preventDefault(); setDropTarget(dateStr) }}
+              onDragLeave={() => setDropTarget(null)}
+              onDrop={e => {
+                e.preventDefault()
+                setDropTarget(null)
+                if (draggedPost) {
+                  onUpdatePost(draggedPost, { scheduledDate: dateStr })
+                  setDraggedPost(null)
+                }
+              }}
+            >
+              {/* Day header */}
+              <div className="text-center mb-1.5">
+                <div className={`text-[10px] ${isWeekend ? 'text-[var(--text-muted)]/60' : 'text-[var(--text-muted)]'}`}>
+                  {weekday}
+                </div>
+                <div className={`text-sm font-bold ${isWeekend ? 'text-[var(--text-muted)]' : ''}`}>
+                  {day}
+                </div>
+                <div className="text-[10px] text-[var(--text-muted)]">{month}</div>
+              </div>
+
+              {/* Posts in this day */}
+              <div className="space-y-1">
+                {dayPosts.map(post => (
+                  <div
+                    key={post.id}
+                    draggable
+                    onDragStart={() => setDraggedPost(post.id)}
+                    onDragEnd={() => { setDraggedPost(null); setDropTarget(null) }}
+                    className={`group relative rounded-lg overflow-hidden cursor-grab active:cursor-grabbing transition-all hover:ring-1 hover:ring-[var(--accent)]/50 ${
+                      draggedPost === post.id ? 'opacity-30' : ''
+                    }`}
+                  >
+                    <img src={post.preview} alt="" className="w-full aspect-square object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px]">
+                          {post.platform === 'instagram' ? '📷' : '🎵'}
+                        </span>
+                        <span className="text-[10px] text-white/80">{post.scheduledTime}</span>
+                      </div>
+                    </div>
+                    {/* Remove from day */}
+                    <button
+                      onClick={() => onUpdatePost(post.id, { scheduledDate: '' })}
+                      className="absolute top-0 right-0 w-4 h-4 bg-black/60 text-[8px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-bl"
+                    >
+                      &times;
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Week 2 label */}
+      <div className="flex items-center gap-3 mt-1 mb-1">
+        <div className="flex-1 h-px bg-[var(--border)]" />
+        <span className="text-[10px] text-[var(--text-muted)]">Week 2</span>
+        <div className="flex-1 h-px bg-[var(--border)]" />
+      </div>
     </div>
   )
 }
@@ -110,13 +305,6 @@ export default function Home() {
       const data = await res.json()
       if (data.error) throw new Error(data.error)
 
-      // Schedule: spread posts across next days
-      const existingCount = posts.length
-      const schedDate = new Date()
-      schedDate.setDate(schedDate.getDate() + Math.floor(existingCount / 2) + 1)
-      const hour = platform === 'instagram' ? 11 : 18
-      const timeStr = `${String(hour).padStart(2, '0')}:00`
-
       const newPost: GeneratedPost = {
         id: crypto.randomUUID(),
         photoId: photo.id,
@@ -124,8 +312,8 @@ export default function Home() {
         caption: data.caption,
         hashtags: data.hashtags || [],
         platform,
-        scheduledDate: schedDate.toISOString().split('T')[0],
-        scheduledTime: timeStr,
+        scheduledDate: '', // unscheduled — calendar will distribute
+        scheduledTime: platform === 'instagram' ? '11:00' : '18:00',
         status: 'draft',
       }
 
@@ -154,6 +342,10 @@ export default function Home() {
     setPosts(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p))
   }
 
+  const handleAutoDistribute = () => {
+    setPosts(prev => autoDistribute(prev))
+  }
+
   const scheduleAll = () => {
     setPosts(prev => prev.map(p => ({ ...p, status: 'scheduled' as const })))
     setStep(4)
@@ -162,6 +354,8 @@ export default function Home() {
   const publishAll = () => {
     setPosts(prev => prev.map(p => ({ ...p, status: 'posted' as const })))
   }
+
+  const allScheduled = posts.length > 0 && posts.every(p => p.scheduledDate)
 
   // --- Render ---
 
@@ -301,7 +495,6 @@ export default function Home() {
                     <p className="text-sm font-medium mb-2 truncate">{photo.description || photo.file.name}</p>
 
                     <div className="flex gap-2 mb-3">
-                      {/* IG button */}
                       <button
                         onClick={() => generateCaption(photo, 'instagram')}
                         disabled={generating.has(`${photo.id}-instagram`)}
@@ -317,7 +510,6 @@ export default function Home() {
                         {posts.some(p => p.photoId === photo.id && p.platform === 'instagram') && ' ✓'}
                       </button>
 
-                      {/* TikTok button */}
                       <button
                         onClick={() => generateCaption(photo, 'tiktok')}
                         disabled={generating.has(`${photo.id}-tiktok`)}
@@ -334,7 +526,6 @@ export default function Home() {
                       </button>
                     </div>
 
-                    {/* Preview generated captions */}
                     {posts.filter(p => p.photoId === photo.id).map(post => (
                       <div key={post.id} className="text-xs bg-white/5 rounded-lg p-2.5 mb-2">
                         <div className="flex items-center gap-1.5 mb-1 text-[var(--text-muted)]">
@@ -355,7 +546,7 @@ export default function Home() {
           {posts.length > 0 && (
             <div className="flex justify-center mt-6">
               <button
-                onClick={() => setStep(3)}
+                onClick={() => { handleAutoDistribute(); setStep(3) }}
                 className="px-8 py-3 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] font-medium transition-colors"
               >
                 Schedule {posts.length} posts &rarr;
@@ -365,65 +556,37 @@ export default function Home() {
         </div>
       )}
 
-      {/* Step 3: Schedule */}
+      {/* Step 3: Calendar Schedule */}
       {step === 3 && (
         <div className="fade-in">
           <div className="flex items-center justify-between mb-6">
             <button onClick={() => setStep(2)} className="text-sm text-[var(--text-muted)] hover:text-white transition-colors">
               &larr; Back to captions
             </button>
-            <span className="text-sm text-[var(--text-muted)]">{posts.length} posts ready</span>
+            <span className="text-sm text-[var(--text-muted)]">{posts.length} posts</span>
           </div>
 
-          <div className="space-y-3">
-            {posts.map(post => (
-              <div key={post.id} className="post-card p-4 fade-in">
-                <div className="flex gap-4">
-                  <img src={post.preview} alt="" className="w-16 h-16 rounded-lg object-cover shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-sm">{post.platform === 'instagram' ? '📷 Instagram' : '🎵 TikTok'}</span>
-                    </div>
-                    <p className="text-xs text-[var(--text-muted)] line-clamp-1 mb-2">{post.caption}</p>
-                    <div className="flex gap-2">
-                      <input
-                        type="date"
-                        value={post.scheduledDate}
-                        onChange={e => updatePost(post.id, { scheduledDate: e.target.value })}
-                        className="text-xs px-3 py-1.5 rounded-lg bg-[var(--bg)] border border-[var(--border)] focus:border-[var(--accent)] focus:outline-none"
-                      />
-                      <input
-                        type="time"
-                        value={post.scheduledTime}
-                        onChange={e => updatePost(post.id, { scheduledTime: e.target.value })}
-                        className="text-xs px-3 py-1.5 rounded-lg bg-[var(--bg)] border border-[var(--border)] focus:border-[var(--accent)] focus:outline-none"
-                      />
-                    </div>
-                  </div>
-                  {/* Edit caption */}
-                  <button
-                    onClick={() => {
-                      const newCaption = prompt('Edit caption:', post.caption)
-                      if (newCaption !== null) updatePost(post.id, { caption: newCaption })
-                    }}
-                    className="text-[var(--text-muted)] hover:text-white text-sm self-start"
-                    title="Edit caption"
-                  >
-                    ✏️
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+          <CalendarScheduler
+            posts={posts}
+            onUpdatePost={updatePost}
+            onAutoDistribute={handleAutoDistribute}
+          />
 
-          <div className="flex justify-center mt-6">
-            <button
-              onClick={scheduleAll}
-              className="px-8 py-3 rounded-xl bg-[var(--success)] hover:brightness-110 font-medium transition-all"
-            >
-              Schedule All {posts.length} Posts ✓
-            </button>
-          </div>
+          {allScheduled && (
+            <div className="flex justify-center mt-6">
+              <button
+                onClick={scheduleAll}
+                className="px-8 py-3 rounded-xl bg-[var(--success)] hover:brightness-110 font-medium transition-all"
+              >
+                Schedule All {posts.length} Posts ✓
+              </button>
+            </div>
+          )}
+          {!allScheduled && (
+            <p className="text-center mt-4 text-sm text-[var(--text-muted)]">
+              Drag all posts to calendar dates to continue
+            </p>
+          )}
         </div>
       )}
 
@@ -440,7 +603,6 @@ export default function Home() {
               {posts.every(p => p.status === 'posted') ? ' have been published.' : ' are queued and ready to go.'}
             </p>
 
-            {/* Post summary */}
             <div className="grid grid-cols-2 gap-3 mb-6">
               <div className="bg-white/5 rounded-xl p-4">
                 <div className="text-2xl mb-1">📷</div>
@@ -454,11 +616,10 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Timeline preview */}
             <div className="text-left mb-6">
               <h3 className="text-sm font-medium mb-3 text-[var(--text-muted)]">Upcoming Schedule</h3>
               <div className="space-y-2">
-                {posts.map(post => (
+                {[...posts].sort((a, b) => a.scheduledDate.localeCompare(b.scheduledDate) || a.scheduledTime.localeCompare(b.scheduledTime)).map(post => (
                   <div key={post.id} className="flex items-center gap-3 text-sm">
                     <span className={`w-2 h-2 rounded-full ${post.status === 'posted' ? 'bg-[var(--success)]' : 'bg-[var(--accent)]'}`} />
                     <span className="text-[var(--text-muted)] w-24">{post.scheduledDate}</span>
@@ -497,7 +658,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* Footer */}
       <div className="text-center mt-12 text-xs text-[var(--text-muted)]">
         Built with Next.js, Tailwind CSS & Grok AI
       </div>
