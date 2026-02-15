@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
-  const { description, businessType, tone, platform, exampleCaptions } = await request.json()
+  const { description, businessType, tone, platform, exampleCaptions, language } = await request.json()
 
   const apiKey = process.env.XAI_API_KEY
   if (!apiKey) {
@@ -16,7 +16,8 @@ export async function POST(request: Request) {
 Generate engaging social media captions and hashtags.
 
 Rules:
-- Write the caption in the language that matches the business description (if German business, write German; if English, write English)
+- IMPORTANT: Write ALL captions in ${language || 'German'}. Both Instagram and TikTok captions must be in the same language.
+- Never mention filenames or technical image names in the caption.
 - Keep it authentic, warm, and engaging
 - For Instagram: up to 2200 chars, 20-30 relevant hashtags
 - For TikTok: shorter, punchier, 5-10 trending hashtags

@@ -336,6 +336,7 @@ export default function Home() {
   const [businessType, setBusinessType] = useState('ice cream shop')
   const [tone, setTone] = useState('friendly and fun')
   const [exampleCaptions, setExampleCaptions] = useState('')
+  const [language, setLanguage] = useState('Deutsch')
   const [publishing, setPublishing] = useState(false)
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
   const [publishProgress, setPublishProgress] = useState(0)
@@ -376,11 +377,12 @@ export default function Home() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          description: photo.description || photo.file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' '),
+          description: photo.description || 'a photo of the product/business',
           businessType,
           tone,
           platform,
           exampleCaptions,
+          language,
         }),
       })
 
@@ -428,10 +430,51 @@ export default function Home() {
   }
 
   const generateAll = async () => {
-    for (const photo of photos) {
-      await generateCaption(photo, 'instagram')
-      await generateCaption(photo, 'tiktok')
+    // Fire all requests in parallel (2 per photo: IG + TikTok)
+    const tasks = photos.flatMap(photo => [
+      generateCaption(photo, 'instagram'),
+      generateCaption(photo, 'tiktok'),
+    ])
+    await Promise.all(tasks)
+  }
+
+  const acceptAllVariants = () => {
+    // Auto-select variant #1 for all pending variant sets
+    const newPosts: GeneratedPost[] = []
+    const keysToRemove: string[] = []
+
+    for (const [key, variantList] of Object.entries(variants)) {
+      if (!variantList || variantList.length === 0) continue
+      const [photoId, platform] = key.split('-') as [string, 'instagram' | 'tiktok']
+      const photo = photos.find(p => p.id === photoId)
+      if (!photo) continue
+
+      keysToRemove.push(key)
+      newPosts.push({
+        id: crypto.randomUUID(),
+        photoId: photo.id,
+        preview: photo.preview,
+        caption: variantList[0].caption,
+        hashtags: variantList[0].hashtags || [],
+        platform,
+        scheduledDate: '',
+        scheduledTime: platform === 'instagram' ? '11:00' : '18:00',
+        status: 'draft',
+      })
     }
+
+    // Remove existing posts for these photo+platform combos, add new ones
+    setPosts(prev => {
+      const filtered = prev.filter(p => !newPosts.some(np => np.photoId === p.photoId && np.platform === p.platform))
+      return [...filtered, ...newPosts]
+    })
+
+    // Clear accepted variants
+    setVariants(prev => {
+      const next = { ...prev }
+      for (const k of keysToRemove) delete next[k]
+      return next
+    })
   }
 
   // --- Schedule ---
@@ -518,7 +561,7 @@ export default function Home() {
       {step === 1 && (
         <div className="fade-in">
           {/* Business config */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
             <div>
               <label className="block text-sm text-[var(--text-muted)] mb-1.5">Business Type</label>
               <input
@@ -536,6 +579,21 @@ export default function Home() {
                 placeholder="e.g. friendly, professional, playful..."
                 className="w-full px-4 py-2.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-sm focus:border-[var(--accent)] focus:outline-none transition-colors"
               />
+            </div>
+            <div>
+              <label className="block text-sm text-[var(--text-muted)] mb-1.5">Language</label>
+              <select
+                value={language}
+                onChange={e => setLanguage(e.target.value)}
+                className="w-full px-4 py-2.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-sm focus:border-[var(--accent)] focus:outline-none transition-colors"
+              >
+                <option value="Deutsch">Deutsch</option>
+                <option value="English">English</option>
+                <option value="Español">Español</option>
+                <option value="Français">Français</option>
+                <option value="Italiano">Italiano</option>
+                <option value="Português">Português</option>
+              </select>
             </div>
           </div>
 
@@ -737,16 +795,24 @@ export default function Home() {
             ))}
           </div>
 
-          {posts.length > 0 && (
-            <div className="flex flex-col items-center mt-6 gap-2">
+          {(posts.length > 0 || Object.keys(variants).length > 0) && (
+            <div className="flex flex-col items-center mt-6 gap-3">
               {Object.keys(variants).length > 0 && (
-                <p className="text-xs text-[var(--text-muted)]">
-                  Select a caption for each platform before scheduling ({Object.keys(variants).length} pending)
-                </p>
+                <>
+                  <p className="text-xs text-[var(--text-muted)]">
+                    Pick your favorites or accept the first suggestion for all
+                  </p>
+                  <button
+                    onClick={acceptAllVariants}
+                    className="px-6 py-2.5 rounded-xl bg-[var(--card)] border border-[var(--border)] hover:border-[var(--accent)] font-medium text-sm transition-colors"
+                  >
+                    Accept All (1st variant) &mdash; {Object.keys(variants).length} pending
+                  </button>
+                </>
               )}
               <button
                 onClick={() => { handleAutoDistribute(); setStep(3) }}
-                disabled={Object.keys(variants).length > 0}
+                disabled={Object.keys(variants).length > 0 || posts.length === 0}
                 className="px-8 py-3 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Schedule {posts.length} posts &rarr;
@@ -881,7 +947,7 @@ export default function Home() {
                 </button>
               )}
               <button
-                onClick={() => { setStep(1); setPhotos([]); setPosts([]); setVariants({}); setPublishErrors([]) }}
+                onClick={() => { setStep(1); setPhotos([]); setPosts([]); setVariants({}); setPublishErrors([]); setPublishProgress(0) }}
                 disabled={publishing}
                 className="px-6 py-2.5 rounded-xl bg-[var(--card)] border border-[var(--border)] hover:border-[var(--accent)] font-medium text-sm transition-colors disabled:opacity-50"
               >
