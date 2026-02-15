@@ -1,0 +1,71 @@
+import { NextResponse } from 'next/server'
+
+export async function POST(request: Request) {
+  const { description, businessType, tone, platform } = await request.json()
+
+  const apiKey = process.env.XAI_API_KEY
+  if (!apiKey) {
+    return NextResponse.json({ error: 'API key not configured' }, { status: 500 })
+  }
+
+  const systemPrompt = `You are a social media expert for a ${businessType || 'small business'}.
+Generate engaging social media captions and hashtags.
+
+Rules:
+- Write the caption in the language that matches the business description (if German business, write German; if English, write English)
+- Keep it authentic, warm, and engaging
+- For Instagram: up to 2200 chars, 20-30 relevant hashtags
+- For TikTok: shorter, punchier, 5-10 trending hashtags
+- Include emojis naturally
+- Add a call-to-action when appropriate
+- Match the requested tone
+
+Return ONLY valid JSON (no markdown, no code blocks) in this exact format:
+{"caption": "the caption text here", "hashtags": ["tag1", "tag2", ...]}
+`
+
+  const userPrompt = `Platform: ${platform || 'Instagram'}
+Tone: ${tone || 'friendly and inviting'}
+Photo/content description: ${description}
+
+Generate a caption and hashtags for this post.`
+
+  try {
+    const res = await fetch('https://api.x.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: 'grok-3-mini-fast',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt },
+        ],
+        temperature: 0.8,
+      }),
+    })
+
+    if (!res.ok) {
+      const err = await res.text()
+      console.error('[Generate] Grok error:', err)
+      return NextResponse.json({ error: 'AI generation failed' }, { status: 500 })
+    }
+
+    const data = await res.json()
+    const content = data.choices?.[0]?.message?.content ?? ''
+
+    // Parse JSON from response (handle potential markdown wrapping)
+    const jsonMatch = content.match(/\{[\s\S]*\}/)
+    if (!jsonMatch) {
+      return NextResponse.json({ error: 'Invalid AI response', raw: content }, { status: 500 })
+    }
+
+    const parsed = JSON.parse(jsonMatch[0])
+    return NextResponse.json(parsed)
+  } catch (err) {
+    console.error('[Generate] Error:', err)
+    return NextResponse.json({ error: 'Generation failed' }, { status: 500 })
+  }
+}
