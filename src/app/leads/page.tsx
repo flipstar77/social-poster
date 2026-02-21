@@ -228,10 +228,10 @@ export default function LeadsPage() {
         if (ev) syncToAirtable(lead, { score: ev.score, reason: ev.reason, recommendation: ev.recommendation })
       }
 
-      // ④ Top-Leads: Batch-Profil-Scrape
-      const topLeads = newLeads
-        .filter(l => (quickEvs[l.username]?.score ?? 0) >= 6)
-        .slice(0, topN)
+      // ④ Top-Leads: Batch-Profil-Scrape (score ≥ 6, or unscored leads fill up to topN)
+      const scored = newLeads.filter(l => (quickEvs[l.username]?.score ?? 0) >= 6)
+      const unscored = newLeads.filter(l => !quickEvs[l.username])
+      const topLeads = [...scored, ...unscored].slice(0, topN)
 
       if (topLeads.length > 0) {
         setPhase('batch-loading')
@@ -257,7 +257,13 @@ export default function LeadsPage() {
           // Sync profile info to Airtable
           for (const lead of topLeads) {
             const info = batchInfos[lead.username]
-            if (info) syncToAirtable(lead, { bio: info.biography || undefined, website: info.externalUrl || undefined, followers: info.followersCount })
+            if (info) {
+              const extra: Record<string, unknown> = {}
+              if (info.biography) extra.bio = info.biography
+              if (info.externalUrl) extra.website = info.externalUrl
+              if (info.followersCount !== undefined) extra.followers = info.followersCount
+              if (Object.keys(extra).length > 0) syncToAirtable(lead, extra)
+            }
           }
 
           // ⑤ Website scraping für E-Mail / Telefon

@@ -1,5 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+function pick(item: Record<string, unknown>, ...keys: string[]): unknown {
+  for (const key of keys) {
+    const v = item[key]
+    if (v !== undefined && v !== null && v !== '') return v
+  }
+  return undefined
+}
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const runId = searchParams.get('runId')
@@ -24,30 +32,31 @@ export async function GET(req: NextRequest) {
   )
   const items: Record<string, unknown>[] = await resultsRes.json()
 
-  // Group posts by username
+  // Group posts by username — try multiple field name variants
   const postsByUser: Record<string, { caption: string; displayUrl: string; postUrl: string; likesCount: number; commentsCount: number; timestamp: string }[]> = {}
   const infoByUser: Record<string, { biography: string; externalUrl: string; followersCount?: number }> = {}
 
   for (const item of items) {
-    const username = (item.ownerUsername as string | undefined)?.trim()
+    const username = (pick(item, 'ownerUsername', 'username', 'owner_username') as string | undefined)?.trim()
     if (!username) continue
 
     if (!postsByUser[username]) {
       postsByUser[username] = []
       infoByUser[username] = {
-        biography: (item.ownerBiography as string | undefined) ?? '',
-        externalUrl: (item.ownerExternalUrl as string | undefined) ?? '',
-        followersCount: item.ownerFollowersCount as number | undefined,
+        biography: (pick(item, 'ownerBiography', 'biography', 'bio') as string | undefined) ?? '',
+        externalUrl: (pick(item, 'ownerExternalUrl', 'externalUrl', 'external_url', 'websiteUrl') as string | undefined) ?? '',
+        followersCount: (pick(item, 'ownerFollowersCount', 'followersCount', 'followers_count', 'followedByCount') as number | undefined),
       }
     }
 
+    const shortCode = pick(item, 'shortCode', 'shortcode') as string | undefined
     postsByUser[username].push({
-      caption: (item.caption as string | undefined) ?? '',
-      displayUrl: (item.displayUrl as string | undefined) ?? '',
-      postUrl: item.shortCode ? `https://instagram.com/p/${item.shortCode}` : '',
-      likesCount: (item.likesCount as number | undefined) ?? 0,
-      commentsCount: (item.commentsCount as number | undefined) ?? 0,
-      timestamp: (item.timestamp as string | undefined) ?? '',
+      caption: (pick(item, 'caption') as string | undefined) ?? '',
+      displayUrl: (pick(item, 'displayUrl', 'display_url', 'thumbnail_src') as string | undefined) ?? '',
+      postUrl: shortCode ? `https://instagram.com/p/${shortCode}` : (pick(item, 'url') as string | undefined) ?? '',
+      likesCount: (pick(item, 'likesCount', 'likes') as number | undefined) ?? 0,
+      commentsCount: (pick(item, 'commentsCount', 'comments') as number | undefined) ?? 0,
+      timestamp: (pick(item, 'timestamp', 'taken_at_timestamp') as string | undefined) ?? '',
     })
   }
 
@@ -64,5 +73,6 @@ export async function GET(req: NextRequest) {
     profiles: postsByUser,
     profileInfos: infoByUser,
     captionSamples,
+    debug: { totalItems: items.length, usernamesFound: Object.keys(postsByUser).length },
   })
 }
