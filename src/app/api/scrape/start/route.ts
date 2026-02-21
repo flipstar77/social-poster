@@ -3,10 +3,8 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function POST(req: NextRequest) {
   const { hashtags, limit = 25 } = await req.json()
 
-  // instagram-hashtag-scraper expects hashtags with # prefix
-  const tagList = hashtags.map((tag: string) =>
-    tag.startsWith('#') ? tag : `#${tag}`
-  )
+  // instagram-hashtag-scraper expects hashtags WITHOUT # prefix
+  const tagList = hashtags.map((tag: string) => tag.replace(/^#/, ''))
 
   const res = await fetch(
     `https://api.apify.com/v2/acts/apify~instagram-hashtag-scraper/runs?token=${process.env.APIFY_API_KEY}`,
