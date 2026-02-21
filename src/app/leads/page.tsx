@@ -225,6 +225,20 @@ export default function LeadsPage() {
       }
       setAirtableIds(prev => { const n = { ...prev, ...newIds }; persist({ airtableIds: n }); return n })
 
+      // Restore contact info from Airtable fields
+      const restoredContactInfo: Record<string, ContactInfo> = {}
+      for (const r of data.records as Record<string, unknown>[]) {
+        const username = String(r['Username'] ?? '')
+        const email = String(r['Email'] ?? '').trim()
+        const phone = String(r['Phone'] ?? '').trim()
+        if (username && (email || phone)) {
+          restoredContactInfo[username] = { emails: email ? [email] : [], phones: phone ? [phone] : [] }
+        }
+      }
+      if (Object.keys(restoredContactInfo).length > 0) {
+        setContactInfo(prev => { const n = { ...prev, ...restoredContactInfo }; persist({ contactInfo: n }); return n })
+      }
+
       if (atLeads.length === 0) { setPhase('done'); setPhaseText('Keine Leads in Airtable gefunden'); return }
 
       setLeads(atLeads)
@@ -296,6 +310,12 @@ export default function LeadsPage() {
           }))
         }
         setContactInfo(prev => { const n = { ...prev, ...newContactInfo }; persist({ contactInfo: n }); return n })
+
+        // Sync contact info to Airtable
+        for (const lead of stage3Leads) {
+          const ci = newContactInfo[lead.username]
+          if (ci) syncToAirtable(lead, { email: ci.emails[0] ?? undefined, phone: ci.phones[0] ?? undefined })
+        }
       }
 
       // Deep evaluation with multi-post context
@@ -426,6 +446,12 @@ export default function LeadsPage() {
             }))
           }
           setContactInfo(prev => { const n = { ...prev, ...newContactInfo }; persist({ contactInfo: n }); return n })
+
+          // Sync contact info to Airtable
+          for (const lead of stage3All) {
+            const ci = newContactInfo[lead.username]
+            if (ci) syncToAirtable(lead, { email: ci.emails[0] ?? undefined, phone: ci.phones[0] ?? undefined })
+          }
 
           // ⑥ Tiefbewertung der Top-Leads mit Multi-Post-Kontext
           setPhase('deep-evaluating'); setPhaseText('Tiefbewertung...')

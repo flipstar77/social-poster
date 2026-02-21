@@ -20,24 +20,26 @@ export async function POST(req: NextRequest) {
     recordId,
     username, fullName, profileUrl, caption, likesCount, postUrl,
     score, reason, recommendation, status, notes,
-    website, bio, followers,
+    website, bio, followers, email, phone,
   } = body
 
   const fields: Record<string, unknown> = {}
-  if (username)                    fields['Username']       = username
-  if (fullName !== undefined)      fields['Full Name']      = fullName
-  if (profileUrl)                  fields['Profile URL']    = profileUrl
-  if (caption !== undefined)       fields['Caption']        = caption
-  if (likesCount !== undefined)    fields['Likes']          = likesCount
-  if (postUrl)                     fields['Post URL']       = postUrl
-  if (score !== undefined)         fields['Score']          = score
-  if (reason !== undefined)        fields['Reason']         = reason
+  if (username)                    fields['Username']        = username
+  if (fullName !== undefined)      fields['Full Name']       = fullName
+  if (profileUrl)                  fields['Profile URL']     = profileUrl
+  if (caption !== undefined)       fields['Caption']         = caption
+  if (likesCount !== undefined)    fields['Likes']           = likesCount
+  if (postUrl)                     fields['Post URL']        = postUrl
+  if (score !== undefined)         fields['Score']           = score
+  if (reason !== undefined)        fields['Reason']          = reason
   if (recommendation !== undefined) fields['Recommendation'] = recommendation
-  if (status !== undefined)        fields['Status']         = status
-  if (notes !== undefined)         fields['Notes']          = notes
-  if (website !== undefined)       fields['Website']        = website
-  if (bio !== undefined)           fields['Bio']            = bio
-  if (followers !== undefined)     fields['Followers']      = followers
+  if (status !== undefined)        fields['Status']          = status
+  if (notes !== undefined)         fields['Notes']           = notes
+  if (website !== undefined)       fields['Website']         = website
+  if (bio !== undefined)           fields['Bio']             = bio
+  if (followers !== undefined)     fields['Followers']       = followers
+  if (email !== undefined)         fields['Email']           = email
+  if (phone !== undefined)         fields['Phone']           = phone
 
   try {
     // Direct update if we have the record ID

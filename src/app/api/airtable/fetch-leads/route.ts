@@ -4,7 +4,7 @@ const BASE = `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/Leads`
 const hdrs = () => ({ Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}` })
 
 export async function GET() {
-  const fields = ['Username', 'Full Name', 'Caption', 'Likes', 'Post URL', 'Profile URL', 'Score', 'Recommendation', 'Status', 'Bio', 'Website', 'Followers']
+  const fields = ['Username', 'Full Name', 'Caption', 'Likes', 'Post URL', 'Profile URL', 'Score', 'Recommendation', 'Status', 'Bio', 'Website', 'Followers', 'Email', 'Phone']
   const records: Record<string, unknown>[] = []
   let offset: string | undefined
 
