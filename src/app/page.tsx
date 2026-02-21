@@ -48,32 +48,54 @@ function useScrollIn(delay = 0) {
 function ParallaxBlobs({ y }: { y: number }) {
   return (
     <>
-      <div style={{ position: 'absolute', top: -140 + y * 0.28, right: -180, width: 620, height: 620, borderRadius: '50%', pointerEvents: 'none', background: 'radial-gradient(circle, rgba(99,102,241,0.14) 0%, transparent 68%)' }} />
-      <div style={{ position: 'absolute', bottom: -60 - y * 0.15, left: -140, width: 460, height: 460, borderRadius: '50%', pointerEvents: 'none', background: 'radial-gradient(circle, rgba(168,85,247,0.1) 0%, transparent 68%)' }} />
-      <div style={{ position: 'absolute', top: 200 + y * 0.1, left: '40%', width: 320, height: 320, borderRadius: '50%', pointerEvents: 'none', background: 'radial-gradient(circle, rgba(34,197,94,0.06) 0%, transparent 68%)' }} />
+      <div style={{ position: 'absolute', top: -180 + y * 0.28, right: -200, width: 900, height: 900, borderRadius: '50%', pointerEvents: 'none', background: 'radial-gradient(circle, rgba(99,102,241,0.22) 0%, transparent 65%)' }} />
+      <div style={{ position: 'absolute', bottom: -80 - y * 0.15, left: -160, width: 700, height: 700, borderRadius: '50%', pointerEvents: 'none', background: 'radial-gradient(circle, rgba(168,85,247,0.18) 0%, transparent 65%)' }} />
+      <div style={{ position: 'absolute', top: 160 + y * 0.1, left: '38%', width: 500, height: 500, borderRadius: '50%', pointerEvents: 'none', background: 'radial-gradient(circle, rgba(236,72,153,0.10) 0%, transparent 65%)' }} />
+      <div style={{ position: 'absolute', top: 40 + y * 0.06, left: '15%', width: 340, height: 340, borderRadius: '50%', pointerEvents: 'none', background: 'radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 65%)' }} />
     </>
   )
 }
 
-// ── Hover card wrapper ────────────────────────────────────────────────────────
+// ── Hover card wrapper (with 3D tilt) ─────────────────────────────────────────
 function HoverCard({ children, accent = false, style: extraStyle }: { children: React.ReactNode; accent?: boolean; style?: React.CSSProperties }) {
   const [h, setH] = useState(false)
+  const [tilt, setTilt] = useState({ x: 0, y: 0 })
+  const cardRef = useRef<HTMLDivElement>(null)
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = cardRef.current?.getBoundingClientRect()
+    if (!rect) return
+    const px = (e.clientX - rect.left) / rect.width - 0.5
+    const py = (e.clientY - rect.top) / rect.height - 0.5
+    setTilt({ x: py * -10, y: px * 10 })
+  }
+
+  const handleMouseLeave = () => { setH(false); setTilt({ x: 0, y: 0 }) }
+
+  const isMoving = tilt.x !== 0 || tilt.y !== 0
   return (
     <div
+      ref={cardRef}
       onMouseEnter={() => setH(true)}
-      onMouseLeave={() => setH(false)}
+      onMouseLeave={handleMouseLeave}
+      onMouseMove={handleMouseMove}
       style={{
         background: '#fff',
         border: h
           ? `2px solid ${accent ? 'rgba(99,102,241,0.5)' : 'rgba(99,102,241,0.25)'}`
           : `${accent ? '2px' : '1px'} solid ${accent ? 'rgba(99,102,241,0.35)' : '#e4e4e7'}`,
         borderRadius: 20,
-        transform: h ? 'translateY(-8px)' : 'translateY(0)',
+        transform: h
+          ? `perspective(900px) translateY(-8px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`
+          : 'perspective(900px) translateY(0) rotateX(0deg) rotateY(0deg)',
         boxShadow: h
           ? `0 20px 60px ${accent ? 'rgba(99,102,241,0.18)' : 'rgba(0,0,0,0.1)'}`
           : `0 2px 20px ${accent ? 'rgba(99,102,241,0.08)' : 'rgba(0,0,0,0.04)'}`,
-        transition: 'transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s ease, border-color 0.3s ease',
+        transition: isMoving
+          ? 'transform 0.08s ease, box-shadow 0.3s ease, border-color 0.3s ease'
+          : 'transform 0.5s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s ease, border-color 0.3s ease',
         cursor: 'default',
+        willChange: 'transform',
         ...extraStyle,
       }}
     >
@@ -194,6 +216,193 @@ function FaqItem({ q, a, open, onToggle }: { q: string; a: string; open: boolean
   )
 }
 
+
+// ── Animated counter hook ─────────────────────────────────────────────────────
+function useCountUp(target: number, isVisible: boolean, duration = 1400) {
+  const [count, setCount] = useState(0)
+  const animated = useRef(false)
+  useEffect(() => {
+    if (!isVisible || animated.current) return
+    animated.current = true
+    const start = performance.now()
+    const tick = (now: number) => {
+      const p = Math.min((now - start) / duration, 1)
+      const eased = 1 - Math.pow(1 - p, 3)
+      setCount(Math.round(eased * target))
+      if (p < 1) requestAnimationFrame(tick)
+    }
+    requestAnimationFrame(tick)
+  }, [isVisible, target, duration])
+  return count
+}
+
+// ── Stats strip ───────────────────────────────────────────────────────────────
+const STATS = [
+  { value: 3, suffix: 'h', label: 'pro Woche gespart', icon: '⏱️' },
+  { value: 5, suffix: '', label: 'Plattformen gleichzeitig', icon: '🚀' },
+  { value: 30, suffix: 's', label: 'pro Post', icon: '⚡' },
+  { value: 90, suffix: '%', label: 'weniger Aufwand', icon: '📈' },
+]
+function StatCount({ stat, visible, delay }: { stat: typeof STATS[0]; visible: boolean; delay: number }) {
+  const n = useCountUp(stat.value, visible)
+  return (
+    <div style={{ textAlign: 'center', opacity: visible ? 1 : 0, transform: visible ? 'translateY(0)' : 'translateY(24px)', transition: `opacity 0.6s ease ${delay}ms, transform 0.6s ease ${delay}ms` }}>
+      <div style={{ fontSize: 22, marginBottom: 8 }}>{stat.icon}</div>
+      <div style={{ fontSize: 52, fontWeight: 900, color: '#fff', lineHeight: 1, letterSpacing: '-2px' }}>{n}{stat.suffix}</div>
+      <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', marginTop: 6, fontWeight: 500 }}>{stat.label}</div>
+    </div>
+  )
+}
+function StatsStrip() {
+  const ref = useRef<HTMLDivElement>(null)
+  const [visible, setVisible] = useState(false)
+  useEffect(() => {
+    if (!ref.current) return
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVisible(true) }, { threshold: 0.3 })
+    obs.observe(ref.current)
+    return () => obs.disconnect()
+  }, [])
+  return (
+    <div ref={ref} style={{ background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #a855f7 100%)', padding: '56px 24px' }}>
+      <div style={{ maxWidth: 900, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 40 }}>
+        {STATS.map((s, i) => <StatCount key={i} stat={s} visible={visible} delay={i * 120} />)}
+      </div>
+    </div>
+  )
+}
+
+// ── Sticky showcase ───────────────────────────────────────────────────────────
+const SHOWCASE_STEPS = [
+  { n: '01', title: 'Bild hochladen', desc: 'Foto oder Video direkt vom Handy. Optional eine kurze Notiz — wir schreiben den Rest.', color: '#6366f1' },
+  { n: '02', title: '3 Varianten wählen', desc: 'Die KI schreibt drei Versionen in eurem Ton. Ihr wählt den besten — oder postet direkt.', color: '#a855f7' },
+  { n: '03', title: 'Auf 5 Plattformen posten', desc: 'Instagram, TikTok, Facebook, YouTube, X — gleichzeitig, mit einem Klick.', color: '#ec4899' },
+]
+function PhoneScreen({ step }: { step: number }) {
+  if (step === 0) return (
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: 16, gap: 12 }}>
+      <div style={{ flex: 1, background: 'linear-gradient(135deg, #ede9fe, #fce7f3)', borderRadius: 16, border: '2px dashed #c4b5fd', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+        <span style={{ fontSize: 40 }}>📸</span>
+        <span style={{ fontSize: 12, color: '#7c3aed', fontWeight: 600 }}>Bild auswählen</span>
+      </div>
+      <div style={{ background: '#f8fafc', borderRadius: 10, padding: '10px 12px', border: '1px solid #e4e4e7' }}>
+        <div style={{ fontSize: 10, color: '#a1a1aa', marginBottom: 4, fontWeight: 700, letterSpacing: '0.05em' }}>OPTIONALE NOTIZ</div>
+        <div style={{ fontSize: 12, color: '#52525b' }}>„Heute: Pasta Carbonara 🍝"</div>
+      </div>
+    </div>
+  )
+  if (step === 1) return (
+    <div style={{ flex: 1, padding: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div style={{ fontSize: 10, fontWeight: 700, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>3 Varianten</div>
+      {[
+        { sel: true,  text: '🍝 Heute bei uns: Pasta Carbonara nach Originalrezept. Kommt vorbei!' },
+        { sel: false, text: 'Klassisch. Cremig. Perfekt. Unsere Carbonara wärmt Herz & Seele 🤍' },
+        { sel: false, text: 'Was gibts heute? Pasta Carbonara! Reservierung: Link in Bio 👆' },
+      ].map((v, i) => (
+        <div key={i} style={{ background: v.sel ? '#eef2ff' : '#f8fafc', border: `1.5px solid ${v.sel ? '#6366f1' : '#e4e4e7'}`, borderRadius: 10, padding: '8px 10px' }}>
+          <div style={{ fontSize: 11, color: v.sel ? '#3730a3' : '#71717a', lineHeight: 1.5 }}>{v.text}</div>
+        </div>
+      ))}
+    </div>
+  )
+  return (
+    <div style={{ flex: 1, padding: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div style={{ fontSize: 10, fontWeight: 700, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Plattformen</div>
+      {[
+        { Icon: IgIcon,      name: 'Instagram', active: true,  color: '#e1306c' },
+        { Icon: TikTokIcon,  name: 'TikTok',    active: true,  color: '#010101' },
+        { Icon: FbIcon,      name: 'Facebook',  active: true,  color: '#1877f2' },
+        { Icon: YtIcon,      name: 'YouTube',   active: true,  color: '#ff0000' },
+        { Icon: XIcon,       name: 'X',         active: false, color: '#000'    },
+      ].map(p => (
+        <div key={p.name} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px', background: p.active ? '#f0fdf4' : '#f8fafc', borderRadius: 8, border: `1px solid ${p.active ? '#bbf7d0' : '#e4e4e7'}` }}>
+          <span style={{ color: p.color, display: 'flex' }}><p.Icon /></span>
+          <span style={{ flex: 1, fontSize: 11, fontWeight: 500, color: '#18181b' }}>{p.name}</span>
+          <span style={{ fontSize: 13, color: p.active ? '#22c55e' : '#d4d4d8' }}>{p.active ? '✓' : '○'}</span>
+        </div>
+      ))}
+      <div style={{ marginTop: 4, background: 'linear-gradient(135deg, #6366f1, #a855f7)', borderRadius: 10, padding: '10px', textAlign: 'center', fontSize: 12, fontWeight: 700, color: '#fff' }}>
+        Jetzt posten →
+      </div>
+    </div>
+  )
+}
+function StickyShowcase({ scrollY, vh }: { scrollY: number; vh: number }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [top, setTop] = useState(9999)
+  useEffect(() => {
+    const update = () => { if (ref.current) setTop(ref.current.offsetTop) }
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
+  const progress = Math.max(0, Math.min(1, (scrollY - top) / (vh * 2)))
+  const step = Math.min(Math.floor(progress * 3.2), 2)
+  const stepColor = SHOWCASE_STEPS[step].color
+
+  return (
+    <div ref={ref} style={{ position: 'relative', minHeight: '320vh' }}>
+      <div style={{ position: 'sticky', top: 0, height: '100vh', display: 'flex', alignItems: 'center', overflow: 'hidden', background: '#fff' }}>
+        <div style={{ maxWidth: 1080, margin: '0 auto', padding: '0 24px', width: '100%', display: 'grid', gridTemplateColumns: '1fr auto', gap: 48, alignItems: 'center' }}>
+
+          {/* Left: step list */}
+          <div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#a1a1aa', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>So funktioniert&apos;s</div>
+            <h2 style={{ fontSize: 'clamp(28px, 4vw, 52px)', fontWeight: 800, color: '#09090b', lineHeight: 1.1, marginBottom: 40 }}>
+              Drei Schritte.<br />
+              <span style={{ background: `linear-gradient(135deg, ${stepColor}, #a855f7)`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', transition: 'all 0.5s ease' }}>
+                Kein Training.
+              </span>
+            </h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
+              {SHOWCASE_STEPS.map((s, i) => {
+                const active = i === step
+                const done = i < step
+                return (
+                  <div key={i} style={{ display: 'flex', gap: 16, alignItems: 'flex-start', opacity: active ? 1 : done ? 0.55 : 0.25, transform: active ? 'translateX(0)' : 'translateX(-6px)', transition: 'all 0.5s cubic-bezier(0.34,1.56,0.64,1)' }}>
+                    <div style={{ width: 44, height: 44, borderRadius: 14, flexShrink: 0, background: active ? s.color : done ? '#22c55e' : '#f4f4f5', color: active || done ? '#fff' : '#a1a1aa', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 14, transition: 'all 0.5s ease' }}>
+                      {done ? '✓' : s.n}
+                    </div>
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: 18, color: '#09090b', marginBottom: 4 }}>{s.title}</div>
+                      <div style={{ fontSize: 14, color: '#71717a', lineHeight: 1.65 }}>{s.desc}</div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Right: CSS phone mockup */}
+          <div style={{ flexShrink: 0 }}>
+            <div style={{ width: 260, height: 520, background: '#09090b', borderRadius: 44, border: '2px solid #27272a', boxShadow: `0 32px 100px rgba(0,0,0,0.18), 0 0 60px ${stepColor}30`, position: 'relative', overflow: 'hidden', transition: 'box-shadow 0.6s ease' }}>
+              {/* Notch */}
+              <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: 88, height: 24, background: '#09090b', borderRadius: '0 0 14px 14px', zIndex: 10 }} />
+              {/* Screen */}
+              <div style={{ position: 'absolute', inset: 3, background: '#f8fafc', borderRadius: 42, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                {/* App bar */}
+                <div style={{ background: '#fff', padding: '34px 14px 10px', borderBottom: '1px solid #e4e4e7', display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ width: 24, height: 24, borderRadius: 7, background: 'linear-gradient(135deg, #6366f1, #a855f7)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11 }}>✨</div>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: '#09090b', flex: 1 }}>Social Poster AI</span>
+                  <div style={{ display: 'flex', gap: 4 }}>
+                    {[0, 1, 2].map(i => (
+                      <div key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: i <= step ? SHOWCASE_STEPS[Math.min(i, step)].color : '#e4e4e7', transition: 'background 0.4s ease' }} />
+                    ))}
+                  </div>
+                </div>
+                <PhoneScreen step={step} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Scroll progress bar */}
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 3, background: '#f4f4f5' }}>
+          <div style={{ height: '100%', background: `linear-gradient(90deg, #6366f1, #a855f7, #ec4899)`, width: `${progress * 100}%`, transition: 'width 0.1s linear' }} />
+        </div>
+      </div>
+    </div>
+  )
+}
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default function LandingPage() {
@@ -319,21 +528,11 @@ export default function LandingPage() {
         {/* ── TICKER ──────────────────────────────────────────────────────── */}
         <Ticker />
 
-        {/* ── SO FUNKTIONIERT'S ────────────────────────────────────────────── */}
-        <section style={{ maxWidth: 1080, margin: '0 auto', padding: '80px 24px' }}>
-          <div style={{ textAlign: 'center', marginBottom: 56 }}>
-            <h2 style={{ fontSize: 36, fontWeight: 800, marginBottom: 10, color: '#09090b' }}>Volles Social Media — minimalster Aufwand</h2>
-            <p style={{ color: '#71717a', fontSize: 16, margin: 0 }}>Drei Schritte. Kein Training. Keine Agentur. Keine Ahnung von Marketing nötig.</p>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 20 }}>
-            <StepCard n="01" icon="📸" title="Bild oder Video hochladen" delay={0}
-              desc="Foto vom Tagesgericht, Video einer Aktion, direkt vom Handy. Optional: kurze Notiz dazu — wir schreiben den Rest." />
-            <StepCard n="02" icon="✨" title="3 Varianten — ihr wählt die beste" delay={130}
-              desc="Die KI erstellt drei verschiedene Texte in eurem Stil. Ihr pickt euren Favoriten — oder postet direkt. Immer in eurer eigenen Stimme." />
-            <StepCard n="03" icon="🚀" title="Auf 5 Plattformen — mit einem Klick" delay={260}
-              desc="Instagram, TikTok, Facebook, YouTube, X — gleichzeitig, automatisch. So einfach wie auf einer posten. Mehr Reichweite, ohne Mehraufwand." />
-          </div>
-        </section>
+        {/* ── STATS ───────────────────────────────────────────────────────── */}
+        <StatsStrip />
+
+        {/* ── STICKY SHOWCASE ─────────────────────────────────────────────── */}
+        <StickyShowcase scrollY={scrollY} vh={vh} />
 
         {/* ── WIE ES SICH ANFÜHLT ──────────────────────────────────────────── */}
         <section style={{ background: '#fff', borderTop: '1px solid #e4e4e7', borderBottom: '1px solid #e4e4e7' }}>
