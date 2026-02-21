@@ -302,6 +302,9 @@ export default function LeadsPage() {
         return ev?.score >= 7
       }).length
 
+      // Auto-dedup Airtable
+      await fetch('/api/airtable/dedup').catch(() => {})
+
       setPhase('done')
       setPhaseText(`Fertig: ${newLeads.length} Profile · ${topLeads.length} tief analysiert · ${recommended} empfohlen`)
       setPhaseDetail('')
