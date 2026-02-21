@@ -335,12 +335,12 @@ function StickyShowcase({ scrollY, vh }: { scrollY: number; vh: number }) {
     window.addEventListener('resize', update)
     return () => window.removeEventListener('resize', update)
   }, [])
-  const progress = Math.max(0, Math.min(1, (scrollY - top) / (vh * 2)))
+  const progress = Math.max(0, Math.min(1, (scrollY - top) / (vh * 1.2)))
   const step = Math.min(Math.floor(progress * 3.2), 2)
   const stepColor = SHOWCASE_STEPS[step].color
 
   return (
-    <div ref={ref} style={{ position: 'relative', minHeight: '320vh' }}>
+    <div ref={ref} style={{ position: 'relative', minHeight: '220vh' }}>
       <div style={{ position: 'sticky', top: 0, height: '100vh', display: 'flex', alignItems: 'center', overflow: 'hidden', background: '#fff' }}>
         <div style={{ maxWidth: 1080, margin: '0 auto', padding: '0 24px', width: '100%', display: 'grid', gridTemplateColumns: '1fr auto', gap: 48, alignItems: 'center' }}>
 
