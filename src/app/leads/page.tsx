@@ -16,25 +16,36 @@ interface ProfilePost { caption: string; displayUrl: string; postUrl: string; li
 interface ProfileInfo { biography: string; externalUrl: string; followersCount?: number }
 interface Evaluation { score: number; reason: string; recommendation: string }
 interface DiscoveredTag { tag: string; count: number }
+interface ContactInfo { emails: string[]; phones: string[] }
 
 type Phase =
   | 'idle' | 'scraping'
-  | 'syncing' | 'evaluating' | 'batch-loading' | 'deep-evaluating'
+  | 'syncing' | 'evaluating' | 'batch-loading' | 'website-scraping' | 'deep-evaluating'
   | 'done' | 'error'
 
 const SCORE_COLOR = (s: number) => s >= 7 ? '#22c55e' : s >= 5 ? '#f59e0b' : '#ef4444'
 const CARD: React.CSSProperties = { background: '#141414', border: '1px solid #262626', borderRadius: 16, overflow: 'hidden' }
 const BTN: React.CSSProperties = { padding: '7px 14px', borderRadius: 8, fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer', fontFamily: 'inherit' }
-const LS_KEY = 'leads-state-v4'
+const LS_KEY = 'leads-state-v5'
 
 function loadLS() { try { const r = localStorage.getItem(LS_KEY); return r ? JSON.parse(r) : null } catch { return null } }
 function saveLS(d: object) { try { localStorage.setItem(LS_KEY, JSON.stringify(d)) } catch {} }
+
+function CopyBtn({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false)
+  return (
+    <button onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1500) }}
+      style={{ background: 'none', border: 'none', cursor: 'pointer', color: copied ? '#22c55e' : '#555', fontSize: 11, padding: '0 2px' }}>
+      {copied ? '✓' : '⎘'}
+    </button>
+  )
+}
 
 export default function LeadsPage() {
   const [hashtags, setHashtags] = useState<string[]>(DEFAULT_HASHTAGS)
   const [newTag, setNewTag] = useState('')
   const [limit, setLimit] = useState(25)
-  const [topN, setTopN] = useState(12) // how many top leads to deep-profile
+  const [topN, setTopN] = useState(12)
 
   const [phase, setPhase] = useState<Phase>('idle')
   const [phaseText, setPhaseText] = useState('')
@@ -53,6 +64,10 @@ export default function LeadsPage() {
   const [airtableSync, setAirtableSync] = useState<Record<string, 'pending' | 'synced' | 'error'>>({})
   const [notes, setNotes] = useState<Record<string, string>>({})
   const [notesEditing, setNotesEditing] = useState<string | null>(null)
+  const [contactInfo, setContactInfo] = useState<Record<string, ContactInfo>>({})
+  const [icebreakers, setIcebreakers] = useState<Record<string, string>>({})
+  const [icebreakerLoading, setIcebreakerLoading] = useState<Set<string>>(new Set())
+  const [expandedIcebreaker, setExpandedIcebreaker] = useState<string | null>(null)
 
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
@@ -69,6 +84,8 @@ export default function LeadsPage() {
     if (s.discoveredHashtags) setDiscoveredHashtags(s.discoveredHashtags)
     if (s.airtableIds) setAirtableIds(s.airtableIds)
     if (s.notes) setNotes(s.notes)
+    if (s.contactInfo) setContactInfo(s.contactInfo)
+    if (s.icebreakers) setIcebreakers(s.icebreakers)
     if (s.leads?.length > 0) { setPhase('done'); setPhaseText(`${s.leads.length} Profile (gespeichert)`) }
   }, [])
 
@@ -137,6 +154,38 @@ export default function LeadsPage() {
     })
   }
 
+  // ─── Icebreaker ──────────────────────────────────────────────
+  async function generateIcebreaker(lead: Lead) {
+    setIcebreakerLoading(prev => new Set(prev).add(lead.username))
+    try {
+      const profInfo = profileInfos[lead.username]
+      const ev = evaluations[lead.username]
+      const captionSample = profiles[lead.username]
+        ?.map((p, i) => `Post ${i + 1}: "${p.caption.slice(0, 120) || '(keine Caption)'}"`)
+        .join('\n')
+
+      const res = await fetch('/api/generate-icebreaker', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: lead.username,
+          fullName: lead.fullName,
+          bio: profInfo?.biography,
+          captionSample,
+          reason: ev?.reason,
+          score: ev?.score,
+          followersCount: profInfo?.followersCount,
+        }),
+      })
+      const data = await res.json()
+      if (data.icebreaker) {
+        setIcebreakers(prev => { const n = { ...prev, [lead.username]: data.icebreaker }; persist({ icebreakers: n }); return n })
+        setExpandedIcebreaker(lead.username)
+      }
+    } finally {
+      setIcebreakerLoading(prev => { const n = new Set(prev); n.delete(lead.username); return n })
+    }
+  }
+
   // ─── MAIN AUTO FLOW ──────────────────────────────────────────
   async function startAutoFlow() {
     if (pollRef.current) clearInterval(pollRef.current)
@@ -185,7 +234,7 @@ export default function LeadsPage() {
 
       if (topLeads.length > 0) {
         setPhase('batch-loading')
-        setPhaseText(`Profile laden...`)
+        setPhaseText('Profile laden...')
         setPhaseDetail(`${topLeads.length} Top-Leads (Score ≥ 6)`)
 
         const batchStart = await fetch('/api/profile/batch-start', {
@@ -210,7 +259,34 @@ export default function LeadsPage() {
             if (info) syncToAirtable(lead, { bio: info.biography || undefined, website: info.externalUrl || undefined, followers: info.followersCount })
           }
 
-          // ⑤ Tiefbewertung der Top-Leads mit Multi-Post-Kontext
+          // ⑤ Website scraping für E-Mail / Telefon
+          const leadsWithUrl = topLeads.filter(l => batchInfos[l.username]?.externalUrl)
+          if (leadsWithUrl.length > 0) {
+            setPhase('website-scraping')
+            setPhaseText('Websites durchsuchen...')
+            setPhaseDetail(`0/${leadsWithUrl.length}`)
+
+            const newContactInfo: Record<string, ContactInfo> = {}
+            const concurrency = 5
+            for (let i = 0; i < leadsWithUrl.length; i += concurrency) {
+              const chunk = leadsWithUrl.slice(i, i + concurrency)
+              setPhaseDetail(`${Math.min(i + concurrency, leadsWithUrl.length)}/${leadsWithUrl.length}`)
+              await Promise.all(chunk.map(async lead => {
+                const url = batchInfos[lead.username]?.externalUrl
+                if (!url) return
+                try {
+                  const r = await fetch(`/api/scrape-website?url=${encodeURIComponent(url)}`)
+                  const d = await r.json()
+                  if (d.emails?.length || d.phones?.length) {
+                    newContactInfo[lead.username] = { emails: d.emails ?? [], phones: d.phones ?? [] }
+                  }
+                } catch { /* ignore per-site errors */ }
+              }))
+            }
+            setContactInfo(prev => { const n = { ...prev, ...newContactInfo }; persist({ contactInfo: n }); return n })
+          }
+
+          // ⑥ Tiefbewertung der Top-Leads mit Multi-Post-Kontext
           setPhase('deep-evaluating'); setPhaseText('Tiefbewertung...')
           const deepEvs = await evaluateBatch(topLeads, captionSamples)
           for (const lead of topLeads) {
@@ -258,6 +334,7 @@ export default function LeadsPage() {
     setLeads([]); setDiscoveredHashtags([]); setEvaluations({})
     setContacted(new Set()); setDismissed(new Set()); setProfiles({})
     setProfileInfos({}); setAirtableIds({}); setAirtableSync({}); setNotes({})
+    setContactInfo({}); setIcebreakers({}); setExpandedIcebreaker(null)
     setPhase('idle'); setPhaseText(''); setPhaseDetail(''); saveLS({})
   }
   function saveNote(lead: Lead) {
@@ -266,14 +343,13 @@ export default function LeadsPage() {
     setNotesEditing(null)
   }
 
-  const isRunning = ['scraping', 'syncing', 'evaluating', 'batch-loading', 'deep-evaluating'].includes(phase)
+  const isRunning = ['scraping', 'syncing', 'evaluating', 'batch-loading', 'website-scraping', 'deep-evaluating'].includes(phase)
   const visible = leads.filter(l => !dismissed.has(l.username))
   const newDiscoveredTags = discoveredHashtags.filter(d => !hashtags.includes(d.tag))
   const syncedCount = Object.values(airtableSync).filter(s => s === 'synced').length
 
-  // Phase progress bar color
   const phaseColor = phase === 'error' ? '#ef4444' : phase === 'done' ? '#22c55e' : '#f59e0b'
-  const phaseSteps: Phase[] = ['scraping', 'syncing', 'evaluating', 'batch-loading', 'deep-evaluating']
+  const phaseSteps: Phase[] = ['scraping', 'syncing', 'evaluating', 'batch-loading', 'website-scraping', 'deep-evaluating']
   const phaseIdx = phaseSteps.indexOf(phase as Phase)
   const progress = isRunning ? Math.round(((phaseIdx + 1) / phaseSteps.length) * 100) : phase === 'done' ? 100 : 0
 
@@ -346,12 +422,13 @@ export default function LeadsPage() {
               <div style={{ height: '100%', background: phaseColor, borderRadius: 2, width: `${progress}%`, transition: 'width 0.5s ease' }} />
             </div>
             {isRunning && (
-              <div style={{ display: 'flex', gap: 12, marginTop: 10 }}>
+              <div style={{ display: 'flex', gap: 12, marginTop: 10, flexWrap: 'wrap' }}>
                 {([
                   ['scraping', '🔍 Scrape'],
                   ['syncing', '🔗 Airtable'],
                   ['evaluating', '✦ Schnellbewertung'],
                   ['batch-loading', '📊 Profile'],
+                  ['website-scraping', '🌐 Websites'],
                   ['deep-evaluating', '✦ Tiefbewertung'],
                 ] as [Phase, string][]).map(([p, label]) => (
                   <span key={p} style={{ fontSize: 11, color: phaseSteps.indexOf(p) < phaseIdx ? '#22c55e' : phaseSteps.indexOf(p) === phaseIdx ? '#f59e0b' : '#3f3f46' }}>
@@ -391,6 +468,10 @@ export default function LeadsPage() {
                 const syncStatus = airtableSync[lead.username]
                 const noteVal = notes[lead.username] ?? ''
                 const isEditingNote = notesEditing === lead.username
+                const contact = contactInfo[lead.username]
+                const icebreaker = icebreakers[lead.username]
+                const icebreakerExpanded = expandedIcebreaker === lead.username
+                const icebreakerIsLoading = icebreakerLoading.has(lead.username)
 
                 return (
                   <div key={lead.username} style={{
@@ -408,7 +489,7 @@ export default function LeadsPage() {
                       )}
                       {ev && <div style={{ position: 'absolute', top: 7, right: 7, background: 'rgba(0,0,0,0.88)', border: `2px solid ${SCORE_COLOR(ev.score)}`, borderRadius: 6, padding: '2px 8px', fontSize: 13, fontWeight: 800, color: SCORE_COLOR(ev.score) }}>{ev.score}/10</div>}
                       {profPosts && <div style={{ position: 'absolute', top: 7, left: 7, background: 'rgba(99,102,241,0.9)', borderRadius: 5, padding: '2px 6px', fontSize: 10, fontWeight: 600 }}>📊 {profPosts.length}</div>}
-                      {isContacted && <div style={{ position: 'absolute', bottom: 7, left: 7, background: 'rgba(34,197,94,0.88)', borderRadius: 5, padding: '2px 6px', fontSize: 10, fontWeight: 600 }}>✓</div>}
+                      {isContacted && <div style={{ position: 'absolute', bottom: 7, left: 7, background: 'rgba(34,197,94,0.88)', borderRadius: 5, padding: '2px 6px', fontSize: 10, fontWeight: 600 }}>✓ Kontaktiert</div>}
                       <div style={{ position: 'absolute', bottom: 7, right: 7, fontSize: 10 }}>
                         {syncStatus === 'synced' ? <span style={{ color: '#22c55e' }}>🔗</span> : syncStatus === 'error' ? <span style={{ color: '#ef4444' }}>⚠</span> : null}
                       </div>
@@ -423,7 +504,7 @@ export default function LeadsPage() {
                         </div>
                         <div style={{ display: 'flex', gap: 6, fontSize: 10, color: '#555' }}>
                           <span>❤️ {lead.likesCount}</span>
-                          {profInfo?.followersCount && <span>👥 {profInfo.followersCount.toLocaleString()}</span>}
+                          {profInfo?.followersCount && <span>👥 {profInfo.followersCount.toLocaleString('de')}</span>}
                         </div>
                       </div>
 
@@ -445,6 +526,26 @@ export default function LeadsPage() {
                         </div>
                       )}
 
+                      {/* Contact Info (email / phone) */}
+                      {contact && (contact.emails.length > 0 || contact.phones.length > 0) && (
+                        <div style={{ background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: 6, padding: '6px 9px', marginBottom: 7 }}>
+                          {contact.emails.map(email => (
+                            <div key={email} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#86efac', marginBottom: 2 }}>
+                              <span>✉️</span>
+                              <a href={`mailto:${email}`} style={{ color: '#86efac', textDecoration: 'none', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{email}</a>
+                              <CopyBtn text={email} />
+                            </div>
+                          ))}
+                          {contact.phones.map(phone => (
+                            <div key={phone} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#86efac' }}>
+                              <span>📞</span>
+                              <span style={{ flex: 1 }}>{phone}</span>
+                              <CopyBtn text={phone} />
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
                       {/* Caption */}
                       <div style={{ background: '#0d0d0d', border: '1px solid #1e1e1e', borderRadius: 6, padding: '6px 9px', marginBottom: 7, fontSize: 11, color: lead.caption ? '#a1a1aa' : '#3f3f46', lineHeight: 1.55, maxHeight: 52, overflow: 'hidden' }}>
                         {lead.caption ? lead.caption.slice(0, 130) + (lead.caption.length > 130 ? '...' : '') : '(keine Caption)'}
@@ -460,6 +561,20 @@ export default function LeadsPage() {
                       )}
 
                       {evaluating.has(lead.username) && <div style={{ fontSize: 11, color: '#f59e0b', marginBottom: 7 }}>⏳ Bewertet...</div>}
+
+                      {/* Icebreaker */}
+                      {icebreaker && icebreakerExpanded && (
+                        <div style={{ background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.25)', borderRadius: 6, padding: '8px 10px', marginBottom: 7 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
+                            <span style={{ fontSize: 10, fontWeight: 700, color: '#818cf8' }}>💬 Icebreaker</span>
+                            <div style={{ display: 'flex', gap: 5 }}>
+                              <CopyBtn text={icebreaker} />
+                              <button onClick={() => setExpandedIcebreaker(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#555', fontSize: 11 }}>✕</button>
+                            </div>
+                          </div>
+                          <div style={{ fontSize: 11, color: '#c4b5fd', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{icebreaker}</div>
+                        </div>
+                      )}
 
                       {/* Profile grid */}
                       {isExpanded && profPosts && (
@@ -505,6 +620,13 @@ export default function LeadsPage() {
                             {isExpanded ? '▲' : `📊 ${profPosts.length}`}
                           </button>
                         )}
+                        {/* Icebreaker button */}
+                        <button
+                          onClick={() => icebreaker ? setExpandedIcebreaker(icebreakerExpanded ? null : lead.username) : generateIcebreaker(lead)}
+                          disabled={icebreakerIsLoading}
+                          style={{ ...BTN, background: icebreaker ? 'rgba(99,102,241,0.2)' : '#1a1a1a', color: icebreaker ? '#c4b5fd' : '#71717a', border: icebreaker ? '1px solid rgba(99,102,241,0.35)' : '1px solid transparent', fontSize: 11 }}>
+                          {icebreakerIsLoading ? '⏳' : icebreaker ? (icebreakerExpanded ? '💬▲' : '💬') : '✉️ DM'}
+                        </button>
                         {lead.postUrl && (
                           <a href={lead.postUrl} target="_blank" rel="noopener noreferrer" style={{ ...BTN, background: '#1a1a1a', color: '#a1a1aa', textDecoration: 'none', fontSize: 11 }}>Post →</a>
                         )}
@@ -533,7 +655,7 @@ export default function LeadsPage() {
           <div style={{ textAlign: 'center', padding: '80px 0' }}>
             <div style={{ fontSize: 36, marginBottom: 14 }}>🚀</div>
             <p style={{ color: '#555', fontSize: 14, marginBottom: 6 }}>Einmal klicken – alles läuft automatisch.</p>
-            <p style={{ color: '#3f3f46', fontSize: 12 }}>Scrape → Bewertung → Profil-Analyse → Airtable-Sync</p>
+            <p style={{ color: '#3f3f46', fontSize: 12 }}>Scrape → Bewertung → Profil-Analyse → Websites → Airtable-Sync</p>
           </div>
         )}
       </div>
