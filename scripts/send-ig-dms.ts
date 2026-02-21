@@ -269,7 +269,8 @@ async function main() {
     // Hide navigator.webdriver (most common bot check)
     Object.defineProperty(navigator, 'webdriver', { get: () => undefined })
     // Fake chrome runtime (headless chrome lacks this)
-    ;(window as Record<string, unknown>)['chrome'] = { runtime: {} }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ;(window as any)['chrome'] = { runtime: {} }
     // Hide automation-related properties
     Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5] })
     Object.defineProperty(navigator, 'languages', { get: () => ['de-DE', 'de', 'en'] })
