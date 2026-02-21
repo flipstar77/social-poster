@@ -15,25 +15,15 @@ function extractContacts(text: string) {
 }
 
 function extractBestUrl(html: string): string {
-  // Try to get actual href from result__url anchor tags
-  const urlRe = /class="result__url[^"]*"[^>]*href="([^"]+)"/g
-  const matches = [...html.matchAll(urlRe)]
+  // lite.duckduckgo.com uses plain <a href="https://..."> links for results
+  const linkRe = /<a[^>]+href="(https?:\/\/[^"]+)"[^>]*>/g
+  const matches = [...html.matchAll(linkRe)]
 
   for (const m of matches) {
-    let url = m[1].trim()
-    if (url.startsWith('//')) url = 'https:' + url
-    if (!url.startsWith('http')) continue
+    const url = m[1].trim()
     if (SKIP_DOMAINS.some(d => url.includes(d))) continue
+    if (url.includes('duckduckgo.com')) continue
     return url
-  }
-
-  // Fallback: result__url displayed text — prepend https://
-  const textMatch = html.match(/class="result__url[^"]*"[^>]*>([^<\s]+)</)
-  if (textMatch) {
-    const raw = textMatch[1].trim()
-    if (raw && !SKIP_DOMAINS.some(d => raw.includes(d))) {
-      return raw.startsWith('http') ? raw : `https://${raw}`
-    }
   }
 
   return ''
@@ -43,6 +33,7 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const username = searchParams.get('username') ?? ''
   const fullName = searchParams.get('fullName') ?? ''
+  const debug = searchParams.get('debug') === '1'
 
   if (!username) return NextResponse.json({ emails: [], phones: [], website: '' })
 
@@ -54,18 +45,29 @@ export async function GET(req: NextRequest) {
   const query = encodeURIComponent(nameQuery)
 
   try {
-    const res = await fetch(`https://html.duckduckgo.com/html/?q=${query}`, {
+    // Use POST to lite.duckduckgo.com — more reliable from server IPs than GET html endpoint
+    const res = await fetch('https://lite.duckduckgo.com/lite/', {
+      method: 'POST',
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         'Accept': 'text/html,application/xhtml+xml',
         'Accept-Language': 'de-DE,de;q=0.9',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Referer': 'https://lite.duckduckgo.com/',
       },
+      body: `q=${query}`,
       signal: AbortSignal.timeout(10000),
     })
 
-    if (!res.ok) return NextResponse.json({ emails: [], phones: [], website: '' })
+    if (!res.ok) {
+      if (debug) return NextResponse.json({ debug: `HTTP ${res.status}`, emails: [], phones: [], website: '' })
+      return NextResponse.json({ emails: [], phones: [], website: '' })
+    }
 
     const html = await res.text()
+
+    if (debug) return NextResponse.json({ debug_status: res.status, debug_html: html.slice(0, 1000), query: nameQuery })
+
 
     // Extract website URL from first usable result
     const website = extractBestUrl(html)
