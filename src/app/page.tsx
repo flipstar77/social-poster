@@ -3,11 +3,27 @@
 import Link from 'next/link'
 import React, { useState, useEffect, useRef } from 'react'
 
-// ── Scroll-in animation hook ──────────────────────────────────────────────────
+// ── CSS animations ────────────────────────────────────────────────────────────
+const GLOBAL_CSS = `
+@keyframes ticker {
+  from { transform: translateX(0) }
+  to   { transform: translateX(-50%) }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(32px) }
+  to   { opacity: 1; transform: translateY(0) }
+}
+.ticker-track { animation: ticker 32s linear infinite; }
+.ticker-track:hover { animation-play-state: paused; }
+.hero-fadeup { animation: fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) both; }
+.hero-fadeup-2 { animation: fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) 0.15s both; }
+.hero-fadeup-3 { animation: fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) 0.3s both; }
+`
+
+// ── Scroll-in hook ────────────────────────────────────────────────────────────
 function useScrollIn(delay = 0) {
   const ref = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(false)
-
   useEffect(() => {
     const el = ref.current
     if (!el) return
@@ -18,7 +34,6 @@ function useScrollIn(delay = 0) {
     obs.observe(el)
     return () => obs.disconnect()
   }, [])
-
   return {
     ref,
     style: {
@@ -29,72 +44,121 @@ function useScrollIn(delay = 0) {
   }
 }
 
-// ── Parallax gradient blob ────────────────────────────────────────────────────
-function ParallaxBlob() {
-  const [offsetY, setOffsetY] = useState(0)
+// ── Parallax blobs ────────────────────────────────────────────────────────────
+function ParallaxBlobs() {
+  const [y, setY] = useState(0)
   useEffect(() => {
-    const onScroll = () => setOffsetY(window.scrollY * 0.25)
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+    const fn = () => setY(window.scrollY)
+    window.addEventListener('scroll', fn, { passive: true })
+    return () => window.removeEventListener('scroll', fn)
   }, [])
   return (
     <>
-      <div style={{
-        position: 'absolute', top: -120 + offsetY, right: -160,
-        width: 580, height: 580, borderRadius: '50%', pointerEvents: 'none',
-        background: 'radial-gradient(circle, rgba(99,102,241,0.13) 0%, transparent 70%)',
-      }} />
-      <div style={{
-        position: 'absolute', bottom: -80 - offsetY * 0.5, left: -120,
-        width: 420, height: 420, borderRadius: '50%', pointerEvents: 'none',
-        background: 'radial-gradient(circle, rgba(168,85,247,0.09) 0%, transparent 70%)',
-      }} />
+      <div style={{ position: 'absolute', top: -140 + y * 0.28, right: -180, width: 620, height: 620, borderRadius: '50%', pointerEvents: 'none', background: 'radial-gradient(circle, rgba(99,102,241,0.14) 0%, transparent 68%)' }} />
+      <div style={{ position: 'absolute', bottom: -60 - y * 0.15, left: -140, width: 460, height: 460, borderRadius: '50%', pointerEvents: 'none', background: 'radial-gradient(circle, rgba(168,85,247,0.1) 0%, transparent 68%)' }} />
+      <div style={{ position: 'absolute', top: 200 + y * 0.1, left: '40%', width: 320, height: 320, borderRadius: '50%', pointerEvents: 'none', background: 'radial-gradient(circle, rgba(34,197,94,0.06) 0%, transparent 68%)' }} />
     </>
   )
 }
 
+// ── Hover card wrapper ────────────────────────────────────────────────────────
+function HoverCard({ children, accent = false, style: extraStyle }: { children: React.ReactNode; accent?: boolean; style?: React.CSSProperties }) {
+  const [h, setH] = useState(false)
+  return (
+    <div
+      onMouseEnter={() => setH(true)}
+      onMouseLeave={() => setH(false)}
+      style={{
+        background: '#fff',
+        border: h
+          ? `2px solid ${accent ? 'rgba(99,102,241,0.5)' : 'rgba(99,102,241,0.25)'}`
+          : `${accent ? '2px' : '1px'} solid ${accent ? 'rgba(99,102,241,0.35)' : '#e4e4e7'}`,
+        borderRadius: 20,
+        transform: h ? 'translateY(-8px)' : 'translateY(0)',
+        boxShadow: h
+          ? `0 20px 60px ${accent ? 'rgba(99,102,241,0.18)' : 'rgba(0,0,0,0.1)'}`
+          : `0 2px 20px ${accent ? 'rgba(99,102,241,0.08)' : 'rgba(0,0,0,0.04)'}`,
+        transition: 'transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s ease, border-color 0.3s ease',
+        cursor: 'default',
+        ...extraStyle,
+      }}
+    >
+      {children}
+    </div>
+  )
+}
+
 // ── Step card ─────────────────────────────────────────────────────────────────
-function StepCard({ n, icon, title, desc, delay }: {
-  n: string; icon: string; title: string; desc: string; delay: number
-}) {
+function StepCard({ n, icon, title, desc, delay }: { n: string; icon: string; title: string; desc: string; delay: number }) {
   const { ref, style } = useScrollIn(delay)
   return (
-    <div ref={ref} style={{
-      ...style,
-      background: '#fff',
-      border: '1px solid #e4e4e7',
-      borderRadius: 20,
-      padding: '36px 28px',
-      boxShadow: '0 2px 20px rgba(0,0,0,0.05)',
-      position: 'relative',
-      overflow: 'hidden',
-    }}>
-      <div style={{
-        position: 'absolute', top: 18, right: 22,
-        fontSize: 52, fontWeight: 800, lineHeight: 1,
-        color: 'rgba(99,102,241,0.07)', userSelect: 'none',
-      }}>{n}</div>
-      <div style={{ fontSize: 38, marginBottom: 18 }}>{icon}</div>
-      <h3 style={{ fontSize: 19, fontWeight: 700, marginBottom: 10, color: '#09090b' }}>{title}</h3>
-      <p style={{ fontSize: 15, color: '#71717a', lineHeight: 1.7, margin: 0 }}>{desc}</p>
+    <div ref={ref} style={style}>
+      <HoverCard style={{ padding: '36px 28px', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: 16, right: 20, fontSize: 56, fontWeight: 800, lineHeight: 1, color: 'rgba(99,102,241,0.06)', userSelect: 'none' }}>{n}</div>
+        <div style={{ fontSize: 38, marginBottom: 18 }}>{icon}</div>
+        <h3 style={{ fontSize: 19, fontWeight: 700, marginBottom: 10, color: '#09090b' }}>{title}</h3>
+        <p style={{ fontSize: 15, color: '#71717a', lineHeight: 1.7, margin: 0 }}>{desc}</p>
+      </HoverCard>
     </div>
   )
 }
 
-// ── Feature pill ──────────────────────────────────────────────────────────────
-function Pill({ icon, text }: { icon: string; text: string }) {
+// ── Scrolling pill ticker ─────────────────────────────────────────────────────
+const PILL_ITEMS = [
+  { icon: '⏱️', text: '2–3 Stunden / Woche gespart' },
+  { icon: '📈', text: 'Mehr Reichweite, mehr Gäste' },
+  { icon: '📱', text: 'Instagram · TikTok · Facebook' },
+  { icon: '🎨', text: '3 Varianten zur Auswahl' },
+  { icon: '🗣️', text: 'Euer Ton, eure Stimme' },
+  { icon: '💸', text: 'Günstiger als jede Agentur' },
+  { icon: '🌍', text: 'Weltweit nutzbar' },
+  { icon: '🚀', text: 'In 30 Sekunden gepostet' },
+]
+
+function Ticker() {
+  const items = [...PILL_ITEMS, ...PILL_ITEMS] // duplicate for infinite loop
   return (
-    <div style={{
-      display: 'inline-flex', alignItems: 'center', gap: 8,
-      background: '#fff', border: '1px solid #e4e4e7', borderRadius: 999,
-      padding: '10px 20px', fontSize: 14, color: '#18181b', fontWeight: 500,
-      boxShadow: '0 1px 6px rgba(0,0,0,0.04)',
-    }}>
-      <span style={{ fontSize: 18 }}>{icon}</span>{text}
+    <div style={{ overflow: 'hidden', padding: '20px 0', borderTop: '1px solid #e4e4e7', borderBottom: '1px solid #e4e4e7', background: '#fff' }}>
+      <div className="ticker-track" style={{ display: 'flex', gap: 12, width: 'max-content' }}>
+        {items.map((p, i) => (
+          <div key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#f8fafc', border: '1px solid #e4e4e7', borderRadius: 999, padding: '9px 20px', fontSize: 14, color: '#18181b', fontWeight: 500, whiteSpace: 'nowrap' }}>
+            <span style={{ fontSize: 17 }}>{p.icon}</span>{p.text}
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
 
+// ── FAQ accordion ─────────────────────────────────────────────────────────────
+const FAQS = [
+  { q: 'Wie lange dauert die Einrichtung?', a: 'Wir richten alles innerhalb von 24 Stunden ein. Ihr bekommt einen persönlichen Zugang und seid sofort startklar — keine technischen Vorkenntnisse nötig.' },
+  { q: 'Brauche ich technisches Wissen?', a: 'Nein. Ihr ladet ein Bild hoch, schreibt optional eine kurze Notiz dazu — alles andere passiert automatisch. Kein Coding, kein Setup, kein Aufwand.' },
+  { q: 'Welche Plattformen werden unterstützt?', a: 'Instagram, TikTok und Facebook. Alle drei mit einem einzigen Post bespielt — ohne Mehraufwand.' },
+  { q: 'Was kostet der laufende Betrieb bei Lite?', a: 'Ihr verwaltet zwei kleine API-Zugänge selbst (~5–10 € / Monat). Wir zeigen euch wie bei der Einrichtung — dauert ca. 10 Minuten und ist einmalig.' },
+  { q: 'Kann ich kündigen?', a: 'Lite ist eine Einmalzahlung — keine Kündigung nötig, Zugang bleibt für immer. Pro ist monatlich kündbar, jederzeit ohne Frist.' },
+  { q: 'Schreibt die KI auch auf Englisch oder anderen Sprachen?', a: 'Ja. Die KI schreibt in jeder Sprache — Deutsch, Englisch, Türkisch, Arabisch und mehr. Einfach beim Setup angeben.' },
+  { q: 'Ist Zahlung per Crypto möglich?', a: 'Ja, wir akzeptieren ETH und BTC. Schick die Zahlung an die unten angezeigte Adresse und melde dich danach kurz bei uns.' },
+]
+
+function FaqItem({ q, a, open, onToggle }: { q: string; a: string; open: boolean; onToggle: () => void }) {
+  return (
+    <div style={{ borderBottom: '1px solid #e4e4e7' }}>
+      <button
+        onClick={onToggle}
+        style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 0', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', gap: 16 }}
+      >
+        <span style={{ fontSize: 16, fontWeight: 600, color: '#09090b' }}>{q}</span>
+        <span style={{ fontSize: 22, color: '#6366f1', flexShrink: 0, transition: 'transform 0.3s ease', transform: open ? 'rotate(45deg)' : 'rotate(0)' }}>+</span>
+      </button>
+      <div style={{ overflow: 'hidden', maxHeight: open ? 200 : 0, transition: 'max-height 0.35s cubic-bezier(0.4,0,0.2,1)', }}>
+        <p style={{ fontSize: 15, color: '#52525b', lineHeight: 1.7, margin: 0, paddingBottom: 20 }}>{a}</p>
+      </div>
+    </div>
+  )
+}
+
+// ── Inputs ────────────────────────────────────────────────────────────────────
 const INPUT: React.CSSProperties = {
   background: '#fff', border: '1px solid #d4d4d8', borderRadius: 10,
   padding: '12px 16px', color: '#18181b', fontSize: 14, width: '100%',
@@ -103,140 +167,88 @@ const INPUT: React.CSSProperties = {
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default function LandingPage() {
-  const [form, setForm] = useState({ name: '', restaurant: '', email: '', message: '' })
+  const [faqOpen, setFaqOpen] = useState<number | null>(null)
+  const [cryptoOpen, setCryptoOpen] = useState(false)
+  const [form, setForm] = useState({ name: '', email: '', message: '' })
   const [sending, setSending] = useState(false)
   const [submitted, setSubmitted] = useState(false)
-  const [error, setError] = useState('')
+  const [formError, setFormError] = useState('')
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleContact(e: React.FormEvent) {
     e.preventDefault()
     setSending(true)
-    setError('')
+    setFormError('')
     try {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, restaurant: form.name }),
       })
-      if (res.ok) {
-        setSubmitted(true)
-      } else {
-        const d = await res.json()
-        setError(d.error ?? 'Fehler beim Senden.')
-      }
-    } catch {
-      setError('Netzwerkfehler – bitte erneut versuchen.')
-    } finally {
-      setSending(false)
-    }
+      if (res.ok) setSubmitted(true)
+      else { const d = await res.json(); setFormError(d.error ?? 'Fehler.') }
+    } catch { setFormError('Netzwerkfehler.') }
+    finally { setSending(false) }
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f8fafc', color: '#18181b', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+    <>
+      <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
+      <div style={{ minHeight: '100vh', background: '#f8fafc', color: '#18181b', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
 
-      {/* ── NAV ─────────────────────────────────────────────────────────────── */}
-      <nav style={{
-        position: 'sticky', top: 0, zIndex: 50,
-        background: 'rgba(248,250,252,0.92)', backdropFilter: 'blur(14px)',
-        borderBottom: '1px solid #e4e4e7',
-      }}>
-        <div style={{
-          maxWidth: 1080, margin: '0 auto', padding: '0 24px', height: 60,
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <defs>
-                <linearGradient id="ig-nav" x1="0%" y1="100%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#f09433" />
-                  <stop offset="100%" stopColor="#bc1888" />
-                </linearGradient>
-              </defs>
-              <rect x="2" y="2" width="20" height="20" rx="5" stroke="url(#ig-nav)" strokeWidth="2" fill="none" />
-              <circle cx="12" cy="12" r="4" stroke="url(#ig-nav)" strokeWidth="2" fill="none" />
-              <circle cx="17.5" cy="6.5" r="1.2" fill="url(#ig-nav)" />
-            </svg>
-            <span style={{ fontWeight: 700, fontSize: 16 }}>Social Poster AI</span>
+        {/* ── NAV ─────────────────────────────────────────────────────────── */}
+        <nav style={{ position: 'sticky', top: 0, zIndex: 50, background: 'rgba(248,250,252,0.92)', backdropFilter: 'blur(14px)', borderBottom: '1px solid #e4e4e7' }}>
+          <div style={{ maxWidth: 1080, margin: '0 auto', padding: '0 24px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <defs><linearGradient id="ig-g" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stopColor="#f09433" /><stop offset="100%" stopColor="#bc1888" /></linearGradient></defs>
+                <rect x="2" y="2" width="20" height="20" rx="5" stroke="url(#ig-g)" strokeWidth="2" fill="none" />
+                <circle cx="12" cy="12" r="4" stroke="url(#ig-g)" strokeWidth="2" fill="none" />
+                <circle cx="17.5" cy="6.5" r="1.2" fill="url(#ig-g)" />
+              </svg>
+              <span style={{ fontWeight: 700, fontSize: 16 }}>Social Poster AI</span>
+            </div>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <Link href="/tool" style={{ fontSize: 14, color: '#71717a', textDecoration: 'none', padding: '8px 14px' }}>Tool →</Link>
+              <a href="#kaufen" style={{ background: '#6366f1', color: 'white', padding: '9px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600, textDecoration: 'none' }}>
+                Jetzt starten
+              </a>
+            </div>
           </div>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <Link href="/tool" style={{ fontSize: 14, color: '#71717a', textDecoration: 'none', padding: '8px 14px' }}>
-              Tool →
-            </Link>
-            <a href="#kontakt" style={{
-              background: '#6366f1', color: 'white',
-              padding: '9px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600,
-              textDecoration: 'none',
-            }}>
-              Demo anfragen
-            </a>
-          </div>
-        </div>
-      </nav>
+        </nav>
 
-      {/* ── HERO ────────────────────────────────────────────────────────────── */}
-      <section style={{ position: 'relative', overflow: 'hidden', background: '#fff', borderBottom: '1px solid #e4e4e7' }}>
-        <ParallaxBlob />
-        <div style={{
-          maxWidth: 1080, margin: '0 auto', padding: '108px 24px 88px',
-          textAlign: 'center', position: 'relative',
-        }}>
-          <div style={{
-            display: 'inline-block', padding: '5px 16px', borderRadius: 999,
-            background: '#f3f4f6', border: '1px solid #e4e4e7',
-            color: '#6366f1', fontSize: 13, fontWeight: 600, marginBottom: 28,
-          }}>
-            Für Restaurants · Cafés · Bars
+        {/* ── HERO ────────────────────────────────────────────────────────── */}
+        <section style={{ position: 'relative', overflow: 'hidden', background: '#fff', borderBottom: '1px solid #e4e4e7' }}>
+          <ParallaxBlobs />
+          <div style={{ maxWidth: 1080, margin: '0 auto', padding: '112px 24px 96px', textAlign: 'center', position: 'relative' }}>
+            <div className="hero-fadeup" style={{ display: 'inline-block', padding: '5px 16px', borderRadius: 999, background: '#f3f4f6', border: '1px solid #e4e4e7', color: '#6366f1', fontSize: 13, fontWeight: 600, marginBottom: 28 }}>
+              Für Restaurants · Cafés · Bars
+            </div>
+            <h1 className="hero-fadeup-2" style={{ fontSize: 'clamp(38px, 7vw, 72px)', fontWeight: 800, lineHeight: 1.08, marginBottom: 24, letterSpacing: '-2px', color: '#09090b' }}>
+              Täglich präsent.<br />
+              <span style={{ background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                Ohne Aufwand.
+              </span>
+            </h1>
+            <p className="hero-fadeup-3" style={{ fontSize: 19, color: '#52525b', maxWidth: 560, margin: '0 auto 44px', lineHeight: 1.75 }}>
+              Dein Restaurant verdient starke Social-Media-Präsenz — aber du hast keine Zeit dafür.
+              Bild hochladen, fertig. <strong style={{ color: '#09090b' }}>In 30 Sekunden gepostet.</strong>
+            </p>
+            <div className="hero-fadeup-3" style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+              <a href="#kaufen" style={{ background: '#6366f1', color: 'white', padding: '15px 36px', borderRadius: 12, fontSize: 16, fontWeight: 700, textDecoration: 'none', boxShadow: '0 4px 24px rgba(99,102,241,0.4)' }}>
+                Jetzt Zugang sichern →
+              </a>
+              <Link href="/tool" style={{ border: '1px solid #d4d4d8', color: '#3f3f46', background: '#fff', padding: '15px 36px', borderRadius: 12, fontSize: 16, fontWeight: 600, textDecoration: 'none' }}>
+                Tool ansehen
+              </Link>
+            </div>
           </div>
-          <h1 style={{
-            fontSize: 'clamp(38px, 7vw, 68px)', fontWeight: 800,
-            lineHeight: 1.1, marginBottom: 24, letterSpacing: '-1.5px', color: '#09090b',
-          }}>
-            Täglich präsent.<br />
-            <span style={{
-              background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
-              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}>Ohne Aufwand.</span>
-          </h1>
-          <p style={{ fontSize: 19, color: '#52525b', maxWidth: 560, margin: '0 auto 44px', lineHeight: 1.75 }}>
-            Dein Restaurant verdient eine starke Social-Media-Präsenz —
-            aber du hast keine Zeit dafür. Wir übernehmen das.
-            Einfach Bild hochladen, fertig. <strong style={{ color: '#09090b' }}>In 30 Sekunden gepostet.</strong>
-          </p>
-          <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <a href="#kontakt" style={{
-              background: '#6366f1', color: 'white',
-              padding: '15px 36px', borderRadius: 12, fontSize: 16, fontWeight: 700,
-              textDecoration: 'none', boxShadow: '0 4px 20px rgba(99,102,241,0.35)',
-            }}>
-              Kostenlose Demo anfragen
-            </a>
-            <Link href="/tool" style={{
-              border: '1px solid #d4d4d8', color: '#3f3f46', background: '#fff',
-              padding: '15px 36px', borderRadius: 12, fontSize: 16, fontWeight: 600,
-              textDecoration: 'none',
-            }}>
-              Tool ansehen →
-            </Link>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ── PILLS ───────────────────────────────────────────────────────────── */}
-      <section style={{ maxWidth: 1080, margin: '0 auto', padding: '44px 24px' }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center' }}>
-          <Pill icon="⏱️" text="2–3 Stunden / Woche gespart" />
-          <Pill icon="📈" text="Mehr Reichweite, mehr Gäste" />
-          <Pill icon="📱" text="Instagram · TikTok · Facebook" />
-          <Pill icon="🎨" text="3 Varianten zur Auswahl" />
-          <Pill icon="🗣️" text="Euer Ton, eure Stimme" />
-          <Pill icon="💸" text="Ohne Agentur, ohne Abo-Falle" />
-        </div>
-      </section>
+        {/* ── TICKER ──────────────────────────────────────────────────────── */}
+        <Ticker />
 
-      {/* ── SO FUNKTIONIERT'S — Animated Steps ──────────────────────────────── */}
-      <section style={{ background: '#fff', borderTop: '1px solid #e4e4e7', borderBottom: '1px solid #e4e4e7' }}>
-        <div style={{ maxWidth: 1080, margin: '0 auto', padding: '72px 24px' }}>
+        {/* ── SO FUNKTIONIERT'S ────────────────────────────────────────────── */}
+        <section style={{ maxWidth: 1080, margin: '0 auto', padding: '80px 24px' }}>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
             <h2 style={{ fontSize: 36, fontWeight: 800, marginBottom: 10, color: '#09090b' }}>Volles Social Media — minimalster Aufwand</h2>
             <p style={{ color: '#71717a', fontSize: 16, margin: 0 }}>Drei Schritte. Kein Training. Keine Agentur. Keine Ahnung von Marketing nötig.</p>
@@ -244,242 +256,197 @@ export default function LandingPage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 20 }}>
             <StepCard n="01" icon="📸" title="Bild oder Video hochladen" delay={0}
               desc="Foto vom Tagesgericht, Video einer Aktion, direkt vom Handy. Optional: kurze Notiz dazu — wir schreiben den Rest." />
-            <StepCard n="02" icon="✨" title="3 Varianten — ihr wählt die beste" delay={140}
-              desc="Die KI erstellt drei verschiedene Texte in eurem Stil und eurer Sprache. Ihr pickt euren Favoriten — oder postet direkt. Immer in eurer eigenen Stimme." />
-            <StepCard n="03" icon="📈" title="Ihr wachst — während ihr kocht" delay={280}
-              desc="Regelmäßige Posts auf Instagram, TikTok und Facebook bedeuten mehr Sichtbarkeit, mehr neue Gäste. Ohne dass ihr täglich daran denken müsst." />
+            <StepCard n="02" icon="✨" title="3 Varianten — ihr wählt die beste" delay={130}
+              desc="Die KI erstellt drei verschiedene Texte in eurem Stil. Ihr pickt euren Favoriten — oder postet direkt. Immer in eurer eigenen Stimme." />
+            <StepCard n="03" icon="📈" title="Ihr wachst — während ihr kocht" delay={260}
+              desc="Regelmäßige Posts auf Instagram, TikTok und Facebook bedeuten mehr Sichtbarkeit und neue Gäste. Automatisch." />
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ── VORHER / NACHHER ────────────────────────────────────────────────── */}
-      <section style={{ maxWidth: 1080, margin: '0 auto', padding: '72px 24px' }}>
-        <h2 style={{ fontSize: 36, fontWeight: 800, textAlign: 'center', marginBottom: 10, color: '#09090b' }}>
-          Wie es sich anfühlt
-        </h2>
-        <p style={{ color: '#71717a', textAlign: 'center', marginBottom: 48, fontSize: 16 }}>
-          Der Unterschied zwischen Social Media mit und ohne uns.
-        </p>
-        <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: 20, maxWidth: 720, margin: '0 auto',
-        }}>
-          <div style={{ background: '#fafafa', border: '1px solid #e4e4e7', borderRadius: 20, padding: 28 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 18 }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#ef4444', display: 'inline-block' }} />
-              <span style={{ fontSize: 13, fontWeight: 500, color: '#a1a1aa' }}>Ohne Social Poster AI</span>
+        {/* ── WIE ES SICH ANFÜHLT ──────────────────────────────────────────── */}
+        <section style={{ background: '#fff', borderTop: '1px solid #e4e4e7', borderBottom: '1px solid #e4e4e7' }}>
+          <div style={{ maxWidth: 1080, margin: '0 auto', padding: '72px 24px' }}>
+            <h2 style={{ fontSize: 36, fontWeight: 800, textAlign: 'center', marginBottom: 10, color: '#09090b' }}>Wie es sich anfühlt</h2>
+            <p style={{ color: '#71717a', textAlign: 'center', marginBottom: 48, fontSize: 16 }}>Der Unterschied zwischen Social Media mit und ohne uns.</p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20, maxWidth: 720, margin: '0 auto' }}>
+              <HoverCard style={{ padding: 28, background: '#fafafa' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 18 }}>
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#ef4444', display: 'inline-block' }} />
+                  <span style={{ fontSize: 13, fontWeight: 500, color: '#a1a1aa' }}>Ohne Social Poster AI</span>
+                </div>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 11 }}>
+                  {['Stundenlang nach Ideen suchen', 'Posts vergessen oder aufschieben', 'Unregelmäßig posten = weniger Reichweite', '2–4 Stunden pro Woche verloren', 'Agentur zu teuer, selber zu aufwändig'].map(t => (
+                    <li key={t} style={{ display: 'flex', gap: 10, fontSize: 14, color: '#71717a', alignItems: 'flex-start' }}>
+                      <span style={{ color: '#ef4444', flexShrink: 0, fontWeight: 700 }}>✗</span>{t}
+                    </li>
+                  ))}
+                </ul>
+              </HoverCard>
+              <HoverCard accent style={{ padding: 28 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 18 }}>
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', display: 'inline-block' }} />
+                  <span style={{ fontSize: 13, fontWeight: 500, color: '#6366f1' }}>Mit Social Poster AI</span>
+                </div>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 11 }}>
+                  {['Bild hochladen — fertig. 30 Sekunden.', 'Jeden Tag automatisch präsent', 'Regelmäßige Posts = mehr neue Gäste', 'Stunden zurückgewinnen, Küche im Fokus', 'Günstiger als jede Agentur weltweit'].map(t => (
+                    <li key={t} style={{ display: 'flex', gap: 10, fontSize: 14, color: '#18181b', alignItems: 'flex-start' }}>
+                      <span style={{ color: '#22c55e', flexShrink: 0, fontWeight: 700 }}>✓</span>{t}
+                    </li>
+                  ))}
+                </ul>
+              </HoverCard>
             </div>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {[
-                'Stundenlang nach Ideen suchen',
-                'Posts vergessen oder aufschieben',
-                'Unregelmäßig posten = weniger Reichweite',
-                '2–4 Stunden pro Woche verloren',
-                'Agentur zu teuer, selber machen zu aufwändig',
-              ].map(t => (
-                <li key={t} style={{ display: 'flex', gap: 10, fontSize: 14, color: '#71717a', alignItems: 'flex-start' }}>
-                  <span style={{ color: '#ef4444', flexShrink: 0, fontWeight: 700 }}>✗</span>{t}
-                </li>
-              ))}
-            </ul>
           </div>
-          <div style={{ background: '#fff', border: '2px solid rgba(99,102,241,0.3)', borderRadius: 20, padding: 28 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 18 }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', display: 'inline-block' }} />
-              <span style={{ fontSize: 13, fontWeight: 500, color: '#6366f1' }}>Mit Social Poster AI</span>
-            </div>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {[
-                'Bild hochladen — fertig. 30 Sekunden.',
-                'Jeden Tag automatisch präsent',
-                'Regelmäßige Posts = mehr neue Gäste',
-                'Stunden zurückgewinnen, Küche im Fokus',
-                'Günstiger als jede Agentur',
-              ].map(t => (
-                <li key={t} style={{ display: 'flex', gap: 10, fontSize: 14, color: '#18181b', alignItems: 'flex-start' }}>
-                  <span style={{ color: '#22c55e', flexShrink: 0, fontWeight: 700 }}>✓</span>{t}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ── FÜR WEN ─────────────────────────────────────────────────────────── */}
-      <section style={{ background: '#fff', borderTop: '1px solid #e4e4e7', borderBottom: '1px solid #e4e4e7' }}>
-        <div style={{ maxWidth: 1080, margin: '0 auto', padding: '64px 24px', textAlign: 'center' }}>
+        {/* ── FÜR WEN ──────────────────────────────────────────────────────── */}
+        <section style={{ maxWidth: 1080, margin: '0 auto', padding: '72px 24px', textAlign: 'center' }}>
           <h2 style={{ fontSize: 36, fontWeight: 800, marginBottom: 10, color: '#09090b' }}>Für wen ist das?</h2>
           <p style={{ color: '#71717a', marginBottom: 16, fontSize: 16 }}>
-            Für alle, die regelmäßig auf Instagram, TikTok und Facebook präsent sein wollen — ohne Stunden dafür aufzuwenden.
+            Für alle, die auf Instagram, TikTok und Facebook präsent sein wollen — ohne Stunden dafür aufzuwenden.
           </p>
-          <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 32 }}>
+          <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 28 }}>
             {['📸 Instagram', '🎵 TikTok', '👥 Facebook'].map(p => (
-              <span key={p} style={{
-                padding: '7px 16px', borderRadius: 999, fontSize: 13, fontWeight: 600,
-                background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)', color: '#6366f1',
-              }}>{p}</span>
+              <span key={p} style={{ padding: '7px 16px', borderRadius: 999, fontSize: 13, fontWeight: 600, background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)', color: '#6366f1' }}>{p}</span>
             ))}
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center' }}>
             {['🍝 Restaurants', '☕ Cafés', '🍹 Cocktailbars', '🍦 Eisdielen', '🚚 Food Trucks', '🥐 Bäckereien', '🍣 Sushi', '🍔 Burger', '🌮 Mexican'].map(item => (
-              <span key={item} style={{
-                padding: '10px 22px', borderRadius: 999, fontSize: 14, fontWeight: 500,
-                background: '#f8fafc', border: '1px solid #e4e4e7', color: '#3f3f46',
-              }}>
-                {item}
-              </span>
+              <span key={item} style={{ padding: '10px 22px', borderRadius: 999, fontSize: 14, fontWeight: 500, background: '#fff', border: '1px solid #e4e4e7', color: '#3f3f46' }}>{item}</span>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ── PREIS ───────────────────────────────────────────────────────────── */}
-      <section id="preis" style={{ maxWidth: 1080, margin: '0 auto', padding: '72px 24px' }}>
-        <h2 style={{ fontSize: 36, fontWeight: 800, textAlign: 'center', marginBottom: 10, color: '#09090b' }}>Preis</h2>
-        <p style={{ color: '#71717a', textAlign: 'center', marginBottom: 56, fontSize: 16 }}>
-          Einmal einrichten — für immer nutzen. Oder wir übernehmen alles.
-        </p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20, maxWidth: 780, margin: '0 auto' }}>
+        {/* ── KAUFEN / PRICING ─────────────────────────────────────────────── */}
+        <section id="kaufen" style={{ background: '#fff', borderTop: '1px solid #e4e4e7', borderBottom: '1px solid #e4e4e7' }}>
+          <div style={{ maxWidth: 1080, margin: '0 auto', padding: '80px 24px' }}>
+            <h2 style={{ fontSize: 36, fontWeight: 800, textAlign: 'center', marginBottom: 10, color: '#09090b' }}>Jetzt starten</h2>
+            <p style={{ color: '#71717a', textAlign: 'center', marginBottom: 56, fontSize: 16 }}>
+              Einmal einrichten — für immer nutzen. Sofortiger Zugang nach Zahlung.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20, maxWidth: 780, margin: '0 auto' }}>
 
-          {/* Lite */}
-          <div style={{
-            background: '#fff', border: '1px solid #e4e4e7', borderRadius: 24, padding: 40,
-            display: 'flex', flexDirection: 'column',
-          }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 16 }}>Lite</div>
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, marginBottom: 4 }}>
-              <span style={{ fontSize: 52, fontWeight: 800, color: '#09090b', lineHeight: 1 }}>149 €</span>
-              <span style={{ fontSize: 15, color: '#71717a', marginBottom: 6 }}>einmalig</span>
+              {/* Lite */}
+              <HoverCard style={{ padding: 40, display: 'flex', flexDirection: 'column' }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>Lite</div>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, marginBottom: 4 }}>
+                  <span style={{ fontSize: 52, fontWeight: 800, color: '#09090b', lineHeight: 1 }}>149 €</span>
+                  <span style={{ fontSize: 15, color: '#71717a', marginBottom: 6 }}>einmalig</span>
+                </div>
+                <div style={{ fontSize: 13, color: '#a1a1aa', marginBottom: 32 }}>+ ~5–10 € / Monat eigene API-Kosten</div>
+                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 32px', display: 'flex', flexDirection: 'column', gap: 12, flex: 1 }}>
+                  {['Lifetime-Zugang zum Tool', 'Unbegrenzte Posts', 'Instagram, TikTok, Facebook', 'KI-Captions in eurer Sprache', 'Persönliche Einrichtung', 'E-Mail Support'].map(item => (
+                    <li key={item} style={{ display: 'flex', gap: 10, fontSize: 14 }}>
+                      <span style={{ color: '#22c55e', fontWeight: 700, flexShrink: 0 }}>✓</span>
+                      <span style={{ color: '#18181b' }}>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                <a
+                  href="https://paypal.me/YOUR_PAYPAL/149EUR"
+                  target="_blank" rel="noopener noreferrer"
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, background: '#0070ba', color: 'white', padding: '14px', borderRadius: 12, fontWeight: 700, fontSize: 15, textDecoration: 'none', marginBottom: 10 }}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.93 4.778-4.005 7.201-9.138 7.201h-2.19a.563.563 0 0 0-.556.479l-1.187 7.527h-.506l-.24 1.516a.56.56 0 0 0 .554.647h3.882c.46 0 .85-.334.922-.788.06-.26.76-4.852.816-5.09a.932.932 0 0 1 .923-.788h.58c3.76 0 6.705-1.528 7.565-5.946.36-1.847.174-3.388-.777-4.471z"/></svg>
+                  Mit PayPal zahlen
+                </a>
+                <button
+                  onClick={() => setCryptoOpen(!cryptoOpen)}
+                  style={{ background: 'none', border: '1px solid #e4e4e7', borderRadius: 12, padding: '11px', fontSize: 14, color: '#71717a', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 500 }}
+                >
+                  {cryptoOpen ? '✕ Crypto schließen' : '₿  Mit Crypto zahlen'}
+                </button>
+                {cryptoOpen && (
+                  <div style={{ marginTop: 12, background: '#f8fafc', borderRadius: 12, padding: 16, fontSize: 12, color: '#52525b' }}>
+                    <div style={{ marginBottom: 10 }}>
+                      <div style={{ fontWeight: 600, color: '#09090b', marginBottom: 4 }}>ETH (Ethereum)</div>
+                      <code style={{ wordBreak: 'break-all', background: '#e4e4e7', padding: '4px 8px', borderRadius: 6, display: 'block' }}>0xYOUR_ETH_WALLET_ADDRESS</code>
+                    </div>
+                    <div>
+                      <div style={{ fontWeight: 600, color: '#09090b', marginBottom: 4 }}>BTC (Bitcoin)</div>
+                      <code style={{ wordBreak: 'break-all', background: '#e4e4e7', padding: '4px 8px', borderRadius: 6, display: 'block' }}>YOUR_BTC_WALLET_ADDRESS</code>
+                    </div>
+                    <p style={{ margin: '10px 0 0', color: '#a1a1aa', fontSize: 11 }}>Nach der Zahlung bitte Screenshot + E-Mail an uns senden.</p>
+                  </div>
+                )}
+              </HoverCard>
+
+              {/* Pro */}
+              <div style={{ position: 'relative' }}>
+                <div style={{ position: 'absolute', top: -14, left: '50%', transform: 'translateX(-50%)', background: '#6366f1', color: '#fff', fontSize: 11, fontWeight: 700, padding: '5px 16px', borderRadius: 999, letterSpacing: '0.06em', zIndex: 1, whiteSpace: 'nowrap' }}>★ BELIEBT</div>
+                <HoverCard accent style={{ padding: 40, display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#6366f1', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>Pro</div>
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, marginBottom: 4 }}>
+                    <span style={{ fontSize: 52, fontWeight: 800, color: '#09090b', lineHeight: 1 }}>149 €</span>
+                    <span style={{ fontSize: 15, color: '#71717a', marginBottom: 6 }}>einmalig</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 32 }}>
+                    <span style={{ fontSize: 26, fontWeight: 700, color: '#09090b' }}>+ 39 €</span>
+                    <span style={{ fontSize: 14, color: '#71717a' }}>/ Monat, alles inklusive</span>
+                  </div>
+                  <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 32px', display: 'flex', flexDirection: 'column', gap: 12, flex: 1 }}>
+                    {['Alles aus Lite', 'Wir managen alle API-Keys', 'Telegram Bot — posten per Sprachnachricht', 'Caption-Stil auf euer Restaurant angepasst', 'WhatsApp Support', 'Monatlicher Check-in'].map(item => (
+                      <li key={item} style={{ display: 'flex', gap: 10, fontSize: 14 }}>
+                        <span style={{ color: '#6366f1', fontWeight: 700, flexShrink: 0 }}>✓</span>
+                        <span style={{ color: '#18181b' }}>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <a href="#kontakt" style={{ display: 'block', textAlign: 'center', background: '#6366f1', color: 'white', padding: '14px', borderRadius: 12, fontWeight: 700, fontSize: 15, textDecoration: 'none', boxShadow: '0 4px 20px rgba(99,102,241,0.35)' }}>
+                    Pro anfragen →
+                  </a>
+                </HoverCard>
+              </div>
             </div>
-            <div style={{ fontSize: 13, color: '#a1a1aa', marginBottom: 32 }}>+ ~5–10 € / Monat Betriebskosten (selbst verwaltet)</div>
-            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 32px', display: 'flex', flexDirection: 'column', gap: 12, flex: 1 }}>
-              {[
-                'Lifetime-Zugang zum Tool',
-                'Unbegrenzte Posts',
-                'KI-Captions in eurer Sprache',
-                'Instagram & mehr',
-                'Persönliche Einrichtung',
-                'E-Mail Support',
-              ].map(item => (
-                <li key={item} style={{ display: 'flex', gap: 10, fontSize: 14 }}>
-                  <span style={{ color: '#22c55e', fontWeight: 700, flexShrink: 0 }}>✓</span>
-                  <span style={{ color: '#18181b' }}>{item}</span>
-                </li>
-              ))}
-            </ul>
-            <a href="#kontakt" style={{
-              display: 'block', textAlign: 'center',
-              border: '1px solid #d4d4d8', color: '#3f3f46', background: '#f8fafc',
-              padding: '13px', borderRadius: 12, fontWeight: 600, fontSize: 15,
-              textDecoration: 'none',
-            }}>
-              Anfragen
-            </a>
+            <p style={{ textAlign: 'center', fontSize: 13, color: '#a1a1aa', marginTop: 28 }}>
+              Zum Vergleich: Social-Media-Agenturen in Deutschland kosten 500–2.000 € / Monat.
+            </p>
           </div>
+        </section>
 
-          {/* Pro */}
-          <div style={{
-            background: '#fff', border: '2px solid rgba(99,102,241,0.4)', borderRadius: 24, padding: 40,
-            boxShadow: '0 8px 48px rgba(99,102,241,0.1)', display: 'flex', flexDirection: 'column',
-            position: 'relative', overflow: 'hidden',
-          }}>
-            <div style={{
-              position: 'absolute', top: 18, right: 18,
-              background: '#6366f1', color: '#fff', fontSize: 11, fontWeight: 700,
-              padding: '4px 12px', borderRadius: 999, letterSpacing: '0.05em',
-            }}>BELIEBT</div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: '#6366f1', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 16 }}>Pro</div>
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, marginBottom: 4 }}>
-              <span style={{ fontSize: 52, fontWeight: 800, color: '#09090b', lineHeight: 1 }}>149 €</span>
-              <span style={{ fontSize: 15, color: '#71717a', marginBottom: 6 }}>einmalig</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 32 }}>
-              <span style={{ fontSize: 26, fontWeight: 700, color: '#09090b' }}>+ 39 €</span>
-              <span style={{ fontSize: 14, color: '#71717a' }}>/ Monat</span>
-            </div>
-            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 32px', display: 'flex', flexDirection: 'column', gap: 12, flex: 1 }}>
-              {[
-                'Alles aus Lite',
-                'Wir managen alle API-Keys',
-                'Telegram Bot — posten per Sprachnachricht',
-                'Caption-Stil auf euer Restaurant angepasst',
-                'WhatsApp Support',
-                'Monatlicher Check-in',
-              ].map(item => (
-                <li key={item} style={{ display: 'flex', gap: 10, fontSize: 14 }}>
-                  <span style={{ color: '#6366f1', fontWeight: 700, flexShrink: 0 }}>✓</span>
-                  <span style={{ color: '#18181b' }}>{item}</span>
-                </li>
-              ))}
-            </ul>
-            <a href="#kontakt" style={{
-              display: 'block', textAlign: 'center',
-              background: '#6366f1', color: 'white',
-              padding: '13px', borderRadius: 12, fontWeight: 700, fontSize: 15,
-              textDecoration: 'none', boxShadow: '0 4px 16px rgba(99,102,241,0.3)',
-            }}>
-              Anfragen
-            </a>
+        {/* ── FAQ ──────────────────────────────────────────────────────────── */}
+        <section style={{ maxWidth: 720, margin: '0 auto', padding: '80px 24px' }}>
+          <h2 style={{ fontSize: 36, fontWeight: 800, textAlign: 'center', marginBottom: 10, color: '#09090b' }}>Häufige Fragen</h2>
+          <p style={{ color: '#71717a', textAlign: 'center', marginBottom: 48, fontSize: 16 }}>Alles was ihr wissen müsst, bevor ihr loslegt.</p>
+          <div>
+            {FAQS.map((f, i) => (
+              <FaqItem key={i} q={f.q} a={f.a} open={faqOpen === i} onToggle={() => setFaqOpen(faqOpen === i ? null : i)} />
+            ))}
           </div>
-        </div>
+        </section>
 
-        <p style={{ textAlign: 'center', fontSize: 13, color: '#a1a1aa', marginTop: 28 }}>
-          Zum Vergleich: Social-Media-Agenturen in Deutschland kosten 500–2.000 € / Monat.
-        </p>
-      </section>
+        {/* ── KONTAKT (klein, für Pro / Fragen) ───────────────────────────── */}
+        <section id="kontakt" style={{ background: '#fff', borderTop: '1px solid #e4e4e7' }}>
+          <div style={{ maxWidth: 560, margin: '0 auto', padding: '72px 24px 96px' }}>
+            <h2 style={{ fontSize: 30, fontWeight: 800, textAlign: 'center', marginBottom: 8, color: '#09090b' }}>Noch Fragen?</h2>
+            <p style={{ color: '#71717a', textAlign: 'center', marginBottom: 36, fontSize: 15 }}>
+              Schreibt uns kurz — wir melden uns innerhalb von 24 Stunden.
+            </p>
+            {submitted ? (
+              <div style={{ textAlign: 'center', padding: 40, background: '#f0fdf4', borderRadius: 20, border: '1px solid #bbf7d0' }}>
+                <div style={{ fontSize: 40, marginBottom: 12 }}>✓</div>
+                <p style={{ fontWeight: 600, color: '#15803d', margin: 0 }}>Nachricht gesendet — wir melden uns!</p>
+              </div>
+            ) : (
+              <form onSubmit={handleContact} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <input required placeholder="Name oder Restaurant" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} style={INPUT} />
+                <input required type="email" placeholder="E-Mail-Adresse" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} style={INPUT} />
+                <textarea placeholder="Eure Frage oder Nachricht" value={form.message} rows={4} onChange={e => setForm(f => ({ ...f, message: e.target.value }))} style={{ ...INPUT, resize: 'vertical' }} />
+                {formError && <p style={{ color: '#ef4444', fontSize: 13, margin: 0 }}>{formError}</p>}
+                <button type="submit" disabled={sending} style={{ background: sending ? '#a5b4fc' : '#6366f1', color: 'white', padding: '14px', borderRadius: 12, fontWeight: 700, fontSize: 15, border: 'none', cursor: sending ? 'not-allowed' : 'pointer', fontFamily: 'inherit' }}>
+                  {sending ? 'Sende...' : 'Nachricht senden'}
+                </button>
+              </form>
+            )}
+          </div>
+        </section>
 
-      {/* ── KONTAKT ─────────────────────────────────────────────────────────── */}
-      <section id="kontakt" style={{ background: '#fff', borderTop: '1px solid #e4e4e7' }}>
-        <div style={{ maxWidth: 1080, margin: '0 auto', padding: '72px 24px 96px' }}>
-          <h2 style={{ fontSize: 36, fontWeight: 800, textAlign: 'center', marginBottom: 10, color: '#09090b' }}>
-            Demo anfragen
-          </h2>
-          <p style={{ color: '#71717a', textAlign: 'center', marginBottom: 48, fontSize: 16 }}>
-            Kurze Nachricht genügt — ich melde mich innerhalb von 24 Stunden.
-          </p>
+        {/* ── FOOTER ──────────────────────────────────────────────────────── */}
+        <footer style={{ borderTop: '1px solid #e4e4e7', padding: '28px 24px', textAlign: 'center', background: '#f8fafc' }}>
+          <p style={{ color: '#a1a1aa', fontSize: 13, margin: 0 }}>© 2026 Social Poster AI</p>
+        </footer>
 
-          {submitted ? (
-            <div style={{
-              maxWidth: 420, margin: '0 auto', textAlign: 'center',
-              background: '#fff', border: '1px solid #22c55e',
-              borderRadius: 20, padding: 56,
-            }}>
-              <div style={{ fontSize: 48, marginBottom: 18 }}>✓</div>
-              <h3 style={{ fontSize: 20, fontWeight: 600, marginBottom: 8 }}>Anfrage gesendet!</h3>
-              <p style={{ color: '#71717a', margin: 0 }}>Ich melde mich innerhalb von 24 Stunden.</p>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} style={{ maxWidth: 480, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <input required placeholder="Euer Name" value={form.name}
-                onChange={e => setForm(f => ({ ...f, name: e.target.value }))} style={INPUT} />
-              <input required placeholder="Restaurant / Bar / Café" value={form.restaurant}
-                onChange={e => setForm(f => ({ ...f, restaurant: e.target.value }))} style={INPUT} />
-              <input required type="email" placeholder="E-Mail-Adresse" value={form.email}
-                onChange={e => setForm(f => ({ ...f, email: e.target.value }))} style={INPUT} />
-              <textarea placeholder="Kurze Nachricht (optional)" value={form.message} rows={4}
-                onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
-                style={{ ...INPUT, resize: 'vertical' }} />
-              {error && <p style={{ color: '#ef4444', fontSize: 14, margin: 0 }}>{error}</p>}
-              <button type="submit" disabled={sending} style={{
-                background: sending ? '#a5b4fc' : '#6366f1', color: 'white',
-                padding: '15px', borderRadius: 12, fontWeight: 700, fontSize: 15,
-                border: 'none', cursor: sending ? 'not-allowed' : 'pointer',
-                fontFamily: 'inherit', boxShadow: '0 4px 16px rgba(99,102,241,0.3)',
-              }}>
-                {sending ? 'Wird gesendet...' : 'Anfrage senden'}
-              </button>
-              <p style={{ textAlign: 'center', fontSize: 12, color: '#a1a1aa', margin: 0 }}>
-                Kein Spam. Keine Newsletter. Einfach eine direkte Antwort.
-              </p>
-            </form>
-          )}
-        </div>
-      </section>
-
-      {/* ── FOOTER ──────────────────────────────────────────────────────────── */}
-      <footer style={{ borderTop: '1px solid #e4e4e7', padding: '28px 24px', textAlign: 'center', background: '#f8fafc' }}>
-        <p style={{ color: '#a1a1aa', fontSize: 13, margin: 0 }}>© 2026 Social Poster AI</p>
-      </footer>
-    </div>
+      </div>
+    </>
   )
 }
