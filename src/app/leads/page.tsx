@@ -45,7 +45,7 @@ export default function LeadsPage() {
   const [hashtags, setHashtags] = useState<string[]>(DEFAULT_HASHTAGS)
   const [newTag, setNewTag] = useState('')
   const [limit, setLimit] = useState(25)
-  const [topN, setTopN] = useState(12)
+  const [topN, setTopN] = useState(50) // safety ceiling for deep-profile batch
 
   const [phase, setPhase] = useState<Phase>('idle')
   const [phaseText, setPhaseText] = useState('')
@@ -234,15 +234,15 @@ export default function LeadsPage() {
         if (ev) syncToAirtable(lead, { score: ev.score, reason: ev.reason, recommendation: ev.recommendation })
       }
 
-      // ④ Top-Leads: Batch-Profil-Scrape (score ≥ 6, or unscored leads fill up to topN)
-      const scored = newLeads.filter(l => (quickEvs[l.username]?.score ?? 0) >= 6)
+      // ④ Stage 2: deep-profile ALL leads marked "Kontaktieren" (+ unscored as fallback), capped at topN
+      const toContact = newLeads.filter(l => quickEvs[l.username]?.recommendation === 'Kontaktieren')
       const unscored = newLeads.filter(l => !quickEvs[l.username])
-      const topLeads = [...scored, ...unscored].slice(0, topN)
+      const topLeads = [...toContact, ...unscored].slice(0, topN)
 
       if (topLeads.length > 0) {
         setPhase('batch-loading')
         setPhaseText('Profile laden...')
-        setPhaseDetail(`${topLeads.length} Top-Leads (Score ≥ 6)`)
+        setPhaseDetail(`${topLeads.length} Leads zum Kontaktieren`)
 
         const batchStart = await fetch('/api/profile/batch-start', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -415,9 +415,9 @@ export default function LeadsPage() {
               </select>
             </label>
             <label style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 13, color: '#a1a1aa' }}>
-              Top-Profile tiefscanen:
+              Max. Deep-Scan:
               <select value={topN} onChange={e => setTopN(Number(e.target.value))} style={{ background: '#0d0d0d', border: '1px solid #262626', borderRadius: 6, padding: '4px 8px', color: '#fafafa', fontSize: 13, fontFamily: 'inherit', outline: 'none' }}>
-                {[5, 10, 15, 20].map(n => <option key={n} value={n}>{n}</option>)}
+                {[20, 30, 50, 100].map(n => <option key={n} value={n}>{n}</option>)}
               </select>
             </label>
             <button onClick={startAutoFlow} disabled={isRunning}
