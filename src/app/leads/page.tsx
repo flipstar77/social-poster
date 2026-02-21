@@ -119,10 +119,16 @@ export default function LeadsPage() {
       const res = await fetch('/api/evaluate-lead', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...lead, captionSample }),
+        signal: AbortSignal.timeout(30000),
       })
       const ev: Evaluation = await res.json()
       setEvaluations(prev => { const n = { ...prev, [lead.username]: ev }; persist({ evaluations: n }); return n })
       return ev
+    } catch {
+      // Fallback so one failed call doesn't break the whole batch
+      const fallback: Evaluation = { score: 5, reason: 'Bewertung fehlgeschlagen.', recommendation: 'Manuell prüfen' }
+      setEvaluations(prev => { const n = { ...prev, [lead.username]: fallback }; persist({ evaluations: n }); return n })
+      return fallback
     } finally {
       setEvaluating(prev => { const n = new Set(prev); n.delete(lead.username); return n })
     }
