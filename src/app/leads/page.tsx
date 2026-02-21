@@ -369,6 +369,21 @@ export default function LeadsPage() {
       }
       setAirtableIds(prev => { const n = { ...prev, ...newIds }; persist({ airtableIds: n }); return n })
 
+      // Restore website + bio from Airtable into profileInfos so cards show it immediately
+      const restoredInfos: Record<string, ProfileInfo> = {}
+      for (const r of records) {
+        const username = String(r['Username'] ?? '')
+        const website = String(r['Website'] ?? '').trim()
+        const bio = String(r['Bio'] ?? '').trim()
+        const followers = r['Followers'] ? Number(r['Followers']) : undefined
+        if (username && (website || bio || followers !== undefined)) {
+          restoredInfos[username] = { biography: bio, externalUrl: website, followersCount: followers }
+        }
+      }
+      if (Object.keys(restoredInfos).length > 0) {
+        setProfileInfos(prev => { const n = { ...prev, ...restoredInfos }; persist({ profileInfos: n }); return n })
+      }
+
       if (searchLeads.length === 0) { setPhase('done'); setPhaseText('Keine Leads gefunden'); return }
 
       setLeads(searchLeads)
@@ -409,8 +424,8 @@ export default function LeadsPage() {
               // If DDG found a website URL → scrape it for better contact data
               if (d.website) {
                 extra.website = d.website
-                // Update profileInfos so the card shows the website immediately
-                setProfileInfos(prev => ({ ...prev, [lead.username]: { biography: prev[lead.username]?.biography ?? '', externalUrl: d.website, followersCount: prev[lead.username]?.followersCount } }))
+                // Update profileInfos so the card shows the website immediately + persist it
+                setProfileInfos(prev => { const n = { ...prev, [lead.username]: { biography: prev[lead.username]?.biography ?? '', externalUrl: d.website, followersCount: prev[lead.username]?.followersCount } }; persist({ profileInfos: n }); return n })
                 try {
                   const sr = await fetch(`/api/scrape-website?url=${encodeURIComponent(d.website)}`)
                   const sd = await sr.json()
