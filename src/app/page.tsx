@@ -161,7 +161,7 @@ const PILL_ITEMS: { icon: React.ReactNode; text: string }[] = [
   { icon: '⏱️', text: '2–3 Stunden / Woche gespart' },
   { icon: '📈', text: 'Mehr Reichweite, mehr Gäste' },
   { icon: '🔁', text: '5 Plattformen · 1 Upload' },
-  { icon: '📅', text: '1 Monat geplant in 1 Stunde' },
+  { icon: '🤖', text: 'Automatisch geplant & gepostet' },
   { icon: <IgIcon />, text: 'Instagram' },
   { icon: <TikTokIcon />, text: 'TikTok' },
   { icon: <FbIcon />, text: 'Facebook' },
@@ -194,7 +194,7 @@ const FAQS = [
   { q: 'Wie lange dauert die Einrichtung?', a: 'Wir richten alles innerhalb von 24 Stunden ein. Ihr bekommt einen persönlichen Zugang und seid sofort startklar — keine technischen Vorkenntnisse nötig.' },
   { q: 'Brauche ich technisches Wissen?', a: 'Nein. Ihr ladet ein Bild hoch, schreibt optional eine kurze Notiz dazu — alles andere passiert automatisch. Kein Coding, kein Setup, kein Aufwand.' },
   { q: 'Welche Plattformen werden unterstützt?', a: 'Instagram, TikTok, Facebook, YouTube und X (Twitter) — bis zu 5 gleichzeitig mit einem einzigen Upload. So einfach wie auf einer posten.' },
-  { q: 'Kann ich Posts im Voraus planen?', a: 'Ja — der eingebaute Kalender lässt euch Posts Tage oder Wochen im Voraus einplanen. Einmal in der Woche 20 Minuten investieren und der ganze Monat läuft automatisch.' },
+  { q: 'Muss ich selbst planen wann gepostet wird?', a: 'Nein. Das System übernimmt das automatisch. Ihr ladet Bilder hoch — wann, wie oft und auf welchen Plattformen gepostet wird, steuert der Auto-Scheduler. Ihr müsst den Kalender nie anfassen.' },
   { q: 'Was kostet der laufende Betrieb bei Lite?', a: 'Ihr verwaltet zwei kleine API-Zugänge selbst — das kostet euch ca. 15–18 € / Monat. Wir zeigen euch alles Schritt für Schritt bei der Einrichtung. Einmalig, dauert ca. 10 Minuten.' },
   { q: 'Kann ich kündigen?', a: 'Lite ist eine Einmalzahlung — keine Kündigung nötig, Zugang bleibt für immer. Pro Monatlich ist jederzeit ohne Frist kündbar. Pro Jährlich gilt für 12 Monate und wird danach automatisch verlängert, außer ihr kündigt rechtzeitig.' },
   { q: 'Schreibt die KI auch auf Englisch oder anderen Sprachen?', a: 'Ja. Die KI schreibt in jeder Sprache — Deutsch, Englisch, Türkisch, Arabisch und mehr. Einfach beim Setup angeben.' },
@@ -242,13 +242,14 @@ function CalendarSection() {
             Auto-Scheduler
           </div>
           <h2 style={{ fontSize: 'clamp(28px,4vw,42px)', fontWeight: 800, color: '#09090b', lineHeight: 1.15, marginBottom: 14 }}>
-            Eine Stunde Planung.<br />
+            Bild hochladen.<br />
             <span style={{ background: 'linear-gradient(135deg,#6366f1,#a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-              Ein ganzer Monat Social Media.
+              Rest passiert automatisch.
             </span>
           </h2>
-          <p style={{ color: '#71717a', fontSize: 16, maxWidth: 480, margin: '0 auto' }}>
-            Einmal in der Woche hinsetzen, alle Posts für den ganzen Monat planen — und nie wieder täglich dran denken.
+          <p style={{ color: '#71717a', fontSize: 16, maxWidth: 520, margin: '0 auto' }}>
+            Kein manuelles Planen. Das System plant und postet automatisch — ihr müsst den Kalender nie anfassen.
+            Ladet einfach Bilder hoch, die KI erledigt den Rest.
           </p>
         </div>
 
@@ -292,9 +293,9 @@ function CalendarSection() {
           {/* Benefits */}
           <div ref={listRef} style={{ ...listStyle, display: 'flex', flexDirection: 'column', gap: 28 }}>
             {[
-              { icon: '📅', title: 'Ganze Woche in 20 Minuten', desc: 'Fotos hochladen, Captions wählen, Tage zuweisen — der Rest läuft von selbst.' },
-              { icon: '⏰', title: 'Optimales Timing, automatisch', desc: 'Posts gehen raus wenn eure Gäste online sind — ohne dass ihr dabei sein müsst.' },
-              { icon: '🧘', title: 'Kein täglicher Stress mehr', desc: 'Kein „Ich muss heute noch was posten". Einmal planen, einen Monat Ruhe.' },
+              { icon: '🤖', title: 'Vollautomatisch — kein Kalender nötig', desc: 'Das System plant und postet selbstständig. Ihr ladet Bilder hoch — wann und wie oft gepostet wird, entscheidet die KI.' },
+              { icon: '⏰', title: 'Optimales Timing, immer', desc: 'Posts gehen raus wenn eure Gäste online sind — morgens, mittags, abends. Automatisch, ohne dass ihr dabei sein müsst.' },
+              { icon: '🧘', title: 'Null täglicher Aufwand', desc: 'Kein „Ich muss heute noch was posten". Ladet ein Bild hoch — alles andere passiert von selbst.' },
             ].map(b => (
               <div key={b.title} style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
                 <div style={{ width: 44, height: 44, borderRadius: 14, background: 'linear-gradient(135deg,#ede9fe,#fce7f3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>{b.icon}</div>
@@ -372,7 +373,7 @@ function StatsStrip() {
 const SHOWCASE_STEPS = [
   { n: '01', title: 'Bild hochladen', desc: 'Foto oder Video direkt vom Handy. Optional eine kurze Notiz — wir schreiben den Rest.', color: '#6366f1' },
   { n: '02', title: '3 Varianten wählen', desc: 'Die KI schreibt drei Versionen in eurem Ton. Ihr wählt den besten — oder postet direkt.', color: '#a855f7' },
-  { n: '03', title: 'Auf 5 Plattformen posten', desc: 'Instagram, TikTok, Facebook, YouTube, X — gleichzeitig, mit einem Klick.', color: '#ec4899' },
+  { n: '03', title: 'Automatisch geplant & gepostet', desc: 'Kein manuelles Planen. Das System postet automatisch auf bis zu 5 Plattformen — zur richtigen Zeit, ohne euer Zutun.', color: '#ec4899' },
 ]
 function PhoneScreen({ step }: { step: number }) {
   if (step === 0) return (
