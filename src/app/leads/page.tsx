@@ -193,6 +193,114 @@ export default function LeadsPage() {
     }
   }
 
+  // ─── ENRICH EXISTING AIRTABLE LEADS (Stage 2+3 only) ────────
+  async function startEnrichFlow() {
+    if (pollRef.current) clearInterval(pollRef.current)
+    try {
+      setPhase('syncing'); setPhaseText('Lade Leads aus Airtable...'); setPhaseDetail('')
+
+      const res = await fetch('/api/airtable/fetch-leads')
+      const data = await res.json()
+      if (data.error) throw new Error(data.error)
+
+      // Convert Airtable records to Lead format
+      const atLeads: Lead[] = (data.records as Record<string, unknown>[]).map(r => ({
+        username: String(r['Username'] ?? ''),
+        fullName: String(r['Full Name'] ?? ''),
+        caption: String(r['Caption'] ?? ''),
+        likesCount: Number(r['Likes'] ?? 0),
+        commentsCount: 0,
+        postUrl: String(r['Post URL'] ?? ''),
+        postImageUrl: '',
+        timestamp: '',
+        profileUrl: String(r['Profile URL'] ?? '') || `https://instagram.com/${r['Username']}`,
+      })).filter(l => l.username)
+
+      // Restore airtable IDs from fetched records
+      const newIds: Record<string, string> = {}
+      for (const r of data.records as Record<string, unknown>[]) {
+        const username = String(r['Username'] ?? '')
+        const id = String(r['id'] ?? '')
+        if (username && id) newIds[username] = id
+      }
+      setAirtableIds(prev => { const n = { ...prev, ...newIds }; persist({ airtableIds: n }); return n })
+
+      if (atLeads.length === 0) { setPhase('done'); setPhaseText('Keine Leads in Airtable gefunden'); return }
+
+      setLeads(atLeads)
+      persist({ leads: atLeads })
+      setPhaseDetail(`${atLeads.length} Leads geladen`)
+
+      // Stage 2: batch profile scrape for all leads
+      setPhase('batch-loading'); setPhaseText('Profile laden...'); setPhaseDetail(`${atLeads.length} Leads`)
+
+      const batchStart = await fetch('/api/profile/batch-start', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ usernames: atLeads.slice(0, topN).map(l => l.username), postsPerProfile: 6 }),
+      })
+      const batchData = await batchStart.json()
+      if (batchData.error) throw new Error(batchData.error)
+
+      const batchResult = await pollUntilDone(`/api/profile/batch-poll?runId=${batchData.runId}&datasetId=${batchData.datasetId}`)
+      const batchProfiles = batchResult.profiles as Record<string, ProfilePost[]>
+      const batchInfos = batchResult.profileInfos as Record<string, ProfileInfo>
+      const captionSamples = batchResult.captionSamples as Record<string, string>
+
+      setProfiles(prev => { const n = { ...prev, ...batchProfiles }; persist({ profiles: n }); return n })
+      setProfileInfos(prev => { const n = { ...prev, ...batchInfos }; persist({ profileInfos: n }); return n })
+
+      // Sync profile info to Airtable
+      for (const lead of atLeads) {
+        const info = batchInfos[lead.username]
+        if (info) {
+          const extra: Record<string, unknown> = {}
+          if (info.biography) extra.bio = info.biography
+          if (info.externalUrl) extra.website = info.externalUrl
+          if (info.followersCount !== undefined) extra.followers = info.followersCount
+          if (Object.keys(extra).length > 0) syncToAirtable(lead, extra)
+        }
+      }
+
+      // Stage 3: website scraping
+      const leadsWithUrl = atLeads.filter(l => batchInfos[l.username]?.externalUrl)
+      if (leadsWithUrl.length > 0) {
+        setPhase('website-scraping'); setPhaseText('Websites durchsuchen...'); setPhaseDetail(`0/${leadsWithUrl.length}`)
+        const newContactInfo: Record<string, ContactInfo> = {}
+        const chunkSize = 5
+        for (let i = 0; i < leadsWithUrl.length; i += chunkSize) {
+          const chunk = leadsWithUrl.slice(i, i + chunkSize)
+          setPhaseDetail(`${Math.min(i + chunkSize, leadsWithUrl.length)}/${leadsWithUrl.length}`)
+          await Promise.all(chunk.map(async lead => {
+            const url = batchInfos[lead.username]?.externalUrl
+            if (!url) return
+            try {
+              const r = await fetch(`/api/scrape-website?url=${encodeURIComponent(url)}`)
+              const d = await r.json()
+              if (d.emails?.length || d.phones?.length) newContactInfo[lead.username] = { emails: d.emails ?? [], phones: d.phones ?? [] }
+            } catch { /* ignore */ }
+          }))
+        }
+        setContactInfo(prev => { const n = { ...prev, ...newContactInfo }; persist({ contactInfo: n }); return n })
+      }
+
+      // Deep evaluation with multi-post context
+      setPhase('deep-evaluating'); setPhaseText('Tiefbewertung...')
+      const deepEvs = await evaluateBatch(atLeads.slice(0, topN), captionSamples)
+      for (const lead of atLeads) {
+        const ev = deepEvs[lead.username]
+        if (ev) syncToAirtable(lead, { score: ev.score, reason: ev.reason, recommendation: ev.recommendation })
+      }
+
+      await fetch('/api/airtable/dedup').catch(() => {})
+
+      setPhase('done')
+      setPhaseText(`Fertig: ${atLeads.length} Leads angereichert`)
+      setPhaseDetail('')
+    } catch (err) {
+      setPhase('error'); setPhaseText(`Fehler: ${err}`); setPhaseDetail('')
+    }
+  }
+
   // ─── MAIN AUTO FLOW ──────────────────────────────────────────
   async function startAutoFlow() {
     if (pollRef.current) clearInterval(pollRef.current)
@@ -423,6 +531,10 @@ export default function LeadsPage() {
             <button onClick={startAutoFlow} disabled={isRunning}
               style={{ ...BTN, padding: '9px 22px', fontSize: 14, background: isRunning ? '#1e1e1e' : '#6366f1', color: isRunning ? '#555' : 'white' }}>
               {isRunning ? '⏳ Läuft...' : '🚀 Auto-Analyse starten'}
+            </button>
+            <button onClick={startEnrichFlow} disabled={isRunning}
+              style={{ ...BTN, padding: '9px 16px', fontSize: 13, background: isRunning ? '#1e1e1e' : '#1a1a2e', color: isRunning ? '#555' : '#818cf8', border: '1px solid rgba(99,102,241,0.35)' }}>
+              {isRunning ? '⏳' : '🔄 Airtable anreichern'}
             </button>
           </div>
         </div>
