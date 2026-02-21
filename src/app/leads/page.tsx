@@ -100,6 +100,7 @@ export default function LeadsPage() {
       const res = await fetch('/api/airtable/upsert', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ recordId, username: lead.username, fullName: lead.fullName, profileUrl: lead.profileUrl, caption: lead.caption, likesCount: lead.likesCount, postUrl: lead.postUrl, ...extra }),
+        signal: AbortSignal.timeout(12000),
       })
       const data = await res.json()
       if (data.recordId) {
@@ -214,7 +215,7 @@ export default function LeadsPage() {
       for (let i = 0; i < newLeads.length; i++) {
         await syncToAirtable(newLeads[i], { status: 'Neu' })
         setPhaseDetail(`${i + 1}/${newLeads.length}`)
-        await new Promise(r => setTimeout(r, 250))
+        await new Promise(r => setTimeout(r, 320))
       }
 
       // ③ Schnell-Bewertung aller Leads (parallel, 4 gleichzeitig)
