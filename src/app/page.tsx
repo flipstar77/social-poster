@@ -210,6 +210,7 @@ const INPUT: React.CSSProperties = {
 export default function LandingPage() {
   const [faqOpen, setFaqOpen] = useState<number | null>(null)
   const [cryptoOpen, setCryptoOpen] = useState(false)
+  const [yearly, setYearly] = useState(false)
   const [form, setForm] = useState({ name: '', email: '', message: '' })
   const [sending, setSending] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -362,9 +363,35 @@ export default function LandingPage() {
         <section id="kaufen" style={{ background: '#fff', borderTop: '1px solid #e4e4e7', borderBottom: '1px solid #e4e4e7' }}>
           <div style={{ maxWidth: 1080, margin: '0 auto', padding: '80px 24px' }}>
             <h2 style={{ fontSize: 36, fontWeight: 800, textAlign: 'center', marginBottom: 10, color: '#09090b' }}>Jetzt starten</h2>
-            <p style={{ color: '#71717a', textAlign: 'center', marginBottom: 56, fontSize: 16 }}>
+            <p style={{ color: '#71717a', textAlign: 'center', marginBottom: 32, fontSize: 16 }}>
               Einmal einrichten — für immer nutzen. Sofortiger Zugang nach Zahlung.
             </p>
+
+            {/* Billing toggle */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, marginBottom: 48 }}>
+              <span style={{ fontSize: 14, fontWeight: 600, color: yearly ? '#71717a' : '#09090b' }}>Monatlich</span>
+              <button
+                onClick={() => setYearly(!yearly)}
+                style={{
+                  position: 'relative', width: 52, height: 28, borderRadius: 999,
+                  background: yearly ? '#6366f1' : '#e4e4e7',
+                  border: 'none', cursor: 'pointer', transition: 'background 0.25s',
+                  flexShrink: 0,
+                }}
+              >
+                <span style={{
+                  position: 'absolute', top: 4, left: yearly ? 28 : 4,
+                  width: 20, height: 20, borderRadius: '50%', background: '#fff',
+                  boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
+                  transition: 'left 0.25s cubic-bezier(0.34,1.56,0.64,1)',
+                  display: 'block',
+                }} />
+              </button>
+              <span style={{ fontSize: 14, fontWeight: 600, color: yearly ? '#09090b' : '#71717a' }}>
+                Jährlich
+                <span style={{ marginLeft: 6, background: '#dcfce7', color: '#16a34a', fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 999 }}>2 Monate gratis</span>
+              </span>
+            </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20, maxWidth: 780, margin: '0 auto' }}>
 
               {/* Lite */}
@@ -421,9 +448,12 @@ export default function LandingPage() {
                     <span style={{ fontSize: 52, fontWeight: 800, color: '#09090b', lineHeight: 1 }}>149 €</span>
                     <span style={{ fontSize: 15, color: '#71717a', marginBottom: 6 }}>einmalig</span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 32 }}>
-                    <span style={{ fontSize: 26, fontWeight: 700, color: '#09090b' }}>+ 39 €</span>
-                    <span style={{ fontSize: 14, color: '#71717a' }}>/ Monat, alles inklusive</span>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 4 }}>
+                    <span style={{ fontSize: 26, fontWeight: 700, color: '#09090b' }}>+ {yearly ? '29' : '39'} €</span>
+                    <span style={{ fontSize: 14, color: '#71717a' }}>/ Monat</span>
+                  </div>
+                  <div style={{ fontSize: 13, color: '#a1a1aa', marginBottom: 32 }}>
+                    {yearly ? 'Jährlich 348 € — 2 Monate gespart' : 'Monatlich kündbar'}
                   </div>
                   <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 32px', display: 'flex', flexDirection: 'column', gap: 12, flex: 1 }}>
                     {['Alles aus Lite', 'Wir managen alle API-Keys', 'Telegram Bot — posten per Sprachnachricht', 'Caption-Stil auf euer Restaurant angepasst', 'WhatsApp Support', 'Monatlicher Check-in'].map(item => (
