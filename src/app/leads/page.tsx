@@ -336,6 +336,98 @@ export default function LeadsPage() {
     }
   }
 
+  // ─── WEBSITE SEARCH ONLY (no Apify) ─────────────────────────
+  async function startWebSearchFlow() {
+    if (pollRef.current) clearInterval(pollRef.current)
+    try {
+      setPhase('syncing'); setPhaseText('Lade Leads aus Airtable...'); setPhaseDetail('')
+
+      const res = await fetch('/api/airtable/fetch-leads')
+      const data = await res.json()
+      if (data.error) throw new Error(data.error)
+
+      const records = data.records as Record<string, unknown>[]
+
+      // Build leads list + restore IDs
+      const searchLeads: Lead[] = records.map(r => ({
+        username: String(r['Username'] ?? ''),
+        fullName: String(r['Full Name'] ?? ''),
+        caption: String(r['Caption'] ?? ''),
+        likesCount: Number(r['Likes'] ?? 0),
+        commentsCount: 0,
+        postUrl: String(r['Post URL'] ?? ''),
+        postImageUrl: '',
+        timestamp: '',
+        profileUrl: String(r['Profile URL'] ?? '') || `https://instagram.com/${r['Username']}`,
+      })).filter(l => l.username)
+
+      const newIds: Record<string, string> = {}
+      for (const r of records) {
+        const username = String(r['Username'] ?? '')
+        const id = String(r['id'] ?? '')
+        if (username && id) newIds[username] = id
+      }
+      setAirtableIds(prev => { const n = { ...prev, ...newIds }; persist({ airtableIds: n }); return n })
+
+      if (searchLeads.length === 0) { setPhase('done'); setPhaseText('Keine Leads gefunden'); return }
+
+      setLeads(searchLeads)
+      persist({ leads: searchLeads })
+
+      setPhase('website-scraping')
+      setPhaseText('DuckDuckGo Suche läuft...')
+      setPhaseDetail(`0/${searchLeads.length}`)
+
+      const newContactInfo: Record<string, ContactInfo> = {}
+      const chunkSize = 3 // slower = less likely to get rate-limited by DDG
+      for (let i = 0; i < searchLeads.length; i += chunkSize) {
+        const chunk = searchLeads.slice(i, i + chunkSize)
+        setPhaseDetail(`${Math.min(i + chunkSize, searchLeads.length)}/${searchLeads.length}`)
+
+        await Promise.all(chunk.map(async lead => {
+          // Check if we already have a website URL from Airtable
+          const existingWebsite = String(records.find(r => r['Username'] === lead.username)?.['Website'] ?? '').trim()
+
+          try {
+            if (existingWebsite) {
+              // Already has website → scrape it for email/phone
+              const r = await fetch(`/api/scrape-website?url=${encodeURIComponent(existingWebsite)}`)
+              const d = await r.json()
+              if (d.emails?.length || d.phones?.length) {
+                newContactInfo[lead.username] = { emails: d.emails ?? [], phones: d.phones ?? [] }
+                syncToAirtable(lead, { email: d.emails[0], phone: d.phones[0] })
+              }
+            } else {
+              // No website → DDG search
+              const r = await fetch(`/api/search-contact?username=${encodeURIComponent(lead.username)}&fullName=${encodeURIComponent(lead.fullName)}`)
+              const d = await r.json()
+              const extra: Record<string, unknown> = {}
+              if (d.website) extra.website = d.website
+              if (d.emails?.[0]) { extra.email = d.emails[0]; }
+              if (d.phones?.[0]) { extra.phone = d.phones[0]; }
+              if (d.emails?.length || d.phones?.length) {
+                newContactInfo[lead.username] = { emails: d.emails ?? [], phones: d.phones ?? [] }
+              }
+              if (Object.keys(extra).length > 0) syncToAirtable(lead, extra)
+            }
+          } catch { /* ignore */ }
+        }))
+
+        // Small delay between chunks to be nice to DDG
+        if (i + chunkSize < searchLeads.length) await new Promise(r => setTimeout(r, 1200))
+      }
+
+      setContactInfo(prev => { const n = { ...prev, ...newContactInfo }; persist({ contactInfo: n }); return n })
+
+      const found = Object.keys(newContactInfo).length
+      setPhase('done')
+      setPhaseText(`Fertig: ${found} Kontakte gefunden von ${searchLeads.length} Leads`)
+      setPhaseDetail('')
+    } catch (err) {
+      setPhase('error'); setPhaseText(`Fehler: ${err}`); setPhaseDetail('')
+    }
+  }
+
   // ─── MAIN AUTO FLOW ──────────────────────────────────────────
   async function startAutoFlow() {
     if (pollRef.current) clearInterval(pollRef.current)
@@ -581,6 +673,10 @@ export default function LeadsPage() {
             <button onClick={startEnrichFlow} disabled={isRunning}
               style={{ ...BTN, padding: '9px 16px', fontSize: 13, background: isRunning ? '#1e1e1e' : '#1a1a2e', color: isRunning ? '#555' : '#818cf8', border: '1px solid rgba(99,102,241,0.35)' }}>
               {isRunning ? '⏳' : '🔄 Airtable anreichern'}
+            </button>
+            <button onClick={startWebSearchFlow} disabled={isRunning}
+              style={{ ...BTN, padding: '9px 16px', fontSize: 13, background: isRunning ? '#1e1e1e' : '#0d1f0d', color: isRunning ? '#555' : '#4ade80', border: '1px solid rgba(74,222,128,0.3)' }}>
+              {isRunning ? '⏳' : '🌐 Websites suchen'}
             </button>
           </div>
         </div>
