@@ -16,6 +16,7 @@ import * as fs from 'fs'
 const AIRTABLE_BASE = process.env.AIRTABLE_BASE_ID ?? ''
 const AIRTABLE_KEY  = process.env.AIRTABLE_API_KEY ?? ''
 const XAI_KEY       = process.env.XAI_API_KEY ?? ''
+const APP_LINK      = process.env.APP_LINK ?? 'https://social-poster.vercel.app'
 
 const SESSION_DIR   = path.join(process.cwd(), '.ig-session')
 const MAX_PER_RUN   = 20          // max DMs per session
@@ -114,21 +115,26 @@ async function markContacted(recordId: string, username: string) {
 async function generateIcebreaker(lead: AirtableLead): Promise<string> {
   if (lead.icebreaker) return lead.icebreaker
 
-  const prompt = `Du bist Outreach-Spezialist für ein Social-Media-Automatisierungstool für Restaurants.
-Schreibe eine kurze, persönliche Instagram-DM an @${lead.username}${lead.fullName ? ` (${lead.fullName})` : ''}.
+  const postHint = lead.caption?.trim()
+    ? `Ich hab gesehen, ihr postet ${lead.caption.slice(0, 80)}...`
+    : ''
 
-Bio: "${lead.bio || '(keine Bio)'}"
-Letzter Post: "${lead.caption?.slice(0, 120) || '(keine Caption)'}"
+  const prompt = `Schreibe eine kurze, persönliche Instagram-DM von "Tobi" an ein Restaurant (${lead.fullName || lead.username}).
 
-Regeln:
-- 3-4 Sätze, locker und authentisch
-- Erwähne konkret etwas aus Bio oder Caption
-- Erkläre kurz: wir helfen Restaurants, mehr Zeit zu sparen durch automatische Social-Media-Captions
-- Ende mit einer einfachen Frage
-- Kein "Hallo" am Anfang, direkt einsteigen
-- Auf Deutsch
+Kontext:
+- Bio des Restaurants: "${lead.bio || '(keine Bio)'}"
+- Letzter Post-Ausschnitt: "${lead.caption?.slice(0, 100) || '(nicht verfügbar)'}"
 
-Antworte nur mit dem DM-Text, kein JSON, kein Markdown.`
+Ton & Inhalt:
+- Tobi schreibt persönlich als Gründer/Entwickler, nicht als Firma
+- Er hat ein Tool gebaut, das Restaurants hilft, automatisch Social-Media-Captions zu erstellen — spart Zeit
+- Erwähne konkret etwas aus Bio oder Post (zeigt, dass er wirklich hingeschaut hat)
+- Link am Ende: ${APP_LINK}
+- 3-5 kurze Sätze, locker und direkt — wie eine echte Nachricht von einem Freund, nicht Marketing
+- Kein "Hallo" am Anfang, direkt mit "Hi, ich bin Tobi" oder ähnlichem einsteigen
+- Auf Deutsch, kein förmliches "Sie"
+
+Antworte NUR mit dem fertigen DM-Text. Kein JSON, kein Markdown, keine Erklärungen.`
 
   try {
     const res = await fetch('https://api.x.ai/v1/chat/completions', {
@@ -142,9 +148,9 @@ Antworte nur mit dem DM-Text, kein JSON, kein Markdown.`
       }),
     })
     const data = await res.json() as { choices?: { message?: { content?: string } }[] }
-    return data.choices?.[0]?.message?.content?.trim() ?? `Hey, euer Restaurant sieht super aus! Wir helfen Lokalen wie euren, Zeit bei Social Media zu sparen. Klingt das interessant?`
+    return data.choices?.[0]?.message?.content?.trim() ?? `Hi, ich bin Tobi. Ich hab ein Tool gebaut, das Restaurants dabei hilft, automatisch Captions für Social Media zu erstellen – spart euch eine Menge Zeit. Schaut mal rein: ${APP_LINK}`
   } catch {
-    return `Hey, euer Restaurant sieht super aus! Wir helfen Lokalen wie euren, Zeit bei Social Media zu sparen – automatische Captions, weniger Aufwand. Wäre das was für euch?`
+    return `Hi, ich bin Tobi. Ich hab ein Tool gebaut, das Restaurants dabei hilft, automatisch Captions für Social Media zu erstellen – spart euch eine Menge Zeit. Schaut mal rein: ${APP_LINK}`
   }
 }
 
@@ -163,6 +169,13 @@ async function sendInstagramDM(
     // Check if profile exists
     const notFound = await page.$('text=Diese Seite ist nicht verfügbar') ?? await page.$('text=Sorry, this page')
     if (notFound) { console.log(`  ✗ Profil nicht gefunden`); return false }
+
+    // Human-like: move mouse randomly and scroll a bit before clicking
+    await page.mouse.move(rand(300, 900), rand(200, 600))
+    await sleep(200, 500)
+    await page.mouse.move(rand(300, 900), rand(200, 600))
+    await page.evaluate(() => window.scrollBy(0, Math.floor(Math.random() * 120)))
+    await sleep(400, 800)
 
     // Click "Message" button
     const msgBtn = await page.$('div[role="button"]:has-text("Nachricht senden")')
@@ -250,6 +263,17 @@ async function main() {
   })
 
   const page = await browser.newPage()
+
+  // ── Stealth: hide Playwright automation signals ────────────────────────────
+  await page.addInitScript(() => {
+    // Hide navigator.webdriver (most common bot check)
+    Object.defineProperty(navigator, 'webdriver', { get: () => undefined })
+    // Fake chrome runtime (headless chrome lacks this)
+    ;(window as Record<string, unknown>)['chrome'] = { runtime: {} }
+    // Hide automation-related properties
+    Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5] })
+    Object.defineProperty(navigator, 'languages', { get: () => ['de-DE', 'de', 'en'] })
+  })
 
   // Check login status
   await page.goto('https://www.instagram.com/', { waitUntil: 'domcontentloaded', timeout: 15000 })
