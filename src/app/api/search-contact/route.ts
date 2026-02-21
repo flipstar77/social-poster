@@ -2,31 +2,17 @@ import { NextRequest, NextResponse } from 'next/server'
 
 const EMAIL_RE = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g
 const PHONE_RE = /(?:\+49|0049|0)[\s\-./]?(?:\(?\d{2,5}\)?[\s\-./]?)\d[\d\s\-./]{6,18}\d/g
-const EMAIL_IGNORE = ['example', 'sentry', 'wix', 'domain.', '@2x', '.png', '.jpg', '.svg', 'noreply', 'no-reply', 'schema.org', 'w3.org', 'duckduckgo', 'google', 'cloudflare', 'jquery', 'bootstrap']
-const SKIP_DOMAINS = ['facebook.com', 'instagram.com', 'google.', 'yelp.', 'tripadvisor.', 'foursquare.', 'twitter.com', 'linkedin.com', 'youtube.com', 'tiktok.com', 'pinterest.', 'xing.com', 'wolt.com', 'lieferando.', 'thefork.', 'opentable.', 'reservix.', 'eventbrite.', 'wikipedia.', 'duckduckgo.']
+const EMAIL_IGNORE = ['example', 'sentry', 'wix', 'domain.', '@2x', '.png', '.jpg', '.svg', 'noreply', 'no-reply', 'schema.org', 'w3.org']
 
-function extractContacts(text: string) {
-  const emails = (text.match(EMAIL_RE) ?? [])
-    .map(e => e.toLowerCase().trim())
-    .filter(e => !EMAIL_IGNORE.some(bad => e.includes(bad)))
-  const phones = (text.match(PHONE_RE) ?? [])
-    .map(p => p.replace(/\s+/g, ' ').trim())
-  return { emails: [...new Set(emails)], phones: [...new Set(phones)] }
-}
+function cleanPhone(p: string) { return p.replace(/\s+/g, ' ').trim() }
+function cleanEmail(e: string) { return e.toLowerCase().trim() }
+function isValidEmail(e: string) { return !EMAIL_IGNORE.some(bad => e.includes(bad)) }
 
-function extractBestUrl(html: string): string {
-  // lite.duckduckgo.com uses plain <a href="https://..."> links for results
-  const linkRe = /<a[^>]+href="(https?:\/\/[^"]+)"[^>]*>/g
-  const matches = [...html.matchAll(linkRe)]
-
-  for (const m of matches) {
-    const url = m[1].trim()
-    if (SKIP_DOMAINS.some(d => url.includes(d))) continue
-    if (url.includes('duckduckgo.com')) continue
-    return url
-  }
-
-  return ''
+interface NominatimResult {
+  display_name?: string
+  extratags?: Record<string, string>
+  lat?: string
+  lon?: string
 }
 
 export async function GET(req: NextRequest) {
@@ -37,50 +23,62 @@ export async function GET(req: NextRequest) {
 
   if (!username) return NextResponse.json({ emails: [], phones: [], website: '' })
 
-  // No quotes — avoids over-filtering on slight name variations
-  const nameQuery = fullName
-    ? `${fullName} Frankfurt Restaurant`
-    : `${username} Restaurant Frankfurt`
-
-  const query = encodeURIComponent(nameQuery)
+  const searchName = fullName || username
 
   try {
-    // Use POST to lite.duckduckgo.com — more reliable from server IPs than GET html endpoint
-    const res = await fetch('https://lite.duckduckgo.com/lite/', {
-      method: 'POST',
+    // ── OpenStreetMap Nominatim ───────────────────────────────────
+    // Free, no API key, works from servers, has email/phone/website in extratags
+    const nominatimUrl = `https://nominatim.openstreetmap.org/search.php?q=${encodeURIComponent(searchName + ' Frankfurt')}&format=json&limit=5&addressdetails=0&extratags=1`
+
+    const res = await fetch(nominatimUrl, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml',
+        // Nominatim requires a descriptive User-Agent with contact info
+        'User-Agent': 'SocialPosterLeadTool/1.0 (github.com/flipstar77/social-poster)',
         'Accept-Language': 'de-DE,de;q=0.9',
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Referer': 'https://lite.duckduckgo.com/',
+        'Accept': 'application/json',
       },
-      body: `q=${query}`,
-      signal: AbortSignal.timeout(10000),
+      signal: AbortSignal.timeout(8000),
     })
 
     if (!res.ok) {
-      if (debug) return NextResponse.json({ debug: `HTTP ${res.status}`, emails: [], phones: [], website: '' })
+      if (debug) return NextResponse.json({ debug: `Nominatim HTTP ${res.status}` })
       return NextResponse.json({ emails: [], phones: [], website: '' })
     }
 
-    const html = await res.text()
+    const results: NominatimResult[] = await res.json()
 
-    if (debug) return NextResponse.json({ debug_status: res.status, debug_html: html.slice(0, 1000), query: nameQuery })
+    if (debug) return NextResponse.json({ debug_results: results.slice(0, 3), query: searchName + ' Frankfurt' })
 
+    const emails: string[] = []
+    const phones: string[] = []
+    let website = ''
 
-    // Extract website URL from first usable result
-    const website = extractBestUrl(html)
+    // Pull contact info from OSM tags across all results
+    for (const r of results) {
+      const t = r.extratags ?? {}
 
-    // Strip HTML for email/phone scanning of DDG snippets
-    const text = html
-      .replace(/<script[\s\S]*?<\/script>/gi, ' ')
-      .replace(/<style[\s\S]*?<\/style>/gi, ' ')
-      .replace(/&#64;/g, '@').replace(/&#46;/g, '.').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-      .replace(/<[^>]+>/g, ' ')
-      .replace(/\s+/g, ' ')
+      // Website
+      const w = t['website'] || t['contact:website'] || t['url'] || ''
+      if (w && !website) website = w.startsWith('http') ? w : `https://${w}`
 
-    const { emails, phones } = extractContacts(text)
+      // Email
+      for (const key of ['email', 'contact:email']) {
+        const e = t[key]
+        if (e) {
+          const found = e.match(EMAIL_RE) ?? []
+          found.map(cleanEmail).filter(isValidEmail).forEach(em => { if (!emails.includes(em)) emails.push(em) })
+        }
+      }
+
+      // Phone
+      for (const key of ['phone', 'contact:phone', 'contact:mobile']) {
+        const p = t[key]
+        if (p) {
+          const cleaned = cleanPhone(p)
+          if (!phones.includes(cleaned)) phones.push(cleaned)
+        }
+      }
+    }
 
     return NextResponse.json({
       emails: emails.slice(0, 5),
