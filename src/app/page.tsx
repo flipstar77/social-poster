@@ -138,6 +138,7 @@ function XIcon() {
 const PILL_ITEMS: { icon: React.ReactNode; text: string }[] = [
   { icon: '⏱️', text: '2–3 Stunden / Woche gespart' },
   { icon: '📈', text: 'Mehr Reichweite, mehr Gäste' },
+  { icon: '🔁', text: '5 Plattformen · 1 Upload' },
   { icon: <IgIcon />, text: 'Instagram' },
   { icon: <TikTokIcon />, text: 'TikTok' },
   { icon: <FbIcon />, text: 'Facebook' },
@@ -169,7 +170,7 @@ function Ticker() {
 const FAQS = [
   { q: 'Wie lange dauert die Einrichtung?', a: 'Wir richten alles innerhalb von 24 Stunden ein. Ihr bekommt einen persönlichen Zugang und seid sofort startklar — keine technischen Vorkenntnisse nötig.' },
   { q: 'Brauche ich technisches Wissen?', a: 'Nein. Ihr ladet ein Bild hoch, schreibt optional eine kurze Notiz dazu — alles andere passiert automatisch. Kein Coding, kein Setup, kein Aufwand.' },
-  { q: 'Welche Plattformen werden unterstützt?', a: 'Instagram, TikTok und Facebook. Alle drei mit einem einzigen Post bespielt — ohne Mehraufwand.' },
+  { q: 'Welche Plattformen werden unterstützt?', a: 'Instagram, TikTok, Facebook, YouTube und X (Twitter) — bis zu 5 gleichzeitig mit einem einzigen Upload. So einfach wie auf einer posten.' },
   { q: 'Was kostet der laufende Betrieb bei Lite?', a: 'Ihr verwaltet zwei kleine API-Zugänge selbst — das kostet euch ca. 15–18 € / Monat. Wir zeigen euch alles Schritt für Schritt bei der Einrichtung. Einmalig, dauert ca. 10 Minuten.' },
   { q: 'Kann ich kündigen?', a: 'Lite ist eine Einmalzahlung — keine Kündigung nötig, Zugang bleibt für immer. Pro Monatlich ist jederzeit ohne Frist kündbar. Pro Jährlich gilt für 12 Monate und wird danach automatisch verlängert, außer ihr kündigt rechtzeitig.' },
   { q: 'Schreibt die KI auch auf Englisch oder anderen Sprachen?', a: 'Ja. Die KI schreibt in jeder Sprache — Deutsch, Englisch, Türkisch, Arabisch und mehr. Einfach beim Setup angeben.' },
@@ -281,10 +282,29 @@ export default function LandingPage() {
                 Ohne Aufwand.
               </span>
             </h1>
-            <p className="hero-fadeup-3" style={{ fontSize: 19, color: '#52525b', maxWidth: 560, margin: '0 auto 44px', lineHeight: 1.75 }}>
+            <p className="hero-fadeup-3" style={{ fontSize: 19, color: '#52525b', maxWidth: 560, margin: '0 auto 20px', lineHeight: 1.75 }}>
               Dein Restaurant verdient starke Social-Media-Präsenz — aber du hast keine Zeit dafür.
-              Bild hochladen, fertig. <strong style={{ color: '#09090b' }}>In 30 Sekunden gepostet.</strong>
+              Bild hochladen, fertig. <strong style={{ color: '#09090b' }}>In 30 Sekunden auf bis zu 5 Plattformen gepostet.</strong>
             </p>
+            {/* Platform logos strip */}
+            <div className="hero-fadeup-3" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 36, flexWrap: 'wrap' }}>
+              {[
+                { Icon: IgIcon, label: 'Instagram', color: '#e1306c' },
+                { Icon: TikTokIcon, label: 'TikTok', color: '#010101' },
+                { Icon: FbIcon, label: 'Facebook', color: '#1877f2' },
+                { Icon: YtIcon, label: 'YouTube', color: '#ff0000' },
+                { Icon: XIcon, label: 'X', color: '#000' },
+              ].map(({ Icon, label, color }, i) => (
+                <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#f8fafc', border: '1px solid #e4e4e7', borderRadius: 999, padding: '6px 14px', fontSize: 13, fontWeight: 500, color: '#18181b' }}>
+                  <span style={{ color, display: 'flex' }}><Icon /></span>
+                  {label}
+                  {i < 4 && <span style={{ color: '#d4d4d8', marginLeft: 4 }}>·</span>}
+                </div>
+              ))}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'linear-gradient(135deg, #6366f1, #a855f7)', borderRadius: 999, padding: '6px 14px', fontSize: 13, fontWeight: 700, color: '#fff' }}>
+                1 Upload
+              </div>
+            </div>
             <div className="hero-fadeup-3" style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
               <a href="#kaufen" style={{ background: '#6366f1', color: 'white', padding: '15px 36px', borderRadius: 12, fontSize: 16, fontWeight: 700, textDecoration: 'none', boxShadow: '0 4px 24px rgba(99,102,241,0.4)' }}>
                 Jetzt Zugang sichern →
@@ -310,8 +330,8 @@ export default function LandingPage() {
               desc="Foto vom Tagesgericht, Video einer Aktion, direkt vom Handy. Optional: kurze Notiz dazu — wir schreiben den Rest." />
             <StepCard n="02" icon="✨" title="3 Varianten — ihr wählt die beste" delay={130}
               desc="Die KI erstellt drei verschiedene Texte in eurem Stil. Ihr pickt euren Favoriten — oder postet direkt. Immer in eurer eigenen Stimme." />
-            <StepCard n="03" icon="📈" title="Ihr wachst — während ihr kocht" delay={260}
-              desc="Regelmäßige Posts auf Instagram, TikTok und Facebook bedeuten mehr Sichtbarkeit und neue Gäste. Automatisch." />
+            <StepCard n="03" icon="🚀" title="Auf 5 Plattformen — mit einem Klick" delay={260}
+              desc="Instagram, TikTok, Facebook, YouTube, X — gleichzeitig, automatisch. So einfach wie auf einer posten. Mehr Reichweite, ohne Mehraufwand." />
           </div>
         </section>
 
