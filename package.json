@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "ig-dms": "tsx scripts/send-ig-dms.ts",
+    "ig-dms:dry": "tsx scripts/send-ig-dms.ts --dry-run"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.18",
@@ -17,5 +19,9 @@
     "react-dom": "^19.2.4",
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "playwright": "^1.58.2",
+    "tsx": "^4.21.0"
   }
 }
