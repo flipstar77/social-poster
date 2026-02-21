@@ -1,15 +1,10 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 
 const DEFAULT_HASHTAGS = [
-  'restaurantfrankfurt',
-  'frankfurtfood',
-  'ffmessen',
-  'ffmfood',
-  'frankfurtrestaurant',
-  'cocktailbarfrankfurt',
-  'frankfurtcafe',
+  'restaurantfrankfurt', 'frankfurtfood', 'ffmessen',
+  'ffmfood', 'frankfurtrestaurant', 'cocktailbarfrankfurt', 'frankfurtcafe',
 ]
 
 interface Lead {
@@ -22,6 +17,13 @@ interface Lead {
   postImageUrl: string
   timestamp: string
   profileUrl: string
+}
+
+interface ProfileInfo {
+  biography: string
+  externalUrl: string
+  followersCount?: number
+  followingCount?: number
 }
 
 interface ProfilePost {
@@ -39,46 +41,17 @@ interface Evaluation {
   recommendation: string
 }
 
-interface DiscoveredTag {
-  tag: string
-  count: number
-}
-
+interface DiscoveredTag { tag: string; count: number }
 type RunStatus = 'idle' | 'starting' | 'running' | 'done' | 'error'
+type SyncStatus = 'pending' | 'syncing' | 'synced' | 'error'
 
-const SCORE_COLOR = (s: number) =>
-  s >= 7 ? '#22c55e' : s >= 5 ? '#f59e0b' : '#ef4444'
+const SCORE_COLOR = (s: number) => s >= 7 ? '#22c55e' : s >= 5 ? '#f59e0b' : '#ef4444'
+const CARD: React.CSSProperties = { background: '#141414', border: '1px solid #262626', borderRadius: 16, overflow: 'hidden' }
+const BTN: React.CSSProperties = { padding: '7px 14px', borderRadius: 8, fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer', fontFamily: 'inherit' }
+const LS_KEY = 'leads-state-v3'
 
-const CARD: React.CSSProperties = {
-  background: '#141414',
-  border: '1px solid #262626',
-  borderRadius: 16,
-  overflow: 'hidden',
-}
-
-const BTN: React.CSSProperties = {
-  padding: '7px 14px',
-  borderRadius: 8,
-  fontSize: 13,
-  fontWeight: 600,
-  border: 'none',
-  cursor: 'pointer',
-  fontFamily: 'inherit',
-}
-
-const LS_KEY = 'leads-state-v2'
-
-function loadState() {
-  try {
-    const raw = localStorage.getItem(LS_KEY)
-    if (!raw) return null
-    return JSON.parse(raw)
-  } catch { return null }
-}
-
-function saveState(data: object) {
-  try { localStorage.setItem(LS_KEY, JSON.stringify(data)) } catch {}
-}
+function loadLS() { try { const r = localStorage.getItem(LS_KEY); return r ? JSON.parse(r) : null } catch { return null } }
+function saveLS(data: object) { try { localStorage.setItem(LS_KEY, JSON.stringify(data)) } catch {} }
 
 export default function LeadsPage() {
   const [hashtags, setHashtags] = useState<string[]>(DEFAULT_HASHTAGS)
@@ -96,136 +69,148 @@ export default function LeadsPage() {
   const [dismissed, setDismissed] = useState<Set<string>>(new Set())
 
   const [profiles, setProfiles] = useState<Record<string, ProfilePost[]>>({})
+  const [profileInfos, setProfileInfos] = useState<Record<string, ProfileInfo>>({})
   const [profileLoading, setProfileLoading] = useState<Set<string>>(new Set())
   const [expandedProfile, setExpandedProfile] = useState<string | null>(null)
+
+  // Airtable
+  const [airtableIds, setAirtableIds] = useState<Record<string, string>>({})
+  const [airtableSync, setAirtableSync] = useState<Record<string, SyncStatus>>({})
+
+  // Notes per lead
+  const [notes, setNotes] = useState<Record<string, string>>({})
+  const [notesEditing, setNotesEditing] = useState<string | null>(null)
 
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const profilePollRefs = useRef<Record<string, ReturnType<typeof setInterval>>>({})
 
-  // Restore from localStorage on mount
   useEffect(() => {
-    const s = loadState()
+    const s = loadLS()
     if (!s) return
     if (s.leads) setLeads(s.leads)
     if (s.evaluations) setEvaluations(s.evaluations)
     if (s.contacted) setContacted(new Set(s.contacted))
     if (s.dismissed) setDismissed(new Set(s.dismissed))
     if (s.profiles) setProfiles(s.profiles)
+    if (s.profileInfos) setProfileInfos(s.profileInfos)
     if (s.discoveredHashtags) setDiscoveredHashtags(s.discoveredHashtags)
-    if (s.leads?.length > 0) {
-      setRunStatus('done')
-      setStatusText(`${s.leads.length} Profile (gespeichert)`)
-    }
+    if (s.airtableIds) setAirtableIds(s.airtableIds)
+    if (s.notes) setNotes(s.notes)
+    if (s.leads?.length > 0) { setRunStatus('done'); setStatusText(`${s.leads.length} Profile (gespeichert)`) }
   }, [])
 
-  function persist(updates: {
-    leads?: Lead[]
-    evaluations?: Record<string, Evaluation>
-    contacted?: Set<string>
-    dismissed?: Set<string>
-    profiles?: Record<string, ProfilePost[]>
-    discoveredHashtags?: DiscoveredTag[]
-  }) {
-    const s = loadState() ?? {}
-    saveState({
-      ...s,
-      ...(updates.leads !== undefined && { leads: updates.leads }),
-      ...(updates.evaluations !== undefined && { evaluations: updates.evaluations }),
-      ...(updates.contacted !== undefined && { contacted: [...updates.contacted] }),
-      ...(updates.dismissed !== undefined && { dismissed: [...updates.dismissed] }),
-      ...(updates.profiles !== undefined && { profiles: updates.profiles }),
-      ...(updates.discoveredHashtags !== undefined && { discoveredHashtags: updates.discoveredHashtags }),
-    })
+  function persist(updates: Record<string, unknown>) {
+    const s = loadLS() ?? {}
+    saveLS({ ...s, ...updates })
   }
 
+  // ─── Airtable sync ───────────────────────────────────────────
+  const syncToAirtable = useCallback(async (
+    lead: Lead,
+    extra: Record<string, unknown> = {}
+  ) => {
+    const { username } = lead
+    setAirtableSync(prev => ({ ...prev, [username]: 'syncing' }))
+    try {
+      const recordId = airtableIds[username]
+      const res = await fetch('/api/airtable/upsert', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          recordId,
+          username: lead.username,
+          fullName: lead.fullName,
+          profileUrl: lead.profileUrl,
+          caption: lead.caption,
+          likesCount: lead.likesCount,
+          postUrl: lead.postUrl,
+          ...extra,
+        }),
+      })
+      const data = await res.json()
+      if (data.recordId) {
+        setAirtableIds(prev => {
+          const next = { ...prev, [username]: data.recordId }
+          persist({ airtableIds: next })
+          return next
+        })
+        setAirtableSync(prev => ({ ...prev, [username]: 'synced' }))
+      } else {
+        setAirtableSync(prev => ({ ...prev, [username]: 'error' }))
+      }
+    } catch {
+      setAirtableSync(prev => ({ ...prev, [username]: 'error' }))
+    }
+  }, [airtableIds])
+
+  // ─── Hashtag helpers ─────────────────────────────────────────
   function addTag(tag?: string) {
     const t = (tag ?? newTag).trim().replace(/^#/, '')
     if (t && !hashtags.includes(t)) setHashtags(prev => [...prev, t])
     if (!tag) setNewTag('')
   }
+  function removeTag(t: string) { setHashtags(prev => prev.filter(x => x !== t)) }
 
-  function removeTag(tag: string) {
-    setHashtags(prev => prev.filter(t => t !== tag))
+  // ─── Reset helpers ───────────────────────────────────────────
+  function resetStatus() {
+    setContacted(new Set()); setDismissed(new Set())
+    persist({ contacted: [], dismissed: [] })
+  }
+  function clearAll() {
+    setLeads([]); setDiscoveredHashtags([]); setEvaluations({})
+    setContacted(new Set()); setDismissed(new Set()); setProfiles({})
+    setProfileInfos({}); setAirtableIds({}); setAirtableSync({}); setNotes({})
+    setRunStatus('idle'); setStatusText(''); saveLS({})
   }
 
-  function resetAllStatus() {
-    setContacted(new Set())
-    setDismissed(new Set())
-    persist({ contacted: new Set(), dismissed: new Set() })
-  }
-
-  function clearLeads() {
-    setLeads([])
-    setDiscoveredHashtags([])
-    setEvaluations({})
-    setContacted(new Set())
-    setDismissed(new Set())
-    setProfiles({})
-    setRunStatus('idle')
-    setStatusText('')
-    saveState({})
-  }
-
+  // ─── Scrape ──────────────────────────────────────────────────
   async function startScrape() {
     if (pollRef.current) clearInterval(pollRef.current)
-    setRunStatus('starting')
-    setStatusText('Starte Apify...')
-    setLeads([])
-    setDiscoveredHashtags([])
+    setRunStatus('starting'); setStatusText('Starte Apify...'); setLeads([]); setDiscoveredHashtags([])
 
     try {
       const res = await fetch('/api/scrape/start', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ hashtags, limit }),
       })
       const data = await res.json()
+      if (data.error) { setRunStatus('error'); setStatusText(`Fehler: ${data.error}`); return }
 
-      if (data.error) {
-        setRunStatus('error')
-        setStatusText(`Fehler: ${data.error}`)
-        return
-      }
-
-      setRunStatus('running')
-      setStatusText('Scraping läuft... (1–3 Minuten)')
+      setRunStatus('running'); setStatusText('Scraping läuft... (1–3 Minuten)')
 
       pollRef.current = setInterval(async () => {
         try {
-          const pollRes = await fetch(`/api/scrape/poll?runId=${data.runId}&datasetId=${data.datasetId}`)
-          const pollData = await pollRes.json()
-
-          if (pollData.status === 'SUCCEEDED') {
+          const p = await fetch(`/api/scrape/poll?runId=${data.runId}&datasetId=${data.datasetId}`)
+          const pd = await p.json()
+          if (pd.status === 'SUCCEEDED') {
             clearInterval(pollRef.current!)
-            const newLeads: Lead[] = pollData.leads ?? []
-            const newTags: DiscoveredTag[] = pollData.discoveredHashtags ?? []
-            setLeads(newLeads)
-            setDiscoveredHashtags(newTags)
-            setRunStatus('done')
-            setStatusText(`${newLeads.length} Profile gefunden`)
+            const newLeads: Lead[] = pd.leads ?? []
+            const newTags: DiscoveredTag[] = pd.discoveredHashtags ?? []
+            setLeads(newLeads); setDiscoveredHashtags(newTags)
+            setRunStatus('done'); setStatusText(`${newLeads.length} Profile gefunden`)
             persist({ leads: newLeads, discoveredHashtags: newTags })
-          } else if (['FAILED', 'ABORTED', 'TIMED-OUT'].includes(pollData.status)) {
+            // Auto-push all leads to Airtable
+            for (const lead of newLeads) {
+              await syncToAirtable(lead, { status: 'Neu' })
+              await new Promise(r => setTimeout(r, 300)) // rate limit
+            }
+          } else if (['FAILED', 'ABORTED', 'TIMED-OUT'].includes(pd.status)) {
             clearInterval(pollRef.current!)
-            setRunStatus('error')
-            setStatusText(`Fehlgeschlagen (${pollData.status})`)
+            setRunStatus('error'); setStatusText(`Fehlgeschlagen (${pd.status})`)
           }
         } catch {}
       }, 5000)
-    } catch (err) {
-      setRunStatus('error')
-      setStatusText(`Fehler: ${err}`)
-    }
+    } catch (err) { setRunStatus('error'); setStatusText(`Fehler: ${err}`) }
   }
 
+  // ─── Profile deep-dive ───────────────────────────────────────
   async function loadProfile(lead: Lead) {
     const { username } = lead
     setProfileLoading(prev => new Set(prev).add(username))
     setExpandedProfile(username)
-
     try {
       const startRes = await fetch('/api/profile/start', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username }),
       })
       const { runId, datasetId, error } = await startRes.json()
@@ -233,45 +218,48 @@ export default function LeadsPage() {
 
       profilePollRefs.current[username] = setInterval(async () => {
         try {
-          const pollRes = await fetch(`/api/profile/poll?runId=${runId}&datasetId=${datasetId}`)
-          const pollData = await pollRes.json()
-
-          if (pollData.status === 'SUCCEEDED') {
+          const p = await fetch(`/api/profile/poll?runId=${runId}&datasetId=${datasetId}`)
+          const pd = await p.json()
+          if (pd.status === 'SUCCEEDED') {
             clearInterval(profilePollRefs.current[username])
-            const posts: ProfilePost[] = pollData.posts ?? []
-            setProfiles(prev => {
-              const next = { ...prev, [username]: posts }
-              persist({ profiles: next })
-              return next
-            })
+            const posts: ProfilePost[] = pd.posts ?? []
+            const info: ProfileInfo = pd.profileInfo ?? { biography: '', externalUrl: '' }
+
+            setProfiles(prev => { const n = { ...prev, [username]: posts }; persist({ profiles: n }); return n })
+            setProfileInfos(prev => { const n = { ...prev, [username]: info }; persist({ profileInfos: n }); return n })
             setProfileLoading(prev => { const n = new Set(prev); n.delete(username); return n })
-            if (pollData.captionSample) evaluateLead(lead, pollData.captionSample)
-          } else if (['FAILED', 'ABORTED', 'TIMED-OUT'].includes(pollData.status)) {
+
+            // Re-evaluate with multi-post context
+            if (pd.captionSample) evaluateLead(lead, pd.captionSample)
+
+            // Sync profile info to Airtable
+            syncToAirtable(lead, {
+              bio: info.biography || undefined,
+              website: info.externalUrl || undefined,
+              followers: info.followersCount,
+            })
+          } else if (['FAILED', 'ABORTED', 'TIMED-OUT'].includes(pd.status)) {
             clearInterval(profilePollRefs.current[username])
             setProfileLoading(prev => { const n = new Set(prev); n.delete(username); return n })
           }
         } catch {}
       }, 5000)
-    } catch {
-      setProfileLoading(prev => { const n = new Set(prev); n.delete(username); return n })
-    }
+    } catch { setProfileLoading(prev => { const n = new Set(prev); n.delete(username); return n }) }
   }
 
+  // ─── Evaluate ────────────────────────────────────────────────
   async function evaluateLead(lead: Lead, captionSample?: string) {
     const { username } = lead
     setEvaluating(prev => new Set(prev).add(username))
     try {
       const res = await fetch('/api/evaluate-lead', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...lead, captionSample }),
       })
       const ev: Evaluation = await res.json()
-      setEvaluations(prev => {
-        const next = { ...prev, [username]: ev }
-        persist({ evaluations: next })
-        return next
-      })
+      setEvaluations(prev => { const n = { ...prev, [username]: ev }; persist({ evaluations: n }); return n })
+      // Sync evaluation to Airtable
+      syncToAirtable(lead, { score: ev.score, reason: ev.reason, recommendation: ev.recommendation })
     } finally {
       setEvaluating(prev => { const n = new Set(prev); n.delete(username); return n })
     }
@@ -282,28 +270,36 @@ export default function LeadsPage() {
     for (const lead of queue) await evaluateLead(lead)
   }
 
-  function markContacted(username: string) {
-    setContacted(prev => { const n = new Set(prev).add(username); persist({ contacted: n }); return n })
+  // ─── Status helpers ──────────────────────────────────────────
+  function markContacted(lead: Lead) {
+    setContacted(prev => { const n = new Set(prev).add(lead.username); persist({ contacted: [...n] }); return n })
+    syncToAirtable(lead, { status: 'Kontaktiert' })
+  }
+  function unmarkContacted(lead: Lead) {
+    setContacted(prev => { const n = new Set(prev); n.delete(lead.username); persist({ contacted: [...n] }); return n })
+    syncToAirtable(lead, { status: 'Neu' })
+  }
+  function dismiss(lead: Lead) {
+    setDismissed(prev => { const n = new Set(prev).add(lead.username); persist({ dismissed: [...n] }); return n })
+    syncToAirtable(lead, { status: 'Nicht interessant' })
+  }
+  function restoreDismissed(lead: Lead) {
+    setDismissed(prev => { const n = new Set(prev); n.delete(lead.username); persist({ dismissed: [...n] }); return n })
+    syncToAirtable(lead, { status: 'Neu' })
   }
 
-  function unmarkContacted(username: string) {
-    setContacted(prev => { const n = new Set(prev); n.delete(username); persist({ contacted: n }); return n })
-  }
-
-  function dismiss(username: string) {
-    setDismissed(prev => { const n = new Set(prev).add(username); persist({ dismissed: n }); return n })
-  }
-
-  function restoreDismissed(username: string) {
-    setDismissed(prev => { const n = new Set(prev); n.delete(username); persist({ dismissed: n }); return n })
+  // ─── Notes ───────────────────────────────────────────────────
+  function saveNote(lead: Lead) {
+    const note = notes[lead.username] ?? ''
+    persist({ notes })
+    syncToAirtable(lead, { notes: note })
+    setNotesEditing(null)
   }
 
   const visible = leads.filter(l => !dismissed.has(l.username))
-  const contactedCount = leads.filter(l => contacted.has(l.username)).length
   const pendingEval = visible.filter(l => !evaluations[l.username]).length
-
-  // Hashtags not already in the search list
   const newDiscoveredTags = discoveredHashtags.filter(d => !hashtags.includes(d.tag))
+  const syncedCount = Object.values(airtableSync).filter(s => s === 'synced').length
 
   return (
     <div style={{ minHeight: '100vh', background: '#0a0a0a', color: '#fafafa' }}>
@@ -314,21 +310,28 @@ export default function LeadsPage() {
         position: 'sticky', top: 0, background: 'rgba(10,10,10,0.92)',
         backdropFilter: 'blur(10px)', zIndex: 50,
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <a href="/" style={{ color: '#555', textDecoration: 'none', fontSize: 13 }}>← Zurück</a>
           <span style={{ color: '#333' }}>|</span>
-          <span style={{ fontWeight: 700, fontSize: 15 }}>🔍 Lead Research – Frankfurt</span>
+          <span style={{ fontWeight: 700, fontSize: 15 }}>🔍 Lead Research</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           {leads.length > 0 && (
             <>
-              <span style={{ fontSize: 12, color: '#555' }}>
-                {visible.length} sichtbar · {contactedCount} kontaktiert · {dismissed.size} ausgeblendet
+              <span style={{ fontSize: 11, color: '#3f3f46' }}>
+                {visible.length} sichtbar · {contacted.size} kontaktiert · {syncedCount}/{leads.length} in Airtable
               </span>
-              <button onClick={resetAllStatus} style={{ ...BTN, background: '#1a1a1a', color: '#f59e0b', fontSize: 12 }}>
+              <a
+                href={`https://airtable.com/${process.env.NEXT_PUBLIC_AIRTABLE_BASE_ID ?? 'appeFF8GsXuX5Lia3'}`}
+                target="_blank" rel="noopener noreferrer"
+                style={{ ...BTN, background: 'rgba(99,102,241,0.15)', color: '#818cf8', border: '1px solid rgba(99,102,241,0.3)', textDecoration: 'none', fontSize: 12 }}
+              >
+                📋 Airtable öffnen
+              </a>
+              <button onClick={resetStatus} style={{ ...BTN, background: '#1a1a1a', color: '#f59e0b', fontSize: 12 }}>
                 ↺ Status reset
               </button>
-              <button onClick={clearLeads} style={{ ...BTN, background: '#1a1a1a', color: '#ef4444', fontSize: 12 }}>
+              <button onClick={clearAll} style={{ ...BTN, background: '#1a1a1a', color: '#ef4444', fontSize: 12 }}>
                 ✕ Alles löschen
               </button>
             </>
@@ -336,90 +339,55 @@ export default function LeadsPage() {
         </div>
       </nav>
 
-      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 24px' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '28px 24px' }}>
 
         {/* SEARCH CONFIG */}
-        <div style={{ ...CARD, padding: 24, marginBottom: 16 }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>Hashtag-Suche</h2>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 14 }}>
+        <div style={{ ...CARD, padding: 22, marginBottom: 14 }}>
+          <h2 style={{ fontSize: 15, fontWeight: 700, marginBottom: 14 }}>Hashtag-Suche</h2>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, marginBottom: 12 }}>
             {hashtags.map(tag => (
               <span key={tag} style={{
-                display: 'flex', alignItems: 'center', gap: 6,
-                padding: '5px 12px', borderRadius: 999, fontSize: 13,
+                display: 'flex', alignItems: 'center', gap: 5,
+                padding: '4px 11px', borderRadius: 999, fontSize: 12,
                 background: 'rgba(99,102,241,0.12)', border: '1px solid rgba(99,102,241,0.3)', color: '#818cf8',
               }}>
                 #{tag}
-                <button onClick={() => removeTag(tag)} style={{
-                  background: 'none', border: 'none', cursor: 'pointer', color: '#555', padding: 0, lineHeight: 1, fontSize: 15,
-                }}>×</button>
+                <button onClick={() => removeTag(tag)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#555', padding: 0, lineHeight: 1, fontSize: 14 }}>×</button>
               </span>
             ))}
           </div>
-          <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-            <input
-              placeholder="Neuen Hashtag hinzufügen..."
-              value={newTag}
-              onChange={e => setNewTag(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && addTag()}
-              style={{
-                flex: 1, background: '#0d0d0d', border: '1px solid #262626',
-                borderRadius: 8, padding: '8px 12px', color: '#fafafa', fontSize: 13, outline: 'none', fontFamily: 'inherit',
-              }}
-            />
-            <button onClick={() => addTag()} style={{ ...BTN, background: '#262626', color: '#a1a1aa' }}>
-              + Hinzufügen
-            </button>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
+            <input placeholder="Neuen Hashtag..." value={newTag} onChange={e => setNewTag(e.target.value)} onKeyDown={e => e.key === 'Enter' && addTag()}
+              style={{ flex: 1, background: '#0d0d0d', border: '1px solid #262626', borderRadius: 8, padding: '7px 11px', color: '#fafafa', fontSize: 13, outline: 'none', fontFamily: 'inherit' }} />
+            <button onClick={() => addTag()} style={{ ...BTN, background: '#262626', color: '#a1a1aa', fontSize: 12 }}>+ Add</button>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#a1a1aa' }}>
-              Posts pro Hashtag:
-              <select value={limit} onChange={e => setLimit(Number(e.target.value))} style={{
-                background: '#0d0d0d', border: '1px solid #262626', borderRadius: 6,
-                padding: '5px 8px', color: '#fafafa', fontSize: 13, fontFamily: 'inherit', outline: 'none',
-              }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 13, color: '#a1a1aa' }}>
+              Posts/Tag:
+              <select value={limit} onChange={e => setLimit(Number(e.target.value))} style={{ background: '#0d0d0d', border: '1px solid #262626', borderRadius: 6, padding: '4px 8px', color: '#fafafa', fontSize: 13, fontFamily: 'inherit', outline: 'none' }}>
                 {[10, 25, 50].map(n => <option key={n} value={n}>{n}</option>)}
               </select>
             </label>
-            <button
-              onClick={startScrape}
-              disabled={runStatus === 'starting' || runStatus === 'running'}
-              style={{
-                ...BTN, padding: '9px 20px', fontSize: 14,
-                background: runStatus === 'running' || runStatus === 'starting' ? '#1e1e1e' : '#6366f1',
-                color: runStatus === 'running' || runStatus === 'starting' ? '#555' : 'white',
-              }}
-            >
-              {runStatus === 'starting' ? '⏳ Starte...' : runStatus === 'running' ? '⏳ Läuft...' : '🔍 Neue Suche starten'}
+            <button onClick={startScrape} disabled={runStatus === 'starting' || runStatus === 'running'}
+              style={{ ...BTN, padding: '8px 18px', fontSize: 14, background: runStatus === 'running' || runStatus === 'starting' ? '#1e1e1e' : '#6366f1', color: runStatus === 'running' || runStatus === 'starting' ? '#555' : 'white' }}>
+              {runStatus === 'starting' ? '⏳ Starte...' : runStatus === 'running' ? '⏳ Läuft...' : '🔍 Suche starten'}
             </button>
             {runStatus !== 'idle' && (
-              <span style={{ fontSize: 13, color: runStatus === 'error' ? '#ef4444' : runStatus === 'done' ? '#22c55e' : '#f59e0b' }}>
-                {statusText}
-              </span>
+              <span style={{ fontSize: 13, color: runStatus === 'error' ? '#ef4444' : runStatus === 'done' ? '#22c55e' : '#f59e0b' }}>{statusText}</span>
             )}
           </div>
         </div>
 
         {/* DISCOVERED HASHTAGS */}
         {newDiscoveredTags.length > 0 && (
-          <div style={{ ...CARD, padding: 20, marginBottom: 16 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: '#a1a1aa', marginBottom: 12 }}>
-              💡 In den Ergebnissen gefundene Hashtags – zum Verfeinern der Suche:
+          <div style={{ ...CARD, padding: 18, marginBottom: 14 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: '#a1a1aa', marginBottom: 10 }}>
+              💡 Häufige Hashtags in den Ergebnissen – zum Verfeinern:
             </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
               {newDiscoveredTags.map(({ tag, count }) => (
-                <button
-                  key={tag}
-                  onClick={() => addTag(tag)}
-                  style={{
-                    ...BTN,
-                    padding: '4px 11px',
-                    background: '#1a1a1a', border: '1px solid #2a2a2a',
-                    color: '#71717a', fontSize: 12,
-                    display: 'flex', alignItems: 'center', gap: 5,
-                  }}
-                >
-                  <span>#{tag}</span>
-                  <span style={{ color: '#3f3f46', fontSize: 11 }}>{count}×</span>
+                <button key={tag} onClick={() => addTag(tag)} style={{ ...BTN, padding: '3px 10px', background: '#1a1a1a', border: '1px solid #2a2a2a', color: '#71717a', fontSize: 11 }}>
+                  #{tag} <span style={{ color: '#3f3f46' }}>{count}×</span>
                 </button>
               ))}
             </div>
@@ -429,24 +397,17 @@ export default function LeadsPage() {
         {/* RESULTS */}
         {visible.length > 0 && (
           <>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, flexWrap: 'wrap', gap: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
               <span style={{ fontSize: 13, color: '#a1a1aa' }}>
-                {visible.length} Profile · {Object.keys(evaluations).length} bewertet · {Object.keys(profiles).length} tief analysiert
+                {visible.length} Profile · {Object.keys(evaluations).length} bewertet · {Object.keys(profileInfos).length} tief analysiert
               </span>
-              <button
-                onClick={evaluateAll}
-                disabled={evaluating.size > 0 || pendingEval === 0}
-                style={{
-                  ...BTN, padding: '8px 18px',
-                  background: evaluating.size > 0 || pendingEval === 0 ? '#1a1a1a' : '#6366f1',
-                  color: evaluating.size > 0 || pendingEval === 0 ? '#444' : 'white',
-                }}
-              >
-                {evaluating.size > 0 ? `⏳ Bewerte... (${evaluating.size})` : `✦ Alle schnell bewerten (${pendingEval})`}
+              <button onClick={evaluateAll} disabled={evaluating.size > 0 || pendingEval === 0}
+                style={{ ...BTN, padding: '7px 16px', background: evaluating.size > 0 || pendingEval === 0 ? '#1a1a1a' : '#6366f1', color: evaluating.size > 0 || pendingEval === 0 ? '#444' : 'white' }}>
+                {evaluating.size > 0 ? `⏳ Bewerte... (${evaluating.size})` : `✦ Alle bewerten (${pendingEval})`}
               </button>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 14 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 12 }}>
               {visible
                 .sort((a, b) => (evaluations[b.username]?.score ?? 0) - (evaluations[a.username]?.score ?? 0))
                 .map(lead => {
@@ -455,129 +416,107 @@ export default function LeadsPage() {
                   const isContacted = contacted.has(lead.username)
                   const isExpanded = expandedProfile === lead.username
                   const profPosts = profiles[lead.username]
+                  const profInfo = profileInfos[lead.username]
                   const isLoadingProfile = profileLoading.has(lead.username)
+                  const syncStatus = airtableSync[lead.username]
+                  const noteVal = notes[lead.username] ?? ''
+                  const isEditingNote = notesEditing === lead.username
 
                   return (
                     <div key={lead.username} style={{
                       ...CARD,
-                      border: `1px solid ${ev
-                        ? (ev.score >= 7 ? 'rgba(34,197,94,0.3)' : ev.score >= 5 ? 'rgba(245,158,11,0.25)' : '#262626')
-                        : '#262626'}`,
+                      border: `1px solid ${ev ? (ev.score >= 7 ? 'rgba(34,197,94,0.3)' : ev.score >= 5 ? 'rgba(245,158,11,0.25)' : '#262626') : '#262626'}`,
                       opacity: isContacted ? 0.5 : 1,
                     }}>
-                      {/* Post thumbnail */}
+                      {/* Thumbnail */}
                       {lead.postImageUrl ? (
-                        <div style={{ height: 140, overflow: 'hidden', position: 'relative', background: '#1a1a1a' }}>
+                        <div style={{ height: 130, overflow: 'hidden', position: 'relative', background: '#1a1a1a' }}>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={lead.postImageUrl}
-                            alt=""
-                            referrerPolicy="no-referrer"
-                            crossOrigin="anonymous"
+                          <img src={lead.postImageUrl} alt="" referrerPolicy="no-referrer" crossOrigin="anonymous"
                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                            onError={e => { (e.target as HTMLElement).style.display = 'none' }}
-                          />
+                            onError={e => { (e.target as HTMLElement).style.display = 'none' }} />
                           {ev && (
-                            <div style={{
-                              position: 'absolute', top: 8, right: 8, background: 'rgba(0,0,0,0.88)',
-                              border: `2px solid ${SCORE_COLOR(ev.score)}`, borderRadius: 7,
-                              padding: '3px 9px', fontSize: 14, fontWeight: 800, color: SCORE_COLOR(ev.score),
-                            }}>
+                            <div style={{ position: 'absolute', top: 7, right: 7, background: 'rgba(0,0,0,0.88)', border: `2px solid ${SCORE_COLOR(ev.score)}`, borderRadius: 6, padding: '2px 8px', fontSize: 13, fontWeight: 800, color: SCORE_COLOR(ev.score) }}>
                               {ev.score}/10
                             </div>
                           )}
-                          {profPosts && (
-                            <div style={{
-                              position: 'absolute', top: 8, left: 8,
-                              background: 'rgba(99,102,241,0.88)', borderRadius: 5,
-                              padding: '2px 7px', fontSize: 10, fontWeight: 600,
-                            }}>📊 {profPosts.length} Posts</div>
-                          )}
-                          {isContacted && (
-                            <div style={{
-                              position: 'absolute', bottom: 8, left: 8,
-                              background: 'rgba(34,197,94,0.88)', borderRadius: 5,
-                              padding: '2px 7px', fontSize: 10, fontWeight: 600,
-                            }}>✓ Kontaktiert</div>
-                          )}
+                          {profPosts && <div style={{ position: 'absolute', top: 7, left: 7, background: 'rgba(99,102,241,0.9)', borderRadius: 5, padding: '2px 7px', fontSize: 10, fontWeight: 600 }}>📊 {profPosts.length} Posts</div>}
+                          {isContacted && <div style={{ position: 'absolute', bottom: 7, left: 7, background: 'rgba(34,197,94,0.88)', borderRadius: 5, padding: '2px 7px', fontSize: 10, fontWeight: 600 }}>✓ Kontaktiert</div>}
+                          {/* Airtable sync indicator */}
+                          <div style={{ position: 'absolute', bottom: 7, right: 7, fontSize: 10, color: syncStatus === 'synced' ? '#22c55e' : syncStatus === 'syncing' ? '#f59e0b' : syncStatus === 'error' ? '#ef4444' : '#3f3f46' }}>
+                            {syncStatus === 'synced' ? '🔗' : syncStatus === 'syncing' ? '⏳' : syncStatus === 'error' ? '⚠' : ''}
+                          </div>
                         </div>
-                      ) : (
-                        <div style={{ height: 48, background: '#111' }} />
-                      )}
+                      ) : <div style={{ height: 36, background: '#111' }} />}
 
-                      <div style={{ padding: '13px 14px 13px' }}>
+                      <div style={{ padding: '12px 14px 12px' }}>
                         {/* Header */}
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 9 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
                           <div>
-                            <a href={lead.profileUrl} target="_blank" rel="noopener noreferrer"
-                              style={{ fontWeight: 700, fontSize: 14, color: '#fafafa', textDecoration: 'none' }}>
+                            <a href={lead.profileUrl} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 700, fontSize: 14, color: '#fafafa', textDecoration: 'none' }}>
                               @{lead.username}
                             </a>
-                            {lead.fullName && <div style={{ fontSize: 11, color: '#555', marginTop: 2 }}>{lead.fullName}</div>}
+                            {lead.fullName && <div style={{ fontSize: 11, color: '#555', marginTop: 1 }}>{lead.fullName}</div>}
                           </div>
-                          <div style={{ display: 'flex', gap: 8, fontSize: 11, color: '#555' }}>
+                          <div style={{ display: 'flex', gap: 7, fontSize: 11, color: '#555' }}>
                             <span>❤️ {lead.likesCount}</span>
                             <span>💬 {lead.commentsCount}</span>
+                            {profInfo?.followersCount && <span>👥 {profInfo.followersCount.toLocaleString()}</span>}
                           </div>
                         </div>
 
-                        {/* Caption */}
-                        <div style={{
-                          background: '#0d0d0d', border: '1px solid #1e1e1e', borderRadius: 7,
-                          padding: '8px 10px', marginBottom: 9, fontSize: 12,
-                          color: lead.caption ? '#a1a1aa' : '#3f3f46', lineHeight: 1.6,
-                          maxHeight: 68, overflow: 'hidden',
-                        }}>
-                          {lead.caption ? lead.caption.slice(0, 160) + (lead.caption.length > 160 ? '...' : '') : '(keine Caption)'}
-                        </div>
-
-                        {/* Grok evaluation */}
-                        {ev && (
-                          <div style={{
-                            background: `${SCORE_COLOR(ev.score)}10`, border: `1px solid ${SCORE_COLOR(ev.score)}28`,
-                            borderRadius: 7, padding: '7px 10px', marginBottom: 9,
-                            fontSize: 12, color: '#a1a1aa', lineHeight: 1.5,
-                          }}>
-                            <span style={{ color: SCORE_COLOR(ev.score), fontWeight: 700, marginRight: 5 }}>{ev.recommendation}</span>
-                            {ev.reason}
-                            {profPosts && <span style={{ color: '#3f3f46', fontSize: 10, marginLeft: 5 }}>({profPosts.length} Posts)</span>}
+                        {/* Profile info: website + bio */}
+                        {profInfo && (profInfo.externalUrl || profInfo.biography) && (
+                          <div style={{ marginBottom: 8 }}>
+                            {profInfo.externalUrl && (
+                              <a href={profInfo.externalUrl.startsWith('http') ? profInfo.externalUrl : `https://${profInfo.externalUrl}`}
+                                target="_blank" rel="noopener noreferrer"
+                                style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: '#818cf8', textDecoration: 'none', marginBottom: 4, wordBreak: 'break-all' }}>
+                                🌐 {profInfo.externalUrl}
+                              </a>
+                            )}
+                            {profInfo.biography && (
+                              <div style={{ fontSize: 11, color: '#71717a', lineHeight: 1.5, overflow: 'hidden', maxHeight: 40 }}>
+                                {profInfo.biography.slice(0, 100)}{profInfo.biography.length > 100 ? '...' : ''}
+                              </div>
+                            )}
                           </div>
                         )}
 
-                        {isEval && <div style={{ fontSize: 12, color: '#f59e0b', marginBottom: 9 }}>⏳ Grok bewertet...</div>}
-                        {isLoadingProfile && !profPosts && <div style={{ fontSize: 12, color: '#f59e0b', marginBottom: 9 }}>⏳ Lade Profil... (30–90 Sek.)</div>}
+                        {/* Caption */}
+                        <div style={{ background: '#0d0d0d', border: '1px solid #1e1e1e', borderRadius: 7, padding: '7px 10px', marginBottom: 8, fontSize: 11, color: lead.caption ? '#a1a1aa' : '#3f3f46', lineHeight: 1.55, maxHeight: 60, overflow: 'hidden' }}>
+                          {lead.caption ? lead.caption.slice(0, 150) + (lead.caption.length > 150 ? '...' : '') : '(keine Caption)'}
+                        </div>
 
-                        {/* Profile deep-dive post grid */}
+                        {/* Evaluation */}
+                        {ev && (
+                          <div style={{ background: `${SCORE_COLOR(ev.score)}10`, border: `1px solid ${SCORE_COLOR(ev.score)}28`, borderRadius: 7, padding: '6px 10px', marginBottom: 8, fontSize: 11, color: '#a1a1aa', lineHeight: 1.5 }}>
+                            <span style={{ color: SCORE_COLOR(ev.score), fontWeight: 700, marginRight: 5 }}>{ev.recommendation}</span>
+                            {ev.reason}
+                            {profPosts && <span style={{ color: '#3f3f46', fontSize: 10, marginLeft: 4 }}>({profPosts.length} Posts)</span>}
+                          </div>
+                        )}
+
+                        {isEval && <div style={{ fontSize: 11, color: '#f59e0b', marginBottom: 8 }}>⏳ Grok bewertet...</div>}
+                        {isLoadingProfile && !profPosts && <div style={{ fontSize: 11, color: '#f59e0b', marginBottom: 8 }}>⏳ Lade Profil... (30–90s)</div>}
+
+                        {/* Profile post grid */}
                         {isExpanded && profPosts && (
-                          <div style={{ marginBottom: 10 }}>
-                            <div style={{ fontSize: 11, color: '#555', marginBottom: 7, fontWeight: 600 }}>
-                              Letzte {profPosts.length} Posts:
-                            </div>
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 4, marginBottom: 8 }}>
+                          <div style={{ marginBottom: 8 }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 3, marginBottom: 6 }}>
                               {profPosts.map((post, i) => (
-                                <a key={i} href={post.postUrl || '#'} target="_blank" rel="noopener noreferrer"
-                                  style={{ textDecoration: 'none' }}>
-                                  <div style={{ height: 72, borderRadius: 5, overflow: 'hidden', background: '#1a1a1a', position: 'relative' }}>
+                                <a key={i} href={post.postUrl || '#'} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+                                  <div style={{ height: 68, borderRadius: 4, overflow: 'hidden', background: '#1a1a1a', position: 'relative' }}>
                                     {post.displayUrl && (
                                       // eslint-disable-next-line @next/next/no-img-element
-                                      <img
-                                        src={post.displayUrl} alt=""
-                                        referrerPolicy="no-referrer"
-                                        crossOrigin="anonymous"
+                                      <img src={post.displayUrl} alt="" referrerPolicy="no-referrer" crossOrigin="anonymous"
                                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                        onError={e => { (e.target as HTMLElement).style.display = 'none' }}
-                                      />
+                                        onError={e => { (e.target as HTMLElement).style.display = 'none' }} />
                                     )}
-                                    {!post.caption && (
-                                      <div style={{
-                                        position: 'absolute', bottom: 2, right: 2,
-                                        background: 'rgba(239,68,68,0.9)', borderRadius: 3,
-                                        padding: '1px 4px', fontSize: 8, fontWeight: 700,
-                                      }}>KEIN TEXT</div>
-                                    )}
+                                    {!post.caption && <div style={{ position: 'absolute', bottom: 2, right: 2, background: 'rgba(239,68,68,0.9)', borderRadius: 3, padding: '1px 4px', fontSize: 8, fontWeight: 700 }}>NO TXT</div>}
                                   </div>
-                                  <div style={{ fontSize: 10, color: '#444', marginTop: 3, lineHeight: 1.4, overflow: 'hidden', maxHeight: 28 }}>
-                                    {post.caption ? post.caption.slice(0, 45) + '...' : '—'}
+                                  <div style={{ fontSize: 9, color: '#444', marginTop: 2, overflow: 'hidden', maxHeight: 24, lineHeight: 1.4 }}>
+                                    {post.caption ? post.caption.slice(0, 40) + '...' : '—'}
                                   </div>
                                 </a>
                               ))}
@@ -585,45 +524,52 @@ export default function LeadsPage() {
                           </div>
                         )}
 
+                        {/* Notes */}
+                        {isEditingNote ? (
+                          <div style={{ marginBottom: 8 }}>
+                            <textarea
+                              value={noteVal}
+                              onChange={e => setNotes(prev => ({ ...prev, [lead.username]: e.target.value }))}
+                              placeholder="Notiz: z.B. Angefragt am 15.2., keine Antwort..."
+                              rows={3}
+                              style={{ width: '100%', background: '#0d0d0d', border: '1px solid #262626', borderRadius: 7, padding: '7px 10px', color: '#fafafa', fontSize: 11, fontFamily: 'inherit', outline: 'none', resize: 'vertical', boxSizing: 'border-box' }}
+                            />
+                            <div style={{ display: 'flex', gap: 6, marginTop: 5 }}>
+                              <button onClick={() => saveNote(lead)} style={{ ...BTN, background: '#22c55e', color: '#000', fontSize: 11, padding: '5px 12px' }}>💾 Speichern</button>
+                              <button onClick={() => setNotesEditing(null)} style={{ ...BTN, background: '#1a1a1a', color: '#555', fontSize: 11, padding: '5px 12px' }}>Abbrechen</button>
+                            </div>
+                          </div>
+                        ) : noteVal ? (
+                          <div onClick={() => setNotesEditing(lead.username)} style={{ background: '#0d0d0d', border: '1px solid #2a2a2a', borderRadius: 6, padding: '6px 10px', marginBottom: 8, fontSize: 11, color: '#71717a', cursor: 'text', lineHeight: 1.5 }}>
+                            📝 {noteVal.slice(0, 80)}{noteVal.length > 80 ? '...' : ''}
+                          </div>
+                        ) : null}
+
                         {/* Actions */}
                         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
                           {!profPosts && !isLoadingProfile && (
-                            <button onClick={() => loadProfile(lead)}
-                              style={{ ...BTN, background: 'rgba(99,102,241,0.14)', color: '#818cf8', border: '1px solid rgba(99,102,241,0.28)', fontSize: 12 }}>
+                            <button onClick={() => loadProfile(lead)} style={{ ...BTN, background: 'rgba(99,102,241,0.14)', color: '#818cf8', border: '1px solid rgba(99,102,241,0.28)', fontSize: 11 }}>
                               📊 Profil laden
                             </button>
                           )}
                           {profPosts && (
-                            <button onClick={() => setExpandedProfile(isExpanded ? null : lead.username)}
-                              style={{ ...BTN, background: 'rgba(99,102,241,0.14)', color: '#818cf8', border: '1px solid rgba(99,102,241,0.28)', fontSize: 12 }}>
-                              {isExpanded ? '▲ Einklappen' : `📊 Posts (${profPosts.length})`}
+                            <button onClick={() => setExpandedProfile(isExpanded ? null : lead.username)} style={{ ...BTN, background: 'rgba(99,102,241,0.14)', color: '#818cf8', border: '1px solid rgba(99,102,241,0.28)', fontSize: 11 }}>
+                              {isExpanded ? '▲' : `📊 ${profPosts.length} Posts`}
                             </button>
                           )}
                           {!ev && !isEval && (
-                            <button onClick={() => evaluateLead(lead)}
-                              style={{ ...BTN, background: '#6366f1', color: 'white', fontSize: 12 }}>
-                              ✦ Bewerten
-                            </button>
+                            <button onClick={() => evaluateLead(lead)} style={{ ...BTN, background: '#6366f1', color: 'white', fontSize: 11 }}>✦ Bewerten</button>
                           )}
                           {lead.postUrl && (
-                            <a href={lead.postUrl} target="_blank" rel="noopener noreferrer"
-                              style={{ ...BTN, background: '#1a1a1a', color: '#a1a1aa', textDecoration: 'none', fontSize: 12 }}>
-                              Post →
-                            </a>
+                            <a href={lead.postUrl} target="_blank" rel="noopener noreferrer" style={{ ...BTN, background: '#1a1a1a', color: '#a1a1aa', textDecoration: 'none', fontSize: 11 }}>Post →</a>
                           )}
+                          <button onClick={() => setNotesEditing(lead.username)} style={{ ...BTN, background: '#1a1a1a', color: '#71717a', fontSize: 11 }}>📝</button>
                           {!isContacted ? (
-                            <button onClick={() => markContacted(lead.username)}
-                              style={{ ...BTN, background: '#1a1a1a', color: '#22c55e', fontSize: 12 }}>
-                              ✓ Kontaktiert
-                            </button>
+                            <button onClick={() => markContacted(lead)} style={{ ...BTN, background: '#1a1a1a', color: '#22c55e', fontSize: 11 }}>✓ Kontaktiert</button>
                           ) : (
-                            <button onClick={() => unmarkContacted(lead.username)}
-                              style={{ ...BTN, background: '#1a1a1a', color: '#555', fontSize: 12 }}>
-                              ↺ Rückgängig
-                            </button>
+                            <button onClick={() => unmarkContacted(lead)} style={{ ...BTN, background: '#1a1a1a', color: '#555', fontSize: 11 }}>↺</button>
                           )}
-                          <button onClick={() => dismiss(lead.username)}
-                            style={{ ...BTN, background: '#1a1a1a', color: '#3f3f46', fontSize: 12 }}>✕</button>
+                          <button onClick={() => dismiss(lead)} style={{ ...BTN, background: '#1a1a1a', color: '#3f3f46', fontSize: 11 }}>✕</button>
                         </div>
                       </div>
                     </div>
@@ -632,13 +578,11 @@ export default function LeadsPage() {
             </div>
 
             {dismissed.size > 0 && (
-              <div style={{ marginTop: 20, textAlign: 'center' }}>
+              <div style={{ marginTop: 18, textAlign: 'center' }}>
                 <span style={{ fontSize: 12, color: '#3f3f46' }}>
                   {dismissed.size} ausgeblendet ·{' '}
-                  <button onClick={() => { setDismissed(new Set()); persist({ dismissed: new Set() }) }}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#555', fontSize: 12, textDecoration: 'underline' }}>
-                    Alle einblenden
-                  </button>
+                  <button onClick={() => { setDismissed(new Set()); persist({ dismissed: [] }) }}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#555', fontSize: 12, textDecoration: 'underline' }}>einblenden</button>
                 </span>
               </div>
             )}
