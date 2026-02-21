@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 const EMAIL_RE = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g
 const PHONE_RE = /(?:\+49|0049|0)[\s\-./]?(?:\(?\d{2,5}\)?[\s\-./]?)\d[\d\s\-./]{6,18}\d/g
 const EMAIL_IGNORE = ['example', 'sentry', 'wix', 'domain.', '@2x', '.png', '.jpg', '.svg', 'noreply', 'no-reply', 'schema.org', 'w3.org']
-const SKIP_DOMAINS = ['facebook.com', 'instagram.com', 'google.', 'yelp.', 'tripadvisor.', 'foursquare.com', 'twitter.com', 'linkedin.com', 'youtube.com', 'tiktok.com', 'xing.com', 'wolt.com', 'lieferando.', 'thefork.', 'opentable.', 'reservix.', 'eventbrite.', 'wikipedia.']
+const SKIP_DOMAINS = ['facebook.com', 'instagram.com', 'google.', 'yelp.', 'tripadvisor.', 'foursquare.com', 'twitter.com', 'linkedin.com', 'youtube.com', 'tiktok.com', 'xing.com', 'wolt.com', 'lieferando.', 'thefork.', 'opentable.', 'reservix.', 'eventbrite.', 'wikipedia.', 'ubereats.', 'just-eat.', 'deliveroo.', 'speisekarte.', 'quandoo.', 'restu.', 'dish.co', 'menudigital.']
 
 interface SerperResult {
   title?: string

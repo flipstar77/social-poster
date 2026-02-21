@@ -390,7 +390,7 @@ export default function LeadsPage() {
       persist({ leads: searchLeads })
 
       setPhase('website-scraping')
-      setPhaseText('DuckDuckGo Suche läuft...')
+      setPhaseText('Google Suche läuft...')
       setPhaseDetail(`0/${searchLeads.length}`)
 
       const newContactInfo: Record<string, ContactInfo> = {}
