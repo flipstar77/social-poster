@@ -68,6 +68,11 @@ export default function LeadsPage() {
   const [icebreakers, setIcebreakers] = useState<Record<string, string>>({})
   const [icebreakerLoading, setIcebreakerLoading] = useState<Set<string>>(new Set())
   const [expandedIcebreaker, setExpandedIcebreaker] = useState<string | null>(null)
+  const [emailCompose, setEmailCompose] = useState<string | null>(null)
+  const [emailSubjects, setEmailSubjects] = useState<Record<string, string>>({})
+  const [emailBodies, setEmailBodies] = useState<Record<string, string>>({})
+  const [emailSending, setEmailSending] = useState<Set<string>>(new Set())
+  const [emailSent, setEmailSent] = useState<Set<string>>(new Set())
 
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
@@ -159,6 +164,39 @@ export default function LeadsPage() {
       }, 5000)
       pollRef.current = iv
     })
+  }
+
+  // ─── Send Email ──────────────────────────────────────────────
+  async function sendEmail(lead: Lead, to: string) {
+    setEmailSending(prev => new Set(prev).add(lead.username))
+    try {
+      const subject = emailSubjects[lead.username] || `Kurze Anfrage zu eurem Instagram-Auftritt`
+      const body = emailBodies[lead.username] || ''
+      const res = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ to, subject, body }),
+        signal: AbortSignal.timeout(15000),
+      })
+      const data = await res.json()
+      if (data.error) { alert(`Fehler: ${data.error}`); return }
+      setEmailSent(prev => new Set(prev).add(lead.username))
+      setEmailCompose(null)
+      markContacted(lead)
+    } finally {
+      setEmailSending(prev => { const n = new Set(prev); n.delete(lead.username); return n })
+    }
+  }
+
+  function openEmailCompose(lead: Lead) {
+    const ib = icebreakers[lead.username]
+    if (!emailBodies[lead.username]) {
+      setEmailBodies(prev => ({ ...prev, [lead.username]: ib || '' }))
+    }
+    if (!emailSubjects[lead.username]) {
+      setEmailSubjects(prev => ({ ...prev, [lead.username]: `Kurze Anfrage zu eurem Instagram-Auftritt` }))
+    }
+    setEmailCompose(lead.username)
   }
 
   // ─── Icebreaker ──────────────────────────────────────────────
@@ -774,6 +812,10 @@ export default function LeadsPage() {
                 const icebreaker = icebreakers[lead.username]
                 const icebreakerExpanded = expandedIcebreaker === lead.username
                 const icebreakerIsLoading = icebreakerLoading.has(lead.username)
+                const isEmailCompose = emailCompose === lead.username
+                const isEmailSending = emailSending.has(lead.username)
+                const isEmailSent = emailSent.has(lead.username)
+                const emailTarget = contact?.emails?.[0] ?? ''
 
                 return (
                   <div key={lead.username} style={{
@@ -878,6 +920,35 @@ export default function LeadsPage() {
                         </div>
                       )}
 
+                      {/* Email Compose */}
+                      {isEmailCompose && emailTarget && (
+                        <div style={{ background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.25)', borderRadius: 6, padding: '9px 10px', marginBottom: 7 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                            <span style={{ fontSize: 10, fontWeight: 700, color: '#4ade80' }}>✉️ Email an {emailTarget}</span>
+                            <button onClick={() => setEmailCompose(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#555', fontSize: 11 }}>✕</button>
+                          </div>
+                          <input
+                            value={emailSubjects[lead.username] || ''}
+                            onChange={e => setEmailSubjects(p => ({ ...p, [lead.username]: e.target.value }))}
+                            placeholder="Betreff..."
+                            style={{ width: '100%', background: '#0d0d0d', border: '1px solid #262626', borderRadius: 5, padding: '5px 8px', color: '#fafafa', fontSize: 11, fontFamily: 'inherit', outline: 'none', marginBottom: 5, boxSizing: 'border-box' }}
+                          />
+                          <textarea
+                            value={emailBodies[lead.username] || ''}
+                            onChange={e => setEmailBodies(p => ({ ...p, [lead.username]: e.target.value }))}
+                            placeholder="Nachricht..."
+                            rows={5}
+                            style={{ width: '100%', background: '#0d0d0d', border: '1px solid #262626', borderRadius: 5, padding: '5px 8px', color: '#fafafa', fontSize: 11, fontFamily: 'inherit', outline: 'none', resize: 'vertical', boxSizing: 'border-box', marginBottom: 6 }}
+                          />
+                          <button
+                            onClick={() => sendEmail(lead, emailTarget)}
+                            disabled={isEmailSending || !emailBodies[lead.username]}
+                            style={{ ...BTN, background: isEmailSending ? '#1a1a1a' : '#16a34a', color: isEmailSending ? '#555' : 'white', fontSize: 11, width: '100%' }}>
+                            {isEmailSending ? '⏳ Sende...' : '📤 Senden'}
+                          </button>
+                        </div>
+                      )}
+
                       {/* Profile grid */}
                       {isExpanded && profPosts && (
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 3, marginBottom: 7 }}>
@@ -929,6 +1000,12 @@ export default function LeadsPage() {
                           style={{ ...BTN, background: icebreaker ? 'rgba(99,102,241,0.2)' : '#1a1a1a', color: icebreaker ? '#c4b5fd' : '#71717a', border: icebreaker ? '1px solid rgba(99,102,241,0.35)' : '1px solid transparent', fontSize: 11 }}>
                           {icebreakerIsLoading ? '⏳' : icebreaker ? (icebreakerExpanded ? '💬▲' : '💬') : '✉️ DM'}
                         </button>
+                        {emailTarget && (
+                          <button onClick={() => isEmailCompose ? setEmailCompose(null) : openEmailCompose(lead)}
+                            style={{ ...BTN, background: isEmailSent ? 'rgba(34,197,94,0.2)' : isEmailCompose ? 'rgba(34,197,94,0.15)' : '#1a1a1a', color: isEmailSent ? '#4ade80' : isEmailCompose ? '#4ade80' : '#71717a', border: isEmailCompose ? '1px solid rgba(34,197,94,0.35)' : '1px solid transparent', fontSize: 11 }}>
+                            {isEmailSent ? '✓ Gesendet' : '📧'}
+                          </button>
+                        )}
                         {lead.postUrl && (
                           <a href={lead.postUrl} target="_blank" rel="noopener noreferrer" style={{ ...BTN, background: '#1a1a1a', color: '#a1a1aa', textDecoration: 'none', fontSize: 11 }}>Post →</a>
                         )}
