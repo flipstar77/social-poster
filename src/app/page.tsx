@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
 // ── Scroll-in animation hook ──────────────────────────────────────────────────
 function useScrollIn(delay = 0) {
