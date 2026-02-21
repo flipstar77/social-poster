@@ -176,8 +176,8 @@ const FAQS = [
   { q: 'Wie lange dauert die Einrichtung?', a: 'Wir richten alles innerhalb von 24 Stunden ein. Ihr bekommt einen persönlichen Zugang und seid sofort startklar — keine technischen Vorkenntnisse nötig.' },
   { q: 'Brauche ich technisches Wissen?', a: 'Nein. Ihr ladet ein Bild hoch, schreibt optional eine kurze Notiz dazu — alles andere passiert automatisch. Kein Coding, kein Setup, kein Aufwand.' },
   { q: 'Welche Plattformen werden unterstützt?', a: 'Instagram, TikTok und Facebook. Alle drei mit einem einzigen Post bespielt — ohne Mehraufwand.' },
-  { q: 'Was kostet der laufende Betrieb bei Lite?', a: 'Ihr verwaltet zwei kleine API-Zugänge selbst (~5–10 € / Monat). Wir zeigen euch wie bei der Einrichtung — dauert ca. 10 Minuten und ist einmalig.' },
-  { q: 'Kann ich kündigen?', a: 'Lite ist eine Einmalzahlung — keine Kündigung nötig, Zugang bleibt für immer. Pro ist monatlich kündbar, jederzeit ohne Frist.' },
+  { q: 'Was kostet der laufende Betrieb bei Lite?', a: 'Ihr verwaltet zwei API-Zugänge selbst: upload-post.com Basic (~13 € / Monat) + OpenAI API (~3–5 € / Monat) = ca. 15–18 € / Monat. Wir zeigen euch alles bei der Einrichtung — einmalig, ca. 10 Minuten.' },
+  { q: 'Kann ich kündigen?', a: 'Lite ist eine Einmalzahlung — keine Kündigung nötig, Zugang bleibt für immer. Pro Monatlich ist jederzeit ohne Frist kündbar. Pro Jährlich gilt für 12 Monate und wird danach automatisch verlängert, außer ihr kündigt rechtzeitig.' },
   { q: 'Schreibt die KI auch auf Englisch oder anderen Sprachen?', a: 'Ja. Die KI schreibt in jeder Sprache — Deutsch, Englisch, Türkisch, Arabisch und mehr. Einfach beim Setup angeben.' },
   { q: 'Ist Zahlung per Crypto möglich?', a: 'Ja, wir akzeptieren ETH und BTC. Schick die Zahlung an die unten angezeigte Adresse und melde dich danach kurz bei uns.' },
 ]
@@ -401,7 +401,7 @@ export default function LandingPage() {
                   <span style={{ fontSize: 52, fontWeight: 800, color: '#09090b', lineHeight: 1 }}>149 €</span>
                   <span style={{ fontSize: 15, color: '#71717a', marginBottom: 6 }}>einmalig</span>
                 </div>
-                <div style={{ fontSize: 13, color: '#a1a1aa', marginBottom: 32 }}>+ ~5–10 € / Monat eigene API-Kosten</div>
+                <div style={{ fontSize: 13, color: '#a1a1aa', marginBottom: 32 }}>+ ~15–18 € / Monat eigene API-Kosten (upload-post + OpenAI)</div>
                 <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 32px', display: 'flex', flexDirection: 'column', gap: 12, flex: 1 }}>
                   {['Lifetime-Zugang zum Tool', 'Unbegrenzte Posts', 'Instagram, TikTok, Facebook', 'KI-Captions in eurer Sprache', 'Persönliche Einrichtung', 'E-Mail Support'].map(item => (
                     <li key={item} style={{ display: 'flex', gap: 10, fontSize: 14 }}>
@@ -463,9 +463,20 @@ export default function LandingPage() {
                       </li>
                     ))}
                   </ul>
-                  <a href="#kontakt" style={{ display: 'block', textAlign: 'center', background: '#6366f1', color: 'white', padding: '14px', borderRadius: 12, fontWeight: 700, fontSize: 15, textDecoration: 'none', boxShadow: '0 4px 20px rgba(99,102,241,0.35)' }}>
-                    Pro anfragen →
-                  </a>
+                  {yearly ? (
+                    <a
+                      href="https://paypal.me/YOUR_PAYPAL/348EUR"
+                      target="_blank" rel="noopener noreferrer"
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, background: '#0070ba', color: 'white', padding: '14px', borderRadius: 12, fontWeight: 700, fontSize: 15, textDecoration: 'none', marginBottom: 10 }}
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.93 4.778-4.005 7.201-9.138 7.201h-2.19a.563.563 0 0 0-.556.479l-1.187 7.527h-.506l-.24 1.516a.56.56 0 0 0 .554.647h3.882c.46 0 .85-.334.922-.788.06-.26.76-4.852.816-5.09a.932.932 0 0 1 .923-.788h.58c3.76 0 6.705-1.528 7.565-5.946.36-1.847.174-3.388-.777-4.471z"/></svg>
+                      348 € / Jahr mit PayPal
+                    </a>
+                  ) : (
+                    <a href="#kontakt" style={{ display: 'block', textAlign: 'center', background: '#6366f1', color: 'white', padding: '14px', borderRadius: 12, fontWeight: 700, fontSize: 15, textDecoration: 'none', boxShadow: '0 4px 20px rgba(99,102,241,0.35)' }}>
+                      Pro anfragen →
+                    </a>
+                  )}
                 </HoverCard>
               </div>
             </div>
