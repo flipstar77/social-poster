@@ -45,13 +45,7 @@ function useScrollIn(delay = 0) {
 }
 
 // ── Parallax blobs ────────────────────────────────────────────────────────────
-function ParallaxBlobs() {
-  const [y, setY] = useState(0)
-  useEffect(() => {
-    const fn = () => setY(window.scrollY)
-    window.addEventListener('scroll', fn, { passive: true })
-    return () => window.removeEventListener('scroll', fn)
-  }, [])
+function ParallaxBlobs({ y }: { y: number }) {
   return (
     <>
       <div style={{ position: 'absolute', top: -140 + y * 0.28, right: -180, width: 620, height: 620, borderRadius: '50%', pointerEvents: 'none', background: 'radial-gradient(circle, rgba(99,102,241,0.14) 0%, transparent 68%)' }} />
@@ -211,6 +205,37 @@ export default function LandingPage() {
   const [faqOpen, setFaqOpen] = useState<number | null>(null)
   const [cryptoOpen, setCryptoOpen] = useState(false)
   const [yearly, setYearly] = useState(false)
+  const [scrollY, setScrollY] = useState(0)
+  const [windowHeight, setWindowHeight] = useState(0)
+
+  useEffect(() => {
+    setWindowHeight(window.innerHeight)
+    let ticking = false
+    const onScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          setScrollY(window.scrollY)
+          ticking = false
+        })
+        ticking = true
+      }
+    }
+    const onResize = () => setWindowHeight(window.innerHeight)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onResize, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onResize)
+    }
+  }, [])
+
+  // Hero parallax — progress 0→1 over first viewport height
+  const vh = windowHeight || 800
+  const heroProgress = Math.min(scrollY / (vh * 0.85), 1)
+  const heroBlobScale = 1 + heroProgress * 0.65
+  const heroBlobOpacity = Math.max(0, 1 - heroProgress * 2.1)
+  const heroBlobBlur = heroProgress * 10
+  const heroTextY = heroProgress * -45
   const [form, setForm] = useState({ name: '', email: '', message: '' })
   const [sending, setSending] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -260,8 +285,19 @@ export default function LandingPage() {
 
         {/* ── HERO ────────────────────────────────────────────────────────── */}
         <section style={{ position: 'relative', overflow: 'hidden', background: '#fff', borderBottom: '1px solid #e4e4e7' }}>
-          <ParallaxBlobs />
-          <div style={{ maxWidth: 1080, margin: '0 auto', padding: '112px 24px 96px', textAlign: 'center', position: 'relative' }}>
+          {/* Blobs wrapper — zooms + blurs + fades on scroll */}
+          <div style={{
+            position: 'absolute', inset: 0, overflow: 'hidden',
+            transform: `scale(${heroBlobScale})`,
+            opacity: heroBlobOpacity,
+            filter: `blur(${heroBlobBlur}px)`,
+            transformOrigin: '50% 30%',
+            willChange: 'transform, opacity, filter',
+          }}>
+            <ParallaxBlobs y={scrollY} />
+          </div>
+          {/* Hero content — floats upward on scroll */}
+          <div style={{ maxWidth: 1080, margin: '0 auto', padding: '112px 24px 96px', textAlign: 'center', position: 'relative', transform: `translateY(${heroTextY}px)`, willChange: 'transform' }}>
             <div className="hero-fadeup" style={{ display: 'inline-block', padding: '5px 16px', borderRadius: 999, background: '#f3f4f6', border: '1px solid #e4e4e7', color: '#6366f1', fontSize: 13, fontWeight: 600, marginBottom: 28 }}>
               Für Restaurants · Cafés · Bars
             </div>
