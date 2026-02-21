@@ -3,16 +3,21 @@ import { NextRequest, NextResponse } from 'next/server'
 const EMAIL_RE = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g
 const PHONE_RE = /(?:\+49|0049|0)[\s\-./]?(?:\(?\d{2,5}\)?[\s\-./]?)\d[\d\s\-./]{6,18}\d/g
 const EMAIL_IGNORE = ['example', 'sentry', 'wix', 'domain.', '@2x', '.png', '.jpg', '.svg', 'noreply', 'no-reply', 'schema.org', 'w3.org']
+const SKIP_DOMAINS = ['facebook.com', 'instagram.com', 'google.', 'yelp.', 'tripadvisor.', 'foursquare.com', 'twitter.com', 'linkedin.com', 'youtube.com', 'tiktok.com', 'xing.com', 'wolt.com', 'lieferando.', 'thefork.', 'opentable.', 'reservix.', 'eventbrite.', 'wikipedia.']
 
-function cleanPhone(p: string) { return p.replace(/\s+/g, ' ').trim() }
-function cleanEmail(e: string) { return e.toLowerCase().trim() }
-function isValidEmail(e: string) { return !EMAIL_IGNORE.some(bad => e.includes(bad)) }
+interface SerperResult {
+  title?: string
+  link?: string
+  snippet?: string
+}
 
-interface NominatimResult {
-  display_name?: string
-  extratags?: Record<string, string>
-  lat?: string
-  lon?: string
+function extractContacts(text: string) {
+  const emails = (text.match(EMAIL_RE) ?? [])
+    .map(e => e.toLowerCase().trim())
+    .filter(e => !EMAIL_IGNORE.some(bad => e.includes(bad)))
+  const phones = (text.match(PHONE_RE) ?? [])
+    .map(p => p.replace(/\s+/g, ' ').trim())
+  return { emails: [...new Set(emails)], phones: [...new Set(phones)] }
 }
 
 export async function GET(req: NextRequest) {
@@ -24,61 +29,36 @@ export async function GET(req: NextRequest) {
   if (!username) return NextResponse.json({ emails: [], phones: [], website: '' })
 
   const searchName = fullName || username
+  const query = `${searchName} Frankfurt`
 
   try {
-    // ── OpenStreetMap Nominatim ───────────────────────────────────
-    // Free, no API key, works from servers, has email/phone/website in extratags
-    const nominatimUrl = `https://nominatim.openstreetmap.org/search.php?q=${encodeURIComponent(searchName + ' Frankfurt')}&format=json&limit=5&addressdetails=0&extratags=1`
-
-    const res = await fetch(nominatimUrl, {
+    const res = await fetch('https://google.serper.dev/search', {
+      method: 'POST',
       headers: {
-        // Nominatim requires a descriptive User-Agent with contact info
-        'User-Agent': 'SocialPosterLeadTool/1.0 (github.com/flipstar77/social-poster)',
-        'Accept-Language': 'de-DE,de;q=0.9',
-        'Accept': 'application/json',
+        'X-API-KEY': process.env.SERPER_API_KEY ?? '',
+        'Content-Type': 'application/json',
       },
+      body: JSON.stringify({ q: query, gl: 'de', hl: 'de', num: 5 }),
       signal: AbortSignal.timeout(8000),
     })
 
     if (!res.ok) {
-      if (debug) return NextResponse.json({ debug: `Nominatim HTTP ${res.status}` })
+      if (debug) return NextResponse.json({ debug: `Serper HTTP ${res.status}` })
       return NextResponse.json({ emails: [], phones: [], website: '' })
     }
 
-    const results: NominatimResult[] = await res.json()
+    const data = await res.json()
+    if (debug) return NextResponse.json({ debug_results: data.organic?.slice(0, 3), query })
 
-    if (debug) return NextResponse.json({ debug_results: results.slice(0, 3), query: searchName + ' Frankfurt' })
+    const organic: SerperResult[] = data.organic ?? []
 
-    const emails: string[] = []
-    const phones: string[] = []
-    let website = ''
+    // Find first result that isn't a social/review site
+    const best = organic.find(r => r.link && !SKIP_DOMAINS.some(d => r.link!.includes(d)))
+    const website = best?.link ?? ''
 
-    // Pull contact info from OSM tags across all results
-    for (const r of results) {
-      const t = r.extratags ?? {}
-
-      // Website
-      const w = t['website'] || t['contact:website'] || t['url'] || ''
-      if (w && !website) website = w.startsWith('http') ? w : `https://${w}`
-
-      // Email
-      for (const key of ['email', 'contact:email']) {
-        const e = t[key]
-        if (e) {
-          const found = e.match(EMAIL_RE) ?? []
-          found.map(cleanEmail).filter(isValidEmail).forEach(em => { if (!emails.includes(em)) emails.push(em) })
-        }
-      }
-
-      // Phone
-      for (const key of ['phone', 'contact:phone', 'contact:mobile']) {
-        const p = t[key]
-        if (p) {
-          const cleaned = cleanPhone(p)
-          if (!phones.includes(cleaned)) phones.push(cleaned)
-        }
-      }
-    }
+    // Extract emails/phones from all snippets
+    const allText = organic.map(r => `${r.title ?? ''} ${r.snippet ?? ''}`).join(' ')
+    const { emails, phones } = extractContacts(allText)
 
     return NextResponse.json({
       emails: emails.slice(0, 5),
