@@ -161,6 +161,7 @@ const PILL_ITEMS: { icon: React.ReactNode; text: string }[] = [
   { icon: '⏱️', text: '2–3 Stunden / Woche gespart' },
   { icon: '📈', text: 'Mehr Reichweite, mehr Gäste' },
   { icon: '🔁', text: '5 Plattformen · 1 Upload' },
+  { icon: '📅', text: '1 Monat geplant in 1 Stunde' },
   { icon: <IgIcon />, text: 'Instagram' },
   { icon: <TikTokIcon />, text: 'TikTok' },
   { icon: <FbIcon />, text: 'Facebook' },
@@ -193,6 +194,7 @@ const FAQS = [
   { q: 'Wie lange dauert die Einrichtung?', a: 'Wir richten alles innerhalb von 24 Stunden ein. Ihr bekommt einen persönlichen Zugang und seid sofort startklar — keine technischen Vorkenntnisse nötig.' },
   { q: 'Brauche ich technisches Wissen?', a: 'Nein. Ihr ladet ein Bild hoch, schreibt optional eine kurze Notiz dazu — alles andere passiert automatisch. Kein Coding, kein Setup, kein Aufwand.' },
   { q: 'Welche Plattformen werden unterstützt?', a: 'Instagram, TikTok, Facebook, YouTube und X (Twitter) — bis zu 5 gleichzeitig mit einem einzigen Upload. So einfach wie auf einer posten.' },
+  { q: 'Kann ich Posts im Voraus planen?', a: 'Ja — der eingebaute Kalender lässt euch Posts Tage oder Wochen im Voraus einplanen. Einmal in der Woche 20 Minuten investieren und der ganze Monat läuft automatisch.' },
   { q: 'Was kostet der laufende Betrieb bei Lite?', a: 'Ihr verwaltet zwei kleine API-Zugänge selbst — das kostet euch ca. 15–18 € / Monat. Wir zeigen euch alles Schritt für Schritt bei der Einrichtung. Einmalig, dauert ca. 10 Minuten.' },
   { q: 'Kann ich kündigen?', a: 'Lite ist eine Einmalzahlung — keine Kündigung nötig, Zugang bleibt für immer. Pro Monatlich ist jederzeit ohne Frist kündbar. Pro Jährlich gilt für 12 Monate und wird danach automatisch verlängert, außer ihr kündigt rechtzeitig.' },
   { q: 'Schreibt die KI auch auf Englisch oder anderen Sprachen?', a: 'Ja. Die KI schreibt in jeder Sprache — Deutsch, Englisch, Türkisch, Arabisch und mehr. Einfach beim Setup angeben.' },
@@ -216,6 +218,101 @@ function FaqItem({ q, a, open, onToggle }: { q: string; a: string; open: boolean
   )
 }
 
+
+// ── Calendar section ──────────────────────────────────────────────────────────
+const CAL_DAYS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So']
+const CAL_SCHEDULE = [
+  [['IG'], [],          ['TT','FB'], [],     ['IG'],      [],    []        ],
+  [[],     ['IG','TT'], [],          ['FB'], [],          ['IG'], []       ],
+  [['TT'], [],          ['IG'],      [],     ['FB','TT'], [],    []        ],
+  [[],     ['IG'],      [],          ['TT'], [],          [],    ['IG','FB']],
+]
+const PLAT_COLOR: Record<string, string> = {
+  IG: '#e1306c', TT: '#010101', FB: '#1877f2',
+}
+function CalendarSection() {
+  const { ref: headRef, style: headStyle } = useScrollIn(0)
+  const { ref: calRef,  style: calStyle  } = useScrollIn(150)
+  const { ref: listRef, style: listStyle } = useScrollIn(250)
+  return (
+    <section style={{ background: '#f8fafc', borderTop: '1px solid #e4e4e7', padding: '88px 24px' }}>
+      <div style={{ maxWidth: 1080, margin: '0 auto' }}>
+        <div ref={headRef} style={{ ...headStyle, textAlign: 'center', marginBottom: 56 }}>
+          <div style={{ display: 'inline-block', padding: '5px 16px', borderRadius: 999, background: 'linear-gradient(135deg,#ede9fe,#fce7f3)', border: '1px solid #c4b5fd', color: '#7c3aed', fontSize: 13, fontWeight: 600, marginBottom: 20 }}>
+            Auto-Scheduler
+          </div>
+          <h2 style={{ fontSize: 'clamp(28px,4vw,42px)', fontWeight: 800, color: '#09090b', lineHeight: 1.15, marginBottom: 14 }}>
+            Eine Stunde Planung.<br />
+            <span style={{ background: 'linear-gradient(135deg,#6366f1,#a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+              Ein ganzer Monat Social Media.
+            </span>
+          </h2>
+          <p style={{ color: '#71717a', fontSize: 16, maxWidth: 480, margin: '0 auto' }}>
+            Einmal in der Woche hinsetzen, alle Posts für den ganzen Monat planen — und nie wieder täglich dran denken.
+          </p>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 40, alignItems: 'center' }}>
+          {/* Calendar mockup */}
+          <div ref={calRef} style={calStyle}>
+            <HoverCard style={{ padding: 24 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                <span style={{ fontWeight: 700, fontSize: 15, color: '#09090b' }}>März 2026</span>
+                <div style={{ display: 'flex', gap: 10 }}>
+                  {Object.entries(PLAT_COLOR).map(([k, c]) => (
+                    <div key={k} style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 11, color: '#71717a' }}>
+                      <div style={{ width: 8, height: 8, borderRadius: '50%', background: c }} />{k}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 4, marginBottom: 6 }}>
+                {CAL_DAYS.map(d => (
+                  <div key={d} style={{ textAlign: 'center', fontSize: 11, fontWeight: 600, color: '#a1a1aa' }}>{d}</div>
+                ))}
+              </div>
+              {CAL_SCHEDULE.map((week, wi) => (
+                <div key={wi} style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 4, marginBottom: 4 }}>
+                  {week.map((day, di) => (
+                    <div key={di} style={{ minHeight: 46, background: day.length ? '#faf5ff' : '#f8fafc', borderRadius: 8, border: `1px solid ${day.length ? '#e9d5ff' : '#f0f0f0'}`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, padding: '4px 2px' }}>
+                      <span style={{ fontSize: 10, color: '#a1a1aa', fontWeight: 500 }}>{wi * 7 + di + 1}</span>
+                      <div style={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
+                        {day.map(p => <div key={p} style={{ width: 7, height: 7, borderRadius: '50%', background: PLAT_COLOR[p] ?? '#888' }} />)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ))}
+              <div style={{ marginTop: 14, fontSize: 12, color: '#71717a', textAlign: 'center' }}>
+                <span style={{ color: '#6366f1', fontWeight: 600 }}>16 Posts</span> geplant · <span style={{ color: '#22c55e', fontWeight: 600 }}>Automatisch gepostet</span>
+              </div>
+            </HoverCard>
+          </div>
+
+          {/* Benefits */}
+          <div ref={listRef} style={{ ...listStyle, display: 'flex', flexDirection: 'column', gap: 28 }}>
+            {[
+              { icon: '📅', title: 'Ganze Woche in 20 Minuten', desc: 'Fotos hochladen, Captions wählen, Tage zuweisen — der Rest läuft von selbst.' },
+              { icon: '⏰', title: 'Optimales Timing, automatisch', desc: 'Posts gehen raus wenn eure Gäste online sind — ohne dass ihr dabei sein müsst.' },
+              { icon: '🧘', title: 'Kein täglicher Stress mehr', desc: 'Kein „Ich muss heute noch was posten". Einmal planen, einen Monat Ruhe.' },
+            ].map(b => (
+              <div key={b.title} style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+                <div style={{ width: 44, height: 44, borderRadius: 14, background: 'linear-gradient(135deg,#ede9fe,#fce7f3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>{b.icon}</div>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: 16, color: '#09090b', marginBottom: 4 }}>{b.title}</div>
+                  <div style={{ fontSize: 14, color: '#71717a', lineHeight: 1.65 }}>{b.desc}</div>
+                </div>
+              </div>
+            ))}
+            <a href="#kaufen" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#6366f1', color: '#fff', padding: '13px 28px', borderRadius: 12, fontSize: 15, fontWeight: 700, textDecoration: 'none', alignSelf: 'flex-start', boxShadow: '0 4px 20px rgba(99,102,241,0.35)' }}>
+              Jetzt starten →
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
 
 // ── Animated counter hook ─────────────────────────────────────────────────────
 function useCountUp(target: number, isVisible: boolean, duration = 1400) {
@@ -533,6 +630,9 @@ export default function LandingPage() {
 
         {/* ── STICKY SHOWCASE ─────────────────────────────────────────────── */}
         <StickyShowcase scrollY={scrollY} vh={vh} />
+
+        {/* ── AUTO-SCHEDULER ──────────────────────────────────────────────── */}
+        <CalendarSection />
 
         {/* ── WIE ES SICH ANFÜHLT ──────────────────────────────────────────── */}
         <section style={{ background: '#fff', borderTop: '1px solid #e4e4e7', borderBottom: '1px solid #e4e4e7' }}>
