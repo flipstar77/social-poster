@@ -398,15 +398,32 @@ export default function LeadsPage() {
                 syncToAirtable(lead, { email: d.emails[0], phone: d.phones[0] })
               }
             } else {
-              // No website → DDG search
+              // No website → DDG search to find website + contacts
               const r = await fetch(`/api/search-contact?username=${encodeURIComponent(lead.username)}&fullName=${encodeURIComponent(lead.fullName)}`)
               const d = await r.json()
+
+              let emails: string[] = d.emails ?? []
+              let phones: string[] = d.phones ?? []
               const extra: Record<string, unknown> = {}
-              if (d.website) extra.website = d.website
-              if (d.emails?.[0]) { extra.email = d.emails[0]; }
-              if (d.phones?.[0]) { extra.phone = d.phones[0]; }
-              if (d.emails?.length || d.phones?.length) {
-                newContactInfo[lead.username] = { emails: d.emails ?? [], phones: d.phones ?? [] }
+
+              // If DDG found a website URL → scrape it for better contact data
+              if (d.website) {
+                extra.website = d.website
+                // Update profileInfos so the card shows the website immediately
+                setProfileInfos(prev => ({ ...prev, [lead.username]: { biography: prev[lead.username]?.biography ?? '', externalUrl: d.website, followersCount: prev[lead.username]?.followersCount } }))
+                try {
+                  const sr = await fetch(`/api/scrape-website?url=${encodeURIComponent(d.website)}`)
+                  const sd = await sr.json()
+                  // Merge: prefer scraped results, fall back to DDG results
+                  if (sd.emails?.length) emails = sd.emails
+                  if (sd.phones?.length) phones = sd.phones
+                } catch { /* ignore scrape errors */ }
+              }
+
+              if (emails.length || phones.length) {
+                newContactInfo[lead.username] = { emails, phones }
+                extra.email = emails[0]
+                extra.phone = phones[0]
               }
               if (Object.keys(extra).length > 0) syncToAirtable(lead, extra)
             }
