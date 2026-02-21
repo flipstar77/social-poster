@@ -261,23 +261,38 @@ export default function LeadsPage() {
         }
       }
 
-      // Stage 3: website scraping
+      // Stage 3: website scraping (has URL) + Google/DDG search (no URL)
       const leadsWithUrl = atLeads.filter(l => batchInfos[l.username]?.externalUrl)
-      if (leadsWithUrl.length > 0) {
-        setPhase('website-scraping'); setPhaseText('Websites durchsuchen...'); setPhaseDetail(`0/${leadsWithUrl.length}`)
+      const leadsNoUrl = atLeads.filter(l => !batchInfos[l.username]?.externalUrl)
+      const stage3Leads = [...leadsWithUrl, ...leadsNoUrl]
+
+      if (stage3Leads.length > 0) {
+        setPhase('website-scraping'); setPhaseText('Kontaktdaten suchen...'); setPhaseDetail(`0/${stage3Leads.length}`)
         const newContactInfo: Record<string, ContactInfo> = {}
         const chunkSize = 5
-        for (let i = 0; i < leadsWithUrl.length; i += chunkSize) {
-          const chunk = leadsWithUrl.slice(i, i + chunkSize)
-          setPhaseDetail(`${Math.min(i + chunkSize, leadsWithUrl.length)}/${leadsWithUrl.length}`)
+        for (let i = 0; i < stage3Leads.length; i += chunkSize) {
+          const chunk = stage3Leads.slice(i, i + chunkSize)
+          setPhaseDetail(`${Math.min(i + chunkSize, stage3Leads.length)}/${stage3Leads.length}`)
           await Promise.all(chunk.map(async lead => {
             const url = batchInfos[lead.username]?.externalUrl
-            if (!url) return
             try {
-              const r = await fetch(`/api/scrape-website?url=${encodeURIComponent(url)}`)
-              const d = await r.json()
-              if (d.emails?.length || d.phones?.length) newContactInfo[lead.username] = { emails: d.emails ?? [], phones: d.phones ?? [] }
-            } catch { /* ignore */ }
+              if (url) {
+                // Has website URL → scrape directly
+                const r = await fetch(`/api/scrape-website?url=${encodeURIComponent(url)}`)
+                const d = await r.json()
+                if (d.emails?.length || d.phones?.length) newContactInfo[lead.username] = { emails: d.emails ?? [], phones: d.phones ?? [] }
+              } else {
+                // No website → DuckDuckGo search
+                const r = await fetch(`/api/search-contact?username=${encodeURIComponent(lead.username)}&fullName=${encodeURIComponent(lead.fullName)}`)
+                const d = await r.json()
+                if (d.emails?.length || d.phones?.length) newContactInfo[lead.username] = { emails: d.emails ?? [], phones: d.phones ?? [] }
+                // Also store found website URL in profileInfos for display
+                if (d.website && !batchInfos[lead.username]) {
+                  setProfileInfos(prev => ({ ...prev, [lead.username]: { biography: '', externalUrl: d.website, followersCount: undefined } }))
+                  syncToAirtable(lead, { website: d.website })
+                }
+              }
+            } catch { /* ignore per-lead errors */ }
           }))
         }
         setContactInfo(prev => { const n = { ...prev, ...newContactInfo }; persist({ contactInfo: n }); return n })
@@ -380,32 +395,37 @@ export default function LeadsPage() {
             }
           }
 
-          // ⑤ Website scraping für E-Mail / Telefon
-          const leadsWithUrl = topLeads.filter(l => batchInfos[l.username]?.externalUrl)
-          if (leadsWithUrl.length > 0) {
-            setPhase('website-scraping')
-            setPhaseText('Websites durchsuchen...')
-            setPhaseDetail(`0/${leadsWithUrl.length}`)
+          // ⑤ Kontaktdaten: Website scrape (hat URL) + DDG search (keine URL)
+          const stage3WithUrl = topLeads.filter(l => batchInfos[l.username]?.externalUrl)
+          const stage3NoUrl = topLeads.filter(l => !batchInfos[l.username]?.externalUrl)
+          const stage3All = [...stage3WithUrl, ...stage3NoUrl]
 
-            const newContactInfo: Record<string, ContactInfo> = {}
-            const concurrency = 5
-            for (let i = 0; i < leadsWithUrl.length; i += concurrency) {
-              const chunk = leadsWithUrl.slice(i, i + concurrency)
-              setPhaseDetail(`${Math.min(i + concurrency, leadsWithUrl.length)}/${leadsWithUrl.length}`)
-              await Promise.all(chunk.map(async lead => {
-                const url = batchInfos[lead.username]?.externalUrl
-                if (!url) return
-                try {
+          setPhase('website-scraping')
+          setPhaseText('Kontaktdaten suchen...')
+          setPhaseDetail(`0/${stage3All.length}`)
+
+          const newContactInfo: Record<string, ContactInfo> = {}
+          const concurrency = 5
+          for (let i = 0; i < stage3All.length; i += concurrency) {
+            const chunk = stage3All.slice(i, i + concurrency)
+            setPhaseDetail(`${Math.min(i + concurrency, stage3All.length)}/${stage3All.length}`)
+            await Promise.all(chunk.map(async lead => {
+              const url = batchInfos[lead.username]?.externalUrl
+              try {
+                if (url) {
                   const r = await fetch(`/api/scrape-website?url=${encodeURIComponent(url)}`)
                   const d = await r.json()
-                  if (d.emails?.length || d.phones?.length) {
-                    newContactInfo[lead.username] = { emails: d.emails ?? [], phones: d.phones ?? [] }
-                  }
-                } catch { /* ignore per-site errors */ }
-              }))
-            }
-            setContactInfo(prev => { const n = { ...prev, ...newContactInfo }; persist({ contactInfo: n }); return n })
+                  if (d.emails?.length || d.phones?.length) newContactInfo[lead.username] = { emails: d.emails ?? [], phones: d.phones ?? [] }
+                } else {
+                  const r = await fetch(`/api/search-contact?username=${encodeURIComponent(lead.username)}&fullName=${encodeURIComponent(lead.fullName)}`)
+                  const d = await r.json()
+                  if (d.emails?.length || d.phones?.length) newContactInfo[lead.username] = { emails: d.emails ?? [], phones: d.phones ?? [] }
+                  if (d.website) syncToAirtable(lead, { website: d.website })
+                }
+              } catch { /* ignore per-lead errors */ }
+            }))
           }
+          setContactInfo(prev => { const n = { ...prev, ...newContactInfo }; persist({ contactInfo: n }); return n })
 
           // ⑥ Tiefbewertung der Top-Leads mit Multi-Post-Kontext
           setPhase('deep-evaluating'); setPhaseText('Tiefbewertung...')
