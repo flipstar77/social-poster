@@ -318,6 +318,21 @@ export default function WaitingPage() {
           </div>
         </div>
 
+        {/* Weiter Button — shown after payment claimed */}
+        {paymentSent && (
+          <a
+            href="/tool"
+            style={{
+              display: 'block', padding: '0.75rem', background: '#1f2937',
+              color: '#e5e7eb', borderRadius: '0.75rem', textDecoration: 'none',
+              fontSize: '0.875rem', fontWeight: 600, textAlign: 'center',
+              marginBottom: '0.75rem', border: '1px solid #374151',
+            }}
+          >
+            Tool schon mal ansehen →
+          </a>
+        )}
+
         {/* Confirmation note */}
         <p style={{ fontSize: '0.75rem', color: '#4b5563', textAlign: 'center', margin: '0 0 1rem', lineHeight: 1.5 }}>
           Nach Zahlungseingang senden wir eine Bestätigung an{' '}

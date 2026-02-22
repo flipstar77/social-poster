@@ -67,7 +67,7 @@ export async function middleware(request: NextRequest) {
 
   if (pathname === '/tool') {
     if (!onboardingDone) return NextResponse.redirect(new URL('/onboarding', request.url))
-    if (!isActive) return NextResponse.redirect(new URL('/waiting', request.url))
+    // Allow access even if not yet active — tool page shows preview banner
     return supabaseResponse
   }
 

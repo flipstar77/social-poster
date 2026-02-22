@@ -407,6 +407,7 @@ export default function Home() {
   // Auth state
   const [userUsername, setUserUsername] = useState('') // upload-post.com UUID-based username
   const [userEmail, setUserEmail] = useState('')
+  const [isActive, setIsActive] = useState(true) // assume active until loaded
   const [connecting, setConnecting] = useState(false)
   const [connectError, setConnectError] = useState('')
   const [planMaxPlatforms, setPlanMaxPlatforms] = useState(3) // default Starter
@@ -419,7 +420,7 @@ export default function Home() {
 
       const { data: profile } = await supabase
         .from('profiles')
-        .select('upload_post_username, selected_platforms, plan')
+        .select('upload_post_username, selected_platforms, plan, is_active')
         .eq('id', user.id)
         .single()
 
@@ -428,6 +429,7 @@ export default function Home() {
         if (profile.selected_platforms?.length) setSelectedPlatforms(profile.selected_platforms)
         const limits: Record<string, number> = { starter: 3, growth: 6, pro: 9 }
         setPlanMaxPlatforms(limits[profile.plan ?? 'starter'] ?? 3)
+        setIsActive(profile.is_active ?? false)
       }
     }
     loadProfile()
@@ -670,6 +672,25 @@ export default function Home() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
+      {/* Preview banner — shown while account is not yet active */}
+      {!isActive && (
+        <div style={{
+          background: '#172554', border: '1px solid #1e3a8a', borderRadius: '0.75rem',
+          padding: '0.875rem 1.25rem', marginBottom: '1.5rem',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem',
+        }}>
+          <div>
+            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#93c5fd' }}>Vorschau-Modus</span>
+            <span style={{ fontSize: '0.8rem', color: '#6b7280', marginLeft: '0.5rem' }}>
+              Dein Account wird nach Zahlungseingang freigeschaltet. Posten ist dann möglich.
+            </span>
+          </div>
+          <a href="/waiting" style={{ fontSize: '0.75rem', color: '#3b82f6', textDecoration: 'none', whiteSpace: 'nowrap' }}>
+            Zurück →
+          </a>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
@@ -1152,13 +1173,24 @@ export default function Home() {
 
             <div className="flex gap-3 justify-center">
               {!posts.every(p => p.status === 'posted') && (
-                <button
-                  onClick={publishAll}
-                  disabled={publishing}
-                  className="px-6 py-2.5 rounded-xl bg-[var(--success)] hover:brightness-110 font-medium text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {publishing ? 'Publishing...' : 'Publish Now'}
-                </button>
+                isActive ? (
+                  <button
+                    onClick={publishAll}
+                    disabled={publishing}
+                    className="px-6 py-2.5 rounded-xl bg-[var(--success)] hover:brightness-110 font-medium text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {publishing ? 'Publishing...' : 'Publish Now'}
+                  </button>
+                ) : (
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ padding: '0.65rem 1.5rem', borderRadius: '0.75rem', background: '#172554', border: '1px solid #1e3a8a', fontSize: '0.85rem', color: '#93c5fd', display: 'inline-block' }}>
+                      🔒 Posten wird nach Account-Freischaltung möglich
+                    </div>
+                    <div style={{ marginTop: '0.5rem' }}>
+                      <a href="/waiting" style={{ fontSize: '0.75rem', color: '#4b5563', textDecoration: 'none' }}>Zahlungsstatus prüfen →</a>
+                    </div>
+                  </div>
+                )
               )}
               <button
                 onClick={() => { setStep(1); setPhotos([]); setPosts([]); setVariants({}); setPublishErrors([]); setPublishProgress(0) }}
