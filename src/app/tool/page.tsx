@@ -409,6 +409,7 @@ export default function Home() {
   const [userEmail, setUserEmail] = useState('')
   const [connecting, setConnecting] = useState(false)
   const [connectError, setConnectError] = useState('')
+  const [planMaxPlatforms, setPlanMaxPlatforms] = useState(3) // default Starter
 
   useEffect(() => {
     async function loadProfile() {
@@ -418,22 +419,26 @@ export default function Home() {
 
       const { data: profile } = await supabase
         .from('profiles')
-        .select('upload_post_username, selected_platforms')
+        .select('upload_post_username, selected_platforms, plan')
         .eq('id', user.id)
         .single()
 
       if (profile) {
         if (profile.upload_post_username) setUserUsername(profile.upload_post_username)
         if (profile.selected_platforms?.length) setSelectedPlatforms(profile.selected_platforms)
+        const limits: Record<string, number> = { starter: 3, growth: 6, pro: 9 }
+        setPlanMaxPlatforms(limits[profile.plan ?? 'starter'] ?? 3)
       }
     }
     loadProfile()
   }, [])
 
   const togglePlatform = (id: string) => {
-    setSelectedPlatforms(prev =>
-      prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]
-    )
+    setSelectedPlatforms(prev => {
+      if (prev.includes(id)) return prev.length > 1 ? prev.filter(p => p !== id) : prev
+      if (prev.length >= planMaxPlatforms) return prev
+      return [...prev, id]
+    })
   }
 
   const handleConnect = async () => {
@@ -773,18 +778,25 @@ export default function Home() {
 
           {/* Platform selector */}
           <div className="mb-4">
-            <label className="block text-sm text-[var(--text-muted)] mb-2">Plattformen</label>
+            <label className="block text-sm text-[var(--text-muted)] mb-2">
+              Plattformen <span className="text-[var(--text-muted)]/60">({selectedPlatforms.length}/{planMaxPlatforms})</span>
+            </label>
             <div className="flex flex-wrap gap-2">
               {PLATFORMS.map(p => {
                 const active = selectedPlatforms.includes(p.id)
+                const atLimit = !active && selectedPlatforms.length >= planMaxPlatforms
                 return (
                   <button
                     key={p.id}
                     onClick={() => togglePlatform(p.id)}
+                    disabled={atLimit}
+                    title={atLimit ? `Plan-Limit erreicht (${planMaxPlatforms} Plattformen)` : undefined}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${
                       active
                         ? 'border-[var(--accent)] bg-[var(--accent)]/15 text-white'
-                        : 'border-[var(--border)] bg-[var(--card)] text-[var(--text-muted)] hover:border-[var(--accent)]/50'
+                        : atLimit
+                          ? 'border-[var(--border)]/30 bg-[var(--card)]/50 text-[var(--text-muted)]/30 cursor-not-allowed'
+                          : 'border-[var(--border)] bg-[var(--card)] text-[var(--text-muted)] hover:border-[var(--accent)]/50'
                     }`}
                   >
                     <PlatformIcon platform={p.id} size={13} />
@@ -795,6 +807,9 @@ export default function Home() {
             </div>
             {selectedPlatforms.length === 0 && (
               <p className="mt-1.5 text-xs text-red-400">Wähle mindestens eine Plattform.</p>
+            )}
+            {selectedPlatforms.length >= planMaxPlatforms && (
+              <p className="mt-1.5 text-xs text-amber-500">Plan-Limit erreicht. Upgrade für mehr Plattformen.</p>
             )}
           </div>
 
