@@ -782,7 +782,7 @@ export default function LandingPage() {
                     <span style={{ fontSize: 14, fontWeight: 600, color: '#3730a3' }}>Bis zu 3 Plattformen</span>
                   </div>
                   <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px', display: 'flex', flexDirection: 'column', gap: 11, flex: 1 }}>
-                    {['Alles aus Starter', 'Instagram + TikTok + Facebook', 'Caption-Stil auf euer Restaurant angepasst', 'Monatlicher Check-in', 'E-Mail Support'].map(item => (
+                    {['Alles aus Starter', 'Instagram + TikTok + Facebook', 'Caption-Stil auf euer Restaurant angepasst', 'E-Mail Support'].map(item => (
                       <li key={item} style={{ display: 'flex', gap: 10, fontSize: 14 }}>
                         <span style={{ color: '#6366f1', fontWeight: 700, flexShrink: 0 }}>✓</span>
                         <span style={{ color: '#18181b' }}>{item}</span>
