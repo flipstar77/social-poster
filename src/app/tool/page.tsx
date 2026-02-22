@@ -453,7 +453,7 @@ export default function Home() {
       })
       const data = await res.json()
       if (!res.ok || !data.connectUrl) {
-        setConnectError(data.error || 'Failed to generate connection link')
+        setConnectError((data.error || 'Failed to generate connection link') + (data.detail ? ` — ${data.detail}` : ''))
         return
       }
       window.open(data.connectUrl, '_blank')

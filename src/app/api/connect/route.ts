@@ -24,7 +24,7 @@ export async function POST(request: Request) {
   if (!createRes.ok && createRes.status !== 409) {
     const text = await createRes.text()
     console.error('[Connect] Create user error:', createRes.status, text)
-    return NextResponse.json({ error: `Failed to create profile: ${createRes.status}` }, { status: 502 })
+    return NextResponse.json({ error: `Failed to create profile: ${createRes.status}`, detail: text }, { status: 502 })
   }
 
   // Step 2: Generate JWT URL for the user to connect their social accounts
