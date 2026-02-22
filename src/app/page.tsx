@@ -340,7 +340,7 @@ function useCountUp(target: number, isVisible: boolean, duration = 1400) {
 // ── Stats strip ───────────────────────────────────────────────────────────────
 const STATS = [
   { value: 3, suffix: 'h', label: 'pro Woche gespart', icon: '⏱️' },
-  { value: 5, suffix: '', label: 'Plattformen gleichzeitig', icon: '🚀' },
+  { value: 9, suffix: '', label: 'Plattformen gleichzeitig', icon: '🚀' },
   { value: 30, suffix: 's', label: 'pro Post', icon: '⚡' },
   { value: 90, suffix: '%', label: 'weniger Aufwand', icon: '📈' },
 ]
@@ -483,7 +483,7 @@ function StickyShowcase({ scrollY, vh }: { scrollY: number; vh: number }) {
                 {/* App bar */}
                 <div style={{ background: '#fff', padding: '34px 14px 10px', borderBottom: '1px solid #e4e4e7', display: 'flex', alignItems: 'center', gap: 8 }}>
                   <div style={{ width: 24, height: 24, borderRadius: 7, background: 'linear-gradient(135deg, #6366f1, #a855f7)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11 }}>✨</div>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#09090b', flex: 1 }}>Social Poster AI</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: '#09090b', flex: 1 }}>FlowingPost</span>
                   <div style={{ display: 'flex', gap: 4 }}>
                     {[0, 1, 2].map(i => (
                       <div key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: i <= step ? SHOWCASE_STEPS[Math.min(i, step)].color : '#e4e4e7', transition: 'background 0.4s ease' }} />
@@ -616,10 +616,10 @@ export default function LandingPage() {
             </div>
             <div className="hero-fadeup-3" style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
               <a href="/login" style={{ background: '#6366f1', color: 'white', padding: '15px 36px', borderRadius: 12, fontSize: 16, fontWeight: 700, textDecoration: 'none', boxShadow: '0 4px 24px rgba(99,102,241,0.4)' }}>
-                Jetzt Zugang sichern →
+                Jetzt Zeit sparen →
               </a>
-              <a href="/login" style={{ border: '1px solid #d4d4d8', color: '#3f3f46', background: '#fff', padding: '15px 36px', borderRadius: 12, fontSize: 16, fontWeight: 600, textDecoration: 'none' }}>
-                Kostenlos registrieren
+              <a href="#kaufen" style={{ border: '1px solid #d4d4d8', color: '#3f3f46', background: '#fff', padding: '15px 36px', borderRadius: 12, fontSize: 16, fontWeight: 600, textDecoration: 'none' }}>
+                Preise ansehen
               </a>
             </div>
           </div>
@@ -646,7 +646,7 @@ export default function LandingPage() {
               <HoverCard style={{ padding: 28, background: '#fafafa' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 18 }}>
                   <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#ef4444', display: 'inline-block' }} />
-                  <span style={{ fontSize: 13, fontWeight: 500, color: '#a1a1aa' }}>Ohne Social Poster AI</span>
+                  <span style={{ fontSize: 13, fontWeight: 500, color: '#a1a1aa' }}>Ohne FlowingPost</span>
                 </div>
                 <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 11 }}>
                   {['Stundenlang nach Ideen suchen', 'Posts vergessen oder aufschieben', 'Unregelmäßig posten = weniger Reichweite', '2–4 Stunden pro Woche verloren', 'Agentur zu teuer, selber zu aufwändig'].map(t => (
@@ -659,7 +659,7 @@ export default function LandingPage() {
               <HoverCard accent style={{ padding: 28 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 18 }}>
                   <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', display: 'inline-block' }} />
-                  <span style={{ fontSize: 13, fontWeight: 500, color: '#6366f1' }}>Mit Social Poster AI</span>
+                  <span style={{ fontSize: 13, fontWeight: 500, color: '#6366f1' }}>Mit FlowingPost</span>
                 </div>
                 <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 11 }}>
                   {['Bild hochladen — fertig. 30 Sekunden.', 'Jeden Tag automatisch präsent', 'Regelmäßige Posts = mehr neue Gäste', 'Stunden zurückgewinnen, Küche im Fokus', 'Günstiger als jede Agentur weltweit'].map(t => (
@@ -677,10 +677,10 @@ export default function LandingPage() {
         <section style={{ maxWidth: 1080, margin: '0 auto', padding: '72px 24px', textAlign: 'center' }}>
           <h2 style={{ fontSize: 36, fontWeight: 800, marginBottom: 10, color: '#09090b' }}>Für wen ist das?</h2>
           <p style={{ color: '#71717a', marginBottom: 16, fontSize: 16 }}>
-            Für alle, die auf Instagram, TikTok und Facebook präsent sein wollen — ohne Stunden dafür aufzuwenden.
+            Für alle, die täglich auf Social Media präsent sein wollen — ohne Stunden dafür zu opfern.
           </p>
           <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 28 }}>
-            {['📸 Instagram', '🎵 TikTok', '👥 Facebook'].map(p => (
+            {['📸 Instagram', '🎵 TikTok', '👥 Facebook', '▶️ YouTube', '✖️ X', '💼 LinkedIn', '📌 Pinterest', '✈️ Telegram', '🎬 und mehr'].map(p => (
               <span key={p} style={{ padding: '7px 16px', borderRadius: 999, fontSize: 13, fontWeight: 600, background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)', color: '#6366f1' }}>{p}</span>
             ))}
           </div>
@@ -696,7 +696,7 @@ export default function LandingPage() {
           <div style={{ maxWidth: 1080, margin: '0 auto', padding: '80px 24px' }}>
             <h2 style={{ fontSize: 36, fontWeight: 800, textAlign: 'center', marginBottom: 10, color: '#09090b' }}>Jetzt starten</h2>
             <p style={{ color: '#71717a', textAlign: 'center', marginBottom: 24, fontSize: 16 }}>
-              Wählt die Anzahl eurer Plattformen — jederzeit kündbar oder upgradebar.
+              Günstiger als ein einziger Mitarbeiter für Social Media. Jederzeit kündbar.
             </p>
 
             {/* Promo banner */}
@@ -848,7 +848,7 @@ export default function LandingPage() {
 
         {/* ── FOOTER ──────────────────────────────────────────────────────── */}
         <footer style={{ borderTop: '1px solid #e4e4e7', padding: '28px 24px', textAlign: 'center', background: '#f8fafc' }}>
-          <p style={{ color: '#a1a1aa', fontSize: 13, margin: 0 }}>© 2026 Social Poster AI</p>
+          <p style={{ color: '#a1a1aa', fontSize: 13, margin: 0 }}>© 2026 FlowingPost</p>
         </footer>
 
       </div>
