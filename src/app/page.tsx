@@ -160,7 +160,7 @@ function XIcon() {
 const PILL_ITEMS: { icon: React.ReactNode; text: string }[] = [
   { icon: '⏱️', text: '2–3 Stunden / Woche gespart' },
   { icon: '📈', text: 'Mehr Reichweite, mehr Gäste' },
-  { icon: '🔁', text: '5 Plattformen · 1 Upload' },
+  { icon: '🔁', text: '9 Plattformen · 1 Upload' },
   { icon: '🤖', text: 'Automatisch geplant & gepostet' },
   { icon: <IgIcon />, text: 'Instagram' },
   { icon: <TikTokIcon />, text: 'TikTok' },
@@ -376,7 +376,7 @@ function StatsStrip() {
 const SHOWCASE_STEPS = [
   { n: '01', title: 'Bild hochladen', desc: 'Foto oder Video direkt vom Handy. Optional eine kurze Notiz — wir schreiben den Rest.', color: '#6366f1' },
   { n: '02', title: '3 Varianten wählen', desc: 'Die KI schreibt drei Versionen in eurem Ton. Ihr wählt den besten — oder postet direkt.', color: '#a855f7' },
-  { n: '03', title: 'Automatisch geplant & gepostet', desc: 'Kein manuelles Planen. Das System postet automatisch auf bis zu 5 Plattformen — zur richtigen Zeit, ohne euer Zutun.', color: '#ec4899' },
+  { n: '03', title: 'Automatisch geplant & gepostet', desc: 'Kein manuelles Planen. Das System postet automatisch auf bis zu 9 Plattformen — zur richtigen Zeit, ohne euer Zutun.', color: '#ec4899' },
 ]
 function PhoneScreen({ step }: { step: number }) {
   if (step === 0) return (
@@ -586,14 +586,14 @@ export default function LandingPage() {
               Für Restaurants · Cafés · Bars
             </div>
             <h1 className="hero-fadeup-2" style={{ fontSize: 'clamp(38px, 7vw, 72px)', fontWeight: 800, lineHeight: 1.08, marginBottom: 24, letterSpacing: '-2px', color: '#09090b' }}>
-              Täglich präsent.<br />
+              2 Stunden zurück.<br />
               <span style={{ background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                Ohne Aufwand.
+                Jede Woche.
               </span>
             </h1>
             <p className="hero-fadeup-3" style={{ fontSize: 19, color: '#52525b', maxWidth: 560, margin: '0 auto 20px', lineHeight: 1.75 }}>
-              Dein Restaurant verdient starke Social-Media-Präsenz — aber du hast keine Zeit dafür.
-              Bild hochladen, fertig. <strong style={{ color: '#09090b' }}>In 30 Sekunden auf bis zu 5 Plattformen gepostet.</strong>
+              Bild hochladen, fertig. FlowingPost schreibt die Caption und postet automatisch —
+              <strong style={{ color: '#09090b' }}> auf bis zu 9 Plattformen gleichzeitig.</strong>
             </p>
             {/* Platform logos strip */}
             <div className="hero-fadeup-3" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 36, flexWrap: 'wrap' }}>
