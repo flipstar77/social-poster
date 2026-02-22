@@ -193,7 +193,7 @@ function Ticker() {
 const FAQS = [
   { q: 'Wie lange dauert die Einrichtung?', a: 'Wir richten alles innerhalb von 24 Stunden ein. Ihr bekommt einen persönlichen Zugang und seid sofort startklar — keine technischen Vorkenntnisse nötig.' },
   { q: 'Brauche ich technisches Wissen?', a: 'Nein. Ihr ladet ein Bild hoch, schreibt optional eine kurze Notiz dazu — alles andere passiert automatisch. Kein Coding, kein Setup, kein Aufwand.' },
-  { q: 'Welche Plattformen sind in welchem Plan?', a: 'Starter: 1 Plattform nach Wahl (z.B. nur Instagram). Growth: bis zu 3 Plattformen (z.B. Instagram, TikTok, Facebook). Pro: alle 5 Plattformen gleichzeitig (Instagram, TikTok, Facebook, YouTube, X). Ihr könnt jederzeit upgraden.' },
+  { q: 'Welche Plattformen sind in welchem Plan?', a: 'Starter: bis zu 3 Plattformen nach Wahl (z.B. Instagram, TikTok, Facebook). Growth: bis zu 6 Plattformen. Pro: alle 9 Plattformen gleichzeitig (Instagram, TikTok, Facebook, LinkedIn, X, YouTube und mehr). Ihr könnt jederzeit upgraden.' },
   { q: 'Muss ich selbst planen wann gepostet wird?', a: 'Nein. Das System übernimmt das automatisch. Ihr ladet Bilder hoch — wann, wie oft und auf welchen Plattformen gepostet wird, steuert der Auto-Scheduler. Ihr müsst den Kalender nie anfassen.' },
   { q: 'Kann ich kündigen?', a: 'Ja, jederzeit. Monatliche Pläne sind ohne Frist kündbar. Jährliche Pläne laufen 12 Monate und verlängern sich danach automatisch — ihr könnt jederzeit vor Ablauf kündigen.' },
   { q: 'Kann ich meinen Plan wechseln?', a: 'Ja. Upgrade von Starter auf Growth oder Pro jederzeit möglich — ihr zahlt nur die Differenz. Downgrade ist zum nächsten Abrechnungszeitraum möglich.' },
@@ -739,15 +739,15 @@ export default function LandingPage() {
               <HoverCard style={{ padding: 36, display: 'flex', flexDirection: 'column' }}>
                 <div style={{ fontSize: 12, fontWeight: 700, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Starter</div>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 2 }}>
-                  <span style={{ fontSize: 48, fontWeight: 800, color: '#09090b', lineHeight: 1 }}>{yearly ? '12' : '15'} €</span>
+                  <span style={{ fontSize: 48, fontWeight: 800, color: '#09090b', lineHeight: 1 }}>{yearly ? '41' : '49'} €</span>
                   <span style={{ fontSize: 14, color: '#71717a' }}>/ Monat</span>
                 </div>
                 <div style={{ fontSize: 13, color: '#a1a1aa', marginBottom: 28 }}>
-                  {yearly ? 'Jährlich 150 € — 2 Monate gespart' : 'Monatlich kündbar'}
+                  {yearly ? 'Jährlich 490 € — 2 Monate gespart' : 'Monatlich kündbar'}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24, padding: '10px 14px', background: '#f8fafc', borderRadius: 10, border: '1px solid #e4e4e7' }}>
                   <span style={{ fontSize: 18 }}>📱</span>
-                  <span style={{ fontSize: 14, fontWeight: 600, color: '#09090b' }}>1 Plattform nach Wahl</span>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: '#09090b' }}>3 Plattformen nach Wahl</span>
                 </div>
                 <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px', display: 'flex', flexDirection: 'column', gap: 11, flex: 1 }}>
                   {['Unbegrenzte Posts', 'KI-Captions in eurer Sprache', 'Auto-Scheduler inklusive', 'E-Mail Support'].map(item => (
@@ -771,15 +771,15 @@ export default function LandingPage() {
                 <HoverCard accent style={{ padding: 36, display: 'flex', flexDirection: 'column', height: '100%' }}>
                   <div style={{ fontSize: 12, fontWeight: 700, color: '#6366f1', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Growth</div>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 2 }}>
-                    <span style={{ fontSize: 48, fontWeight: 800, color: '#09090b', lineHeight: 1 }}>{yearly ? '18' : '22'} €</span>
+                    <span style={{ fontSize: 48, fontWeight: 800, color: '#09090b', lineHeight: 1 }}>{yearly ? '83' : '99'} €</span>
                     <span style={{ fontSize: 14, color: '#71717a' }}>/ Monat</span>
                   </div>
                   <div style={{ fontSize: 13, color: '#a1a1aa', marginBottom: 28 }}>
-                    {yearly ? 'Jährlich 220 € — 2 Monate gespart' : 'Monatlich kündbar'}
+                    {yearly ? 'Jährlich 990 € — 2 Monate gespart' : 'Monatlich kündbar'}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24, padding: '10px 14px', background: '#eef2ff', borderRadius: 10, border: '1px solid #c7d2fe' }}>
                     <span style={{ fontSize: 18 }}>🚀</span>
-                    <span style={{ fontSize: 14, fontWeight: 600, color: '#3730a3' }}>Bis zu 3 Plattformen</span>
+                    <span style={{ fontSize: 14, fontWeight: 600, color: '#3730a3' }}>Bis zu 6 Plattformen</span>
                   </div>
                   <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px', display: 'flex', flexDirection: 'column', gap: 11, flex: 1 }}>
                     {['Alles aus Starter', 'Instagram, TikTok, Facebook + mehr', 'E-Mail Support'].map(item => (
@@ -802,11 +802,11 @@ export default function LandingPage() {
               <HoverCard style={{ padding: 36, display: 'flex', flexDirection: 'column' }}>
                 <div style={{ fontSize: 12, fontWeight: 700, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Pro</div>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 2 }}>
-                  <span style={{ fontSize: 48, fontWeight: 800, color: '#09090b', lineHeight: 1 }}>{yearly ? '21' : '29'} €</span>
+                  <span style={{ fontSize: 48, fontWeight: 800, color: '#09090b', lineHeight: 1 }}>{yearly ? '166' : '199'} €</span>
                   <span style={{ fontSize: 14, color: '#71717a' }}>/ Monat</span>
                 </div>
                 <div style={{ fontSize: 13, color: '#a1a1aa', marginBottom: 28 }}>
-                  {yearly ? 'Jährlich 249 € — 30% gespart' : 'Monatlich kündbar'}
+                  {yearly ? 'Jährlich 1.990 € — 2 Monate gespart' : 'Monatlich kündbar'}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24, padding: '10px 14px', background: '#fdf4ff', borderRadius: 10, border: '1px solid #e9d5ff' }}>
                   <span style={{ fontSize: 18 }}>🌍</span>

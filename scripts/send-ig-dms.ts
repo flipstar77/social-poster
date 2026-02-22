@@ -12,6 +12,15 @@ import { chromium } from 'playwright'
 import * as path from 'path'
 import * as fs from 'fs'
 
+// ── Load .env.local early ─────────────────────────────────────────────────────
+const envPath = path.join(process.cwd(), '.env.local')
+if (fs.existsSync(envPath)) {
+  for (const line of fs.readFileSync(envPath, 'utf-8').split('\n')) {
+    const m = line.match(/^([^#=]+)=(.*)$/)
+    if (m) process.env[m[1].trim()] = m[2].trim()
+  }
+}
+
 // ── Config ────────────────────────────────────────────────────────────────────
 const AIRTABLE_BASE = process.env.AIRTABLE_BASE_ID ?? ''
 const AIRTABLE_KEY  = process.env.AIRTABLE_API_KEY ?? ''
@@ -334,15 +343,6 @@ async function main() {
   }
 
   await browser.close()
-}
-
-// Load .env.local
-const envPath = path.join(process.cwd(), '.env.local')
-if (fs.existsSync(envPath)) {
-  for (const line of fs.readFileSync(envPath, 'utf-8').split('\n')) {
-    const m = line.match(/^([^#=]+)=(.*)$/)
-    if (m) process.env[m[1].trim()] = m[2].trim()
-  }
 }
 
 main().catch(err => { console.error(err); process.exit(1) })
