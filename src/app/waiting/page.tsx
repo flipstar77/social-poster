@@ -46,6 +46,8 @@ export default function WaitingPage() {
   const [accountsConnected, setAccountsConnected] = useState(false)
   const [connecting, setConnecting] = useState(false)
   const [connectError, setConnectError] = useState('')
+  const [paymentSent, setPaymentSent] = useState(false)
+  const [sendingPayment, setSendingPayment] = useState(false)
 
   useEffect(() => {
     async function loadProfile() {
@@ -112,6 +114,19 @@ export default function WaitingPage() {
     } finally {
       setConnecting(false)
     }
+  }
+
+  async function handlePaymentSent() {
+    setSendingPayment(true)
+    try {
+      await fetch('/api/payment-claimed', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, plan }),
+      })
+    } catch { /* fire and forget */ }
+    setPaymentSent(true)
+    setSendingPayment(false)
   }
 
   async function handleSignOut() {
@@ -272,6 +287,32 @@ export default function WaitingPage() {
                 <div style={{ fontSize: '0.68rem', color: '#6b7280', marginTop: '0.25rem' }}>
                   ETH-Äquivalent zu €{PLAN_PRICES[plan] ?? '?'} senden
                 </div>
+              </div>
+
+              {/* Zahlung gesendet Button */}
+              <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #1f2937' }}>
+                {paymentSent ? (
+                  <div style={{
+                    background: '#052e16', border: '1px solid #14532d', borderRadius: '0.5rem',
+                    padding: '0.75rem 1rem', fontSize: '0.8rem', color: '#4ade80', textAlign: 'center',
+                  }}>
+                    ✓ Danke! Wir prüfen deine Zahlung und schalten deinen Account innerhalb von 24h frei.
+                  </div>
+                ) : (
+                  <button
+                    onClick={handlePaymentSent}
+                    disabled={sendingPayment}
+                    style={{
+                      width: '100%', padding: '0.65rem',
+                      background: sendingPayment ? '#14532d' : '#16a34a',
+                      color: '#fff', border: 'none', borderRadius: '0.5rem',
+                      fontSize: '0.85rem', fontWeight: 600,
+                      cursor: sendingPayment ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    {sendingPayment ? 'Wird gesendet...' : 'Zahlung gesendet ✓'}
+                  </button>
+                )}
               </div>
             </div>
           </div>
