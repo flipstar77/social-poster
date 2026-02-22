@@ -58,7 +58,7 @@ export default function WaitingPage() {
 
       const { data: profile } = await supabase
         .from('profiles')
-        .select('plan, selected_platforms, is_active, upload_post_username, accounts_connected')
+        .select('plan, selected_platforms, is_active, upload_post_username')
         .eq('id', user.id)
         .single()
 
@@ -70,14 +70,24 @@ export default function WaitingPage() {
         setPlan(profile.plan ?? 'starter')
         setPlatforms(profile.selected_platforms ?? [])
         setUsername(profile.upload_post_username ?? '')
-        setAccountsConnected(profile.accounts_connected ?? false)
       }
+
+      // accounts_connected is optional — query separately to avoid breaking if column missing
+      const { data: extra } = await supabase
+        .from('profiles')
+        .select('accounts_connected')
+        .eq('id', user.id)
+        .single()
+      if (extra?.accounts_connected) setAccountsConnected(true)
     }
     loadProfile()
   }, [])
 
   async function handleConnect() {
-    if (!username) return
+    if (!username) {
+      setConnectError('Profil nicht geladen — bitte Seite neu laden.')
+      return
+    }
     setConnecting(true)
     setConnectError('')
     try {
@@ -92,7 +102,7 @@ export default function WaitingPage() {
         return
       }
       // Mark as connected in DB (optimistic — they'll actually connect in the new tab)
-      await supabase.from('profiles').update({ accounts_connected: true }).eq('upload_post_username', username)
+      await supabase.from('profiles').update({ accounts_connected: true }).eq('upload_post_username', username).throwOnError().catch(() => { /* column may not exist yet */ })
       setAccountsConnected(true)
       window.open(data.connectUrl, '_blank')
     } catch {
