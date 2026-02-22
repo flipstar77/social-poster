@@ -102,7 +102,9 @@ export default function WaitingPage() {
         return
       }
       // Mark as connected in DB (optimistic — they'll actually connect in the new tab)
-      await supabase.from('profiles').update({ accounts_connected: true }).eq('upload_post_username', username).throwOnError().catch(() => { /* column may not exist yet */ })
+      try {
+        await supabase.from('profiles').update({ accounts_connected: true }).eq('upload_post_username', username)
+      } catch { /* column may not exist yet */ }
       setAccountsConnected(true)
       window.open(data.connectUrl, '_blank')
     } catch {
