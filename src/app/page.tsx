@@ -813,7 +813,7 @@ export default function LandingPage() {
                   <span style={{ fontSize: 14, fontWeight: 600, color: '#7e22ce' }}>Alle 5 Plattformen</span>
                 </div>
                 <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px', display: 'flex', flexDirection: 'column', gap: 11, flex: 1 }}>
-                  {['Alles aus Growth', 'YouTube + X / Twitter dazu', 'Telegram Bot — posten per Sprachnachricht', 'Prioritäts-Support', 'Monatlicher Strategy-Call'].map(item => (
+                  {['Alles aus Growth', 'YouTube + X / Twitter dazu', 'Telegram Bot — posten per Sprachnachricht', 'Prioritäts-Support'].map(item => (
                     <li key={item} style={{ display: 'flex', gap: 10, fontSize: 14 }}>
                       <span style={{ color: '#a855f7', fontWeight: 700, flexShrink: 0 }}>✓</span>
                       <span style={{ color: '#18181b' }}>{item}</span>

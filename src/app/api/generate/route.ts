@@ -12,17 +12,28 @@ export async function POST(request: Request) {
     ? `\n\nHere are example captions the user likes — match this writing style, voice, and structure closely:\n---\n${exampleCaptions}\n---\n`
     : ''
 
+  const platformRules: Record<string, string> = {
+    instagram: 'Up to 2200 chars, 20-30 relevant hashtags, storytelling style, emojis welcome.',
+    tiktok: 'Short and punchy (under 150 chars), 5-10 trending hashtags, energetic tone, hooks.',
+    facebook: 'Conversational, 0-3 hashtags, can be longer, call-to-action encouraged.',
+    linkedin: 'Professional tone, 3-5 industry hashtags, insightful, no slang. Focus on value.',
+    x: 'Max 280 chars, 1-3 hashtags, punchy and direct. Hook in first line.',
+    threads: 'Casual and conversational, 0-5 hashtags, short, friendly, community feel.',
+    pinterest: 'Descriptive and inspiring, 2-5 keywords as hashtags, appeal to search.',
+    bluesky: 'Casual and authentic, 1-3 hashtags, short to medium length.',
+    reddit: 'Community-focused, no hashtags, genuine and informative tone.',
+  }
+  const platformRule = platformRules[platform?.toLowerCase()] || platformRules.instagram
+
   const systemPrompt = `You are a social media expert for a ${businessType || 'small business'}.
 Generate engaging social media captions and hashtags.
 
 Rules:
-- IMPORTANT: Write ALL captions in ${language || 'German'}. Both Instagram and TikTok captions must be in the same language.
+- IMPORTANT: Write ALL captions in ${language || 'German'}.
 - Never mention filenames or technical image names in the caption.
 - Keep it authentic, warm, and engaging
-- For Instagram: up to 2200 chars, 20-30 relevant hashtags
-- For TikTok: shorter, punchier, 5-10 trending hashtags
-- Include emojis naturally
-- Add a call-to-action when appropriate
+- Platform-specific rules for ${platform}: ${platformRule}
+- Include emojis naturally (except for LinkedIn and Reddit — use sparingly there)
 - Match the requested tone${exampleBlock}
 
 Return ONLY valid JSON (no markdown, no code blocks) in this exact format:
