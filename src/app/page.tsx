@@ -193,12 +193,15 @@ function Ticker() {
 const FAQS = [
   { q: 'Wie lange dauert die Einrichtung?', a: 'Wir richten alles innerhalb von 24 Stunden ein. Ihr bekommt einen persönlichen Zugang und seid sofort startklar — keine technischen Vorkenntnisse nötig.' },
   { q: 'Brauche ich technisches Wissen?', a: 'Nein. Ihr ladet ein Bild hoch, schreibt optional eine kurze Notiz dazu — alles andere passiert automatisch. Kein Coding, kein Setup, kein Aufwand.' },
-  { q: 'Welche Plattformen werden unterstützt?', a: 'Instagram, TikTok, Facebook, YouTube und X (Twitter) — bis zu 5 gleichzeitig mit einem einzigen Upload. So einfach wie auf einer posten.' },
+  { q: 'Welche Plattformen sind in welchem Plan?', a: 'Starter: 1 Plattform nach Wahl (z.B. nur Instagram). Growth: bis zu 3 Plattformen (z.B. Instagram, TikTok, Facebook). Pro: alle 5 Plattformen gleichzeitig (Instagram, TikTok, Facebook, YouTube, X). Ihr könnt jederzeit upgraden.' },
   { q: 'Muss ich selbst planen wann gepostet wird?', a: 'Nein. Das System übernimmt das automatisch. Ihr ladet Bilder hoch — wann, wie oft und auf welchen Plattformen gepostet wird, steuert der Auto-Scheduler. Ihr müsst den Kalender nie anfassen.' },
-  { q: 'Was kostet der laufende Betrieb bei Lite?', a: 'Ihr verwaltet zwei kleine API-Zugänge selbst — das kostet euch ca. 15–18 € / Monat. Wir zeigen euch alles Schritt für Schritt bei der Einrichtung. Einmalig, dauert ca. 10 Minuten.' },
-  { q: 'Kann ich kündigen?', a: 'Lite ist eine Einmalzahlung — keine Kündigung nötig, Zugang bleibt für immer. Pro Monatlich ist jederzeit ohne Frist kündbar. Pro Jährlich gilt für 12 Monate und wird danach automatisch verlängert, außer ihr kündigt rechtzeitig.' },
+  { q: 'Kann ich kündigen?', a: 'Ja, jederzeit. Monatliche Pläne sind ohne Frist kündbar. Jährliche Pläne laufen 12 Monate und verlängern sich danach automatisch — ihr könnt jederzeit vor Ablauf kündigen.' },
+  { q: 'Kann ich meinen Plan wechseln?', a: 'Ja. Upgrade von Starter auf Growth oder Pro jederzeit möglich — ihr zahlt nur die Differenz. Downgrade ist zum nächsten Abrechnungszeitraum möglich.' },
   { q: 'Schreibt die KI auch auf Englisch oder anderen Sprachen?', a: 'Ja. Die KI schreibt in jeder Sprache — Deutsch, Englisch, Türkisch, Arabisch und mehr. Einfach beim Setup angeben.' },
-  { q: 'Ist Zahlung per Crypto möglich?', a: 'Ja, wir akzeptieren ETH und BTC. Schick die Zahlung an die unten angezeigte Adresse und melde dich danach kurz bei uns.' },
+  { q: 'Was ist das Launch-Angebot?', a: 'Die ersten 50 Kunden zahlen keine Einrichtungsgebühr — normalerweise 99 €. Das Angebot gilt bis die 50 Plätze vergeben sind, danach kehren wir zum regulären Preis zurück.' },
+  { q: 'Performen geplante Posts genauso gut wie manuelle?', a: 'Ja. Geplante Posts performen genauso gut wie manuell veröffentlichte. Moderne Algorithmen werten Relevanz und Qualität des Contents — nicht ob jemand manuell auf "Posten" geklickt hat. Regelmäßigkeit ist sogar ein Vorteil.' },
+  { q: 'Ist das sicher für meine Social-Media-Accounts?', a: 'Ja. Wir nutzen ausschließlich die offiziellen, verifizierten APIs von Instagram, TikTok, Facebook und Co. — kein Scraping, keine Bots, keine Workarounds. Eure Accounts sind zu 100% geschützt.' },
+  { q: 'Wie viel Zeit spare ich wirklich?', a: 'Unsere Nutzer berichten von bis zu 90% Zeitersparnis gegenüber manuellem Posten auf mehreren Plattformen. Statt 2–4 Stunden pro Woche: ein Bild hochladen, fertig.' },
 ]
 
 function FaqItem({ q, a, open, onToggle }: { q: string; a: string; open: boolean; onToggle: () => void }) {
@@ -505,7 +508,6 @@ function StickyShowcase({ scrollY, vh }: { scrollY: number; vh: number }) {
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default function LandingPage() {
   const [faqOpen, setFaqOpen] = useState<number | null>(null)
-  const [cryptoOpen, setCryptoOpen] = useState(false)
   const [yearly, setYearly] = useState(false)
   const [scrollY, setScrollY] = useState(0)
   const [windowHeight, setWindowHeight] = useState(0)
@@ -693,9 +695,16 @@ export default function LandingPage() {
         <section id="kaufen" style={{ background: '#fff', borderTop: '1px solid #e4e4e7', borderBottom: '1px solid #e4e4e7' }}>
           <div style={{ maxWidth: 1080, margin: '0 auto', padding: '80px 24px' }}>
             <h2 style={{ fontSize: 36, fontWeight: 800, textAlign: 'center', marginBottom: 10, color: '#09090b' }}>Jetzt starten</h2>
-            <p style={{ color: '#71717a', textAlign: 'center', marginBottom: 32, fontSize: 16 }}>
-              Einmal einrichten — für immer nutzen. Sofortiger Zugang nach Zahlung.
+            <p style={{ color: '#71717a', textAlign: 'center', marginBottom: 24, fontSize: 16 }}>
+              Wählt die Anzahl eurer Plattformen — jederzeit kündbar oder upgradebar.
             </p>
+
+            {/* Promo banner */}
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 32 }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'linear-gradient(135deg, #fef3c7, #fde68a)', border: '1px solid #fbbf24', borderRadius: 999, padding: '8px 20px', fontSize: 13, fontWeight: 700, color: '#92400e' }}>
+                🚀 Launch-Angebot: Erste 50 Kunden — keine Einrichtungsgebühr (–99 €)
+              </div>
+            </div>
 
             {/* Billing toggle */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, marginBottom: 48 }}>
@@ -722,18 +731,26 @@ export default function LandingPage() {
                 <span style={{ marginLeft: 6, background: '#dcfce7', color: '#16a34a', fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 999 }}>2 Monate gratis</span>
               </span>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20, maxWidth: 780, margin: '0 auto' }}>
 
-              {/* Lite */}
-              <HoverCard style={{ padding: 40, display: 'flex', flexDirection: 'column' }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>Lite</div>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, marginBottom: 4 }}>
-                  <span style={{ fontSize: 52, fontWeight: 800, color: '#09090b', lineHeight: 1 }}>149 €</span>
-                  <span style={{ fontSize: 15, color: '#71717a', marginBottom: 6 }}>einmalig</span>
+            {/* 3 Tier cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
+
+              {/* Starter */}
+              <HoverCard style={{ padding: 36, display: 'flex', flexDirection: 'column' }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Starter</div>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 2 }}>
+                  <span style={{ fontSize: 48, fontWeight: 800, color: '#09090b', lineHeight: 1 }}>{yearly ? '12' : '15'} €</span>
+                  <span style={{ fontSize: 14, color: '#71717a' }}>/ Monat</span>
                 </div>
-                <div style={{ fontSize: 13, color: '#a1a1aa', marginBottom: 32 }}>+ ~15–18 € / Monat eigene API-Kosten</div>
-                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 32px', display: 'flex', flexDirection: 'column', gap: 12, flex: 1 }}>
-                  {['Lifetime-Zugang zum Tool', 'Unbegrenzte Posts', 'Instagram, TikTok, Facebook', 'KI-Captions in eurer Sprache', 'Persönliche Einrichtung', 'E-Mail Support'].map(item => (
+                <div style={{ fontSize: 13, color: '#a1a1aa', marginBottom: 28 }}>
+                  {yearly ? 'Jährlich 150 € — 2 Monate gespart' : 'Monatlich kündbar'}
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24, padding: '10px 14px', background: '#f8fafc', borderRadius: 10, border: '1px solid #e4e4e7' }}>
+                  <span style={{ fontSize: 18 }}>📱</span>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: '#09090b' }}>1 Plattform nach Wahl</span>
+                </div>
+                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px', display: 'flex', flexDirection: 'column', gap: 11, flex: 1 }}>
+                  {['Unbegrenzte Posts', 'KI-Captions in eurer Sprache', 'Auto-Scheduler inklusive', 'Wir managen alles für euch', 'Persönliche Einrichtung', 'E-Mail Support'].map(item => (
                     <li key={item} style={{ display: 'flex', gap: 10, fontSize: 14 }}>
                       <span style={{ color: '#22c55e', fontWeight: 700, flexShrink: 0 }}>✓</span>
                       <span style={{ color: '#18181b' }}>{item}</span>
@@ -741,80 +758,77 @@ export default function LandingPage() {
                   ))}
                 </ul>
                 <a
-                  href="https://paypal.me/YOUR_PAYPAL/149EUR"
-                  target="_blank" rel="noopener noreferrer"
-                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, background: '#0070ba', color: 'white', padding: '14px', borderRadius: 12, fontWeight: 700, fontSize: 15, textDecoration: 'none', marginBottom: 10 }}
+                  href="mailto:hello@flowingpost.com?subject=Starter%20Plan%20Anfrage&body=Hallo%2C%0A%0Aich%20interessiere%20mich%20f%C3%BCr%20den%20Starter%20Plan%20(1%20Plattform).%0A%0AMein%20Restaurant%2FCaf%C3%A9%3A%20%0AWelche%20Plattform%3A%20%0A%0AViele%20Gr%C3%BC%C3%9Fe"
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: '#18181b', color: 'white', padding: '13px', borderRadius: 12, fontWeight: 700, fontSize: 15, textDecoration: 'none' }}
                 >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.93 4.778-4.005 7.201-9.138 7.201h-2.19a.563.563 0 0 0-.556.479l-1.187 7.527h-.506l-.24 1.516a.56.56 0 0 0 .554.647h3.882c.46 0 .85-.334.922-.788.06-.26.76-4.852.816-5.09a.932.932 0 0 1 .923-.788h.58c3.76 0 6.705-1.528 7.565-5.946.36-1.847.174-3.388-.777-4.471z"/></svg>
-                  Mit PayPal zahlen
+                  Jetzt anfragen →
                 </a>
-                <button
-                  onClick={() => setCryptoOpen(!cryptoOpen)}
-                  style={{ background: 'none', border: '1px solid #e4e4e7', borderRadius: 12, padding: '11px', fontSize: 14, color: '#71717a', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 500 }}
-                >
-                  {cryptoOpen ? '✕ Crypto schließen' : '₿  Mit Crypto zahlen'}
-                </button>
-                {cryptoOpen && (
-                  <div style={{ marginTop: 12, background: '#f8fafc', borderRadius: 12, padding: 16, fontSize: 12, color: '#52525b' }}>
-                    <div style={{ marginBottom: 10 }}>
-                      <div style={{ fontWeight: 600, color: '#09090b', marginBottom: 4 }}>ETH (Ethereum)</div>
-                      <code style={{ wordBreak: 'break-all', background: '#e4e4e7', padding: '4px 8px', borderRadius: 6, display: 'block' }}>0xYOUR_ETH_WALLET_ADDRESS</code>
-                    </div>
-                    <div>
-                      <div style={{ fontWeight: 600, color: '#09090b', marginBottom: 4 }}>BTC (Bitcoin)</div>
-                      <code style={{ wordBreak: 'break-all', background: '#e4e4e7', padding: '4px 8px', borderRadius: 6, display: 'block' }}>YOUR_BTC_WALLET_ADDRESS</code>
-                    </div>
-                    <p style={{ margin: '10px 0 0', color: '#a1a1aa', fontSize: 11 }}>Nach der Zahlung bitte Screenshot + E-Mail an uns senden.</p>
-                  </div>
-                )}
               </HoverCard>
 
-              {/* Pro */}
+              {/* Growth — BELIEBT */}
               <div style={{ position: 'relative' }}>
                 <div style={{ position: 'absolute', top: -14, left: '50%', transform: 'translateX(-50%)', background: '#6366f1', color: '#fff', fontSize: 11, fontWeight: 700, padding: '5px 16px', borderRadius: 999, letterSpacing: '0.06em', zIndex: 1, whiteSpace: 'nowrap' }}>★ BELIEBT</div>
-                <HoverCard accent style={{ padding: 40, display: 'flex', flexDirection: 'column' }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: '#6366f1', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>Pro</div>
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, marginBottom: 4 }}>
-                    <span style={{ fontSize: 52, fontWeight: 800, color: '#09090b', lineHeight: 1 }}>149 €</span>
-                    <span style={{ fontSize: 15, color: '#71717a', marginBottom: 6 }}>einmalig</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 4 }}>
-                    <span style={{ fontSize: 26, fontWeight: 700, color: '#09090b' }}>+ {yearly ? '29' : '39'} €</span>
+                <HoverCard accent style={{ padding: 36, display: 'flex', flexDirection: 'column', height: '100%' }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#6366f1', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Growth</div>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 2 }}>
+                    <span style={{ fontSize: 48, fontWeight: 800, color: '#09090b', lineHeight: 1 }}>{yearly ? '18' : '22'} €</span>
                     <span style={{ fontSize: 14, color: '#71717a' }}>/ Monat</span>
                   </div>
-                  <div style={{ fontSize: 13, color: '#a1a1aa', marginBottom: 32 }}>
-                    {yearly ? 'Jährlich 348 € — 2 Monate gespart' : 'Monatlich kündbar'}
+                  <div style={{ fontSize: 13, color: '#a1a1aa', marginBottom: 28 }}>
+                    {yearly ? 'Jährlich 220 € — 2 Monate gespart' : 'Monatlich kündbar'}
                   </div>
-                  <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 32px', display: 'flex', flexDirection: 'column', gap: 12, flex: 1 }}>
-                    {['Alles aus Lite', 'Wir managen alle API-Keys', 'Telegram Bot — posten per Sprachnachricht', 'Caption-Stil auf euer Restaurant angepasst', 'WhatsApp Support', 'Monatlicher Check-in'].map(item => (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24, padding: '10px 14px', background: '#eef2ff', borderRadius: 10, border: '1px solid #c7d2fe' }}>
+                    <span style={{ fontSize: 18 }}>🚀</span>
+                    <span style={{ fontSize: 14, fontWeight: 600, color: '#3730a3' }}>Bis zu 3 Plattformen</span>
+                  </div>
+                  <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px', display: 'flex', flexDirection: 'column', gap: 11, flex: 1 }}>
+                    {['Alles aus Starter', 'Instagram + TikTok + Facebook', 'Caption-Stil auf euer Restaurant angepasst', 'Monatlicher Check-in', 'E-Mail Support'].map(item => (
                       <li key={item} style={{ display: 'flex', gap: 10, fontSize: 14 }}>
                         <span style={{ color: '#6366f1', fontWeight: 700, flexShrink: 0 }}>✓</span>
                         <span style={{ color: '#18181b' }}>{item}</span>
                       </li>
                     ))}
                   </ul>
-                  {yearly ? (
-                    <a
-                      href="https://paypal.me/YOUR_PAYPAL/348EUR"
-                      target="_blank" rel="noopener noreferrer"
-                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, background: '#0070ba', color: 'white', padding: '14px', borderRadius: 12, fontWeight: 700, fontSize: 15, textDecoration: 'none', marginBottom: 10 }}
-                    >
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.93 4.778-4.005 7.201-9.138 7.201h-2.19a.563.563 0 0 0-.556.479l-1.187 7.527h-.506l-.24 1.516a.56.56 0 0 0 .554.647h3.882c.46 0 .85-.334.922-.788.06-.26.76-4.852.816-5.09a.932.932 0 0 1 .923-.788h.58c3.76 0 6.705-1.528 7.565-5.946.36-1.847.174-3.388-.777-4.471z"/></svg>
-                      348 € / Jahr mit PayPal
-                    </a>
-                  ) : (
-                    <a
-                      href="https://paypal.me/YOUR_PAYPAL/188EUR"
-                      target="_blank" rel="noopener noreferrer"
-                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, background: '#0070ba', color: 'white', padding: '14px', borderRadius: 12, fontWeight: 700, fontSize: 15, textDecoration: 'none' }}
-                    >
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.93 4.778-4.005 7.201-9.138 7.201h-2.19a.563.563 0 0 0-.556.479l-1.187 7.527h-.506l-.24 1.516a.56.56 0 0 0 .554.647h3.882c.46 0 .85-.334.922-.788.06-.26.76-4.852.816-5.09a.932.932 0 0 1 .923-.788h.58c3.76 0 6.705-1.528 7.565-5.946.36-1.847.174-3.388-.777-4.471z"/></svg>
-                      Mit PayPal starten
-                    </a>
-                  )}
+                  <a
+                    href="mailto:hello@flowingpost.com?subject=Growth%20Plan%20Anfrage&body=Hallo%2C%0A%0Aich%20interessiere%20mich%20f%C3%BCr%20den%20Growth%20Plan%20(3%20Plattformen).%0A%0AMein%20Restaurant%2FCaf%C3%A9%3A%20%0AWelche%20Plattformen%3A%20%0A%0AViele%20Gr%C3%BC%C3%9Fe"
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: 'linear-gradient(135deg, #6366f1, #a855f7)', color: 'white', padding: '13px', borderRadius: 12, fontWeight: 700, fontSize: 15, textDecoration: 'none', boxShadow: '0 4px 20px rgba(99,102,241,0.35)' }}
+                  >
+                    Jetzt anfragen →
+                  </a>
                 </HoverCard>
               </div>
+
+              {/* Pro */}
+              <HoverCard style={{ padding: 36, display: 'flex', flexDirection: 'column' }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Pro</div>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 2 }}>
+                  <span style={{ fontSize: 48, fontWeight: 800, color: '#09090b', lineHeight: 1 }}>{yearly ? '21' : '29'} €</span>
+                  <span style={{ fontSize: 14, color: '#71717a' }}>/ Monat</span>
+                </div>
+                <div style={{ fontSize: 13, color: '#a1a1aa', marginBottom: 28 }}>
+                  {yearly ? 'Jährlich 249 € — 30% gespart' : 'Monatlich kündbar'}
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24, padding: '10px 14px', background: '#fdf4ff', borderRadius: 10, border: '1px solid #e9d5ff' }}>
+                  <span style={{ fontSize: 18 }}>🌍</span>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: '#7e22ce' }}>Alle 5 Plattformen</span>
+                </div>
+                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px', display: 'flex', flexDirection: 'column', gap: 11, flex: 1 }}>
+                  {['Alles aus Growth', 'YouTube + X / Twitter dazu', 'Telegram Bot — posten per Sprachnachricht', 'Prioritäts-Support', 'Monatlicher Strategy-Call'].map(item => (
+                    <li key={item} style={{ display: 'flex', gap: 10, fontSize: 14 }}>
+                      <span style={{ color: '#a855f7', fontWeight: 700, flexShrink: 0 }}>✓</span>
+                      <span style={{ color: '#18181b' }}>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                <a
+                  href="mailto:hello@flowingpost.com?subject=Pro%20Plan%20Anfrage&body=Hallo%2C%0A%0Aich%20interessiere%20mich%20f%C3%BCr%20den%20Pro%20Plan%20(alle%205%20Plattformen).%0A%0AMein%20Restaurant%2FCaf%C3%A9%3A%20%0A%0AViele%20Gr%C3%BC%C3%9Fe"
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: '#18181b', color: 'white', padding: '13px', borderRadius: 12, fontWeight: 700, fontSize: 15, textDecoration: 'none' }}
+                >
+                  Jetzt anfragen →
+                </a>
+              </HoverCard>
             </div>
+
             <p style={{ textAlign: 'center', fontSize: 13, color: '#a1a1aa', marginTop: 28 }}>
               Zum Vergleich: Social-Media-Agenturen in Deutschland kosten 500–2.000 € / Monat.
             </p>
