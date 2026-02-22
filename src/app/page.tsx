@@ -308,7 +308,7 @@ function CalendarSection() {
                 </div>
               </div>
             ))}
-            <a href="#kaufen" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#6366f1', color: '#fff', padding: '13px 28px', borderRadius: 12, fontSize: 15, fontWeight: 700, textDecoration: 'none', alignSelf: 'flex-start', boxShadow: '0 4px 20px rgba(99,102,241,0.35)' }}>
+            <a href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#6366f1', color: '#fff', padding: '13px 28px', borderRadius: 12, fontSize: 15, fontWeight: 700, textDecoration: 'none', alignSelf: 'flex-start', boxShadow: '0 4px 20px rgba(99,102,241,0.35)' }}>
               Jetzt starten →
             </a>
           </div>
@@ -556,11 +556,11 @@ export default function LandingPage() {
                 <circle cx="12" cy="12" r="4" stroke="url(#ig-g)" strokeWidth="2" fill="none" />
                 <circle cx="17.5" cy="6.5" r="1.2" fill="url(#ig-g)" />
               </svg>
-              <span style={{ fontWeight: 700, fontSize: 16 }}>Social Poster AI</span>
+              <span style={{ fontWeight: 700, fontSize: 16 }}>FlowingPost</span>
             </div>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <Link href="/tool" style={{ fontSize: 14, color: '#71717a', textDecoration: 'none', padding: '8px 14px' }}>Tool →</Link>
-              <a href="#kaufen" style={{ background: '#6366f1', color: 'white', padding: '9px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600, textDecoration: 'none' }}>
+              <Link href="/login" style={{ fontSize: 14, color: '#71717a', textDecoration: 'none', padding: '8px 14px' }}>Anmelden →</Link>
+              <a href="/login" style={{ background: '#6366f1', color: 'white', padding: '9px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600, textDecoration: 'none' }}>
                 Jetzt starten
               </a>
             </div>
@@ -615,12 +615,12 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="hero-fadeup-3" style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <a href="#kaufen" style={{ background: '#6366f1', color: 'white', padding: '15px 36px', borderRadius: 12, fontSize: 16, fontWeight: 700, textDecoration: 'none', boxShadow: '0 4px 24px rgba(99,102,241,0.4)' }}>
+              <a href="/login" style={{ background: '#6366f1', color: 'white', padding: '15px 36px', borderRadius: 12, fontSize: 16, fontWeight: 700, textDecoration: 'none', boxShadow: '0 4px 24px rgba(99,102,241,0.4)' }}>
                 Jetzt Zugang sichern →
               </a>
-              <Link href="/tool" style={{ border: '1px solid #d4d4d8', color: '#3f3f46', background: '#fff', padding: '15px 36px', borderRadius: 12, fontSize: 16, fontWeight: 600, textDecoration: 'none' }}>
-                Tool ansehen
-              </Link>
+              <a href="/login" style={{ border: '1px solid #d4d4d8', color: '#3f3f46', background: '#fff', padding: '15px 36px', borderRadius: 12, fontSize: 16, fontWeight: 600, textDecoration: 'none' }}>
+                Kostenlos registrieren
+              </a>
             </div>
           </div>
         </section>
@@ -758,10 +758,10 @@ export default function LandingPage() {
                   ))}
                 </ul>
                 <a
-                  href="mailto:hello@flowingpost.com?subject=Starter%20Plan%20Anfrage&body=Hallo%2C%0A%0Aich%20interessiere%20mich%20f%C3%BCr%20den%20Starter%20Plan%20(1%20Plattform).%0A%0AMein%20Restaurant%2FCaf%C3%A9%3A%20%0AWelche%20Plattform%3A%20%0A%0AViele%20Gr%C3%BC%C3%9Fe"
+                  href="/login"
                   style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: '#18181b', color: 'white', padding: '13px', borderRadius: 12, fontWeight: 700, fontSize: 15, textDecoration: 'none' }}
                 >
-                  Jetzt anfragen →
+                  Jetzt starten →
                 </a>
               </HoverCard>
 
@@ -790,10 +790,10 @@ export default function LandingPage() {
                     ))}
                   </ul>
                   <a
-                    href="mailto:hello@flowingpost.com?subject=Growth%20Plan%20Anfrage&body=Hallo%2C%0A%0Aich%20interessiere%20mich%20f%C3%BCr%20den%20Growth%20Plan%20(3%20Plattformen).%0A%0AMein%20Restaurant%2FCaf%C3%A9%3A%20%0AWelche%20Plattformen%3A%20%0A%0AViele%20Gr%C3%BC%C3%9Fe"
+                    href="/login"
                     style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: 'linear-gradient(135deg, #6366f1, #a855f7)', color: 'white', padding: '13px', borderRadius: 12, fontWeight: 700, fontSize: 15, textDecoration: 'none', boxShadow: '0 4px 20px rgba(99,102,241,0.35)' }}
                   >
-                    Jetzt anfragen →
+                    Jetzt starten →
                   </a>
                 </HoverCard>
               </div>
@@ -821,10 +821,10 @@ export default function LandingPage() {
                   ))}
                 </ul>
                 <a
-                  href="mailto:hello@flowingpost.com?subject=Pro%20Plan%20Anfrage&body=Hallo%2C%0A%0Aich%20interessiere%20mich%20f%C3%BCr%20den%20Pro%20Plan%20(alle%209%20Plattformen%20%2B%20Telegram%20Bot).%0A%0AMein%20Restaurant%2FCaf%C3%A9%3A%20%0A%0AViele%20Gr%C3%BC%C3%9Fe"
+                  href="/login"
                   style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: '#18181b', color: 'white', padding: '13px', borderRadius: 12, fontWeight: 700, fontSize: 15, textDecoration: 'none' }}
                 >
-                  Jetzt anfragen →
+                  Jetzt starten →
                 </a>
               </HoverCard>
             </div>

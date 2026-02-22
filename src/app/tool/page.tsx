@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useRef, useCallback, useEffect } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import { useRouter } from 'next/navigation'
 
 // --- Types ---
 
@@ -381,6 +383,9 @@ function CalendarScheduler({
 // --- Main App ---
 
 export default function Home() {
+  const router = useRouter()
+  const supabase = createClient()
+
   const [step, setStep] = useState(1)
   const [photos, setPhotos] = useState<UploadedPhoto[]>([])
   const [posts, setPosts] = useState<GeneratedPost[]>([])
@@ -399,38 +404,53 @@ export default function Home() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(['instagram', 'tiktok'])
 
+  // Auth state
+  const [userUsername, setUserUsername] = useState('') // upload-post.com UUID-based username
+  const [userEmail, setUserEmail] = useState('')
+  const [connecting, setConnecting] = useState(false)
+  const [connectError, setConnectError] = useState('')
+
+  useEffect(() => {
+    async function loadProfile() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      setUserEmail(user.email ?? '')
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('upload_post_username, selected_platforms')
+        .eq('id', user.id)
+        .single()
+
+      if (profile) {
+        if (profile.upload_post_username) setUserUsername(profile.upload_post_username)
+        if (profile.selected_platforms?.length) setSelectedPlatforms(profile.selected_platforms)
+      }
+    }
+    loadProfile()
+  }, [])
+
   const togglePlatform = (id: string) => {
     setSelectedPlatforms(prev =>
       prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]
     )
   }
 
-  // Account setup
-  const [accountUsername, setAccountUsername] = useState('')
-  const [connecting, setConnecting] = useState(false)
-  const [connectError, setConnectError] = useState('')
-
-  useEffect(() => {
-    const saved = localStorage.getItem('fp_username')
-    if (saved) setAccountUsername(saved)
-  }, [])
-
   const handleConnect = async () => {
-    if (!accountUsername.trim()) return
+    if (!userUsername) return
     setConnecting(true)
     setConnectError('')
     try {
       const res = await fetch('/api/connect', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: accountUsername.trim() }),
+        body: JSON.stringify({ username: userUsername }),
       })
       const data = await res.json()
       if (!res.ok || !data.connectUrl) {
         setConnectError(data.error || 'Failed to generate connection link')
         return
       }
-      localStorage.setItem('fp_username', accountUsername.trim())
       window.open(data.connectUrl, '_blank')
     } catch {
       setConnectError('Network error — please try again')
@@ -439,10 +459,9 @@ export default function Home() {
     }
   }
 
-  const saveUsername = () => {
-    if (accountUsername.trim()) {
-      localStorage.setItem('fp_username', accountUsername.trim())
-    }
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+    router.push('/')
   }
 
   // --- Upload handlers ---
@@ -618,7 +637,7 @@ export default function Home() {
       formData.append('scheduledDate', post.scheduledDate)
       formData.append('scheduledTime', post.scheduledTime)
       formData.append('timezone', timezone)
-      if (accountUsername.trim()) formData.append('username', accountUsername.trim())
+      if (userUsername) formData.append('username', userUsername)
 
       try {
         const res = await fetch('/api/publish', { method: 'POST', body: formData })
@@ -647,56 +666,39 @@ export default function Home() {
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
       {/* Header */}
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold mb-2">
-          Flowing<span className="text-[var(--accent)]">Post</span>
-        </h1>
-        <p className="text-[var(--text-muted)]">
-          Fotos hochladen &rarr; KI generiert Captions &rarr; Planen &rarr; Auf allen Plattformen posten
-        </p>
-      </div>
-
-      {/* Account Setup */}
-      <div className="max-w-xl mx-auto mb-8 p-4 rounded-xl bg-[var(--card)] border border-[var(--border)]">
-        <p className="text-xs text-[var(--text-muted)] uppercase tracking-wide font-medium mb-3">Dein Account</p>
-        <div className="flex gap-2">
-          <input
-            value={accountUsername}
-            onChange={e => setAccountUsername(e.target.value)}
-            onBlur={saveUsername}
-            placeholder="Dein Benutzername (von uns per E-Mail erhalten)"
-            className="flex-1 px-3 py-2 rounded-lg bg-[var(--bg)] border border-[var(--border)] text-sm focus:border-[var(--accent)] focus:outline-none transition-colors"
-          />
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold">
+            Flowing<span className="text-[var(--accent)]">Post</span>
+          </h1>
+          <p className="text-[var(--text-muted)] text-sm mt-1">
+            Fotos hochladen &rarr; KI generiert Captions &rarr; Planen &rarr; Auf allen Plattformen posten
+          </p>
+        </div>
+        <div className="flex items-center gap-3 shrink-0">
+          {userUsername && (
+            <button
+              onClick={handleConnect}
+              disabled={connecting}
+              className="px-3 py-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] hover:border-[var(--accent)] text-xs font-medium transition-colors disabled:opacity-50"
+            >
+              {connecting ? 'Verbinde...' : 'Konten verbinden →'}
+            </button>
+          )}
+          {userEmail && (
+            <span className="text-xs text-[var(--text-muted)] hidden sm:block">{userEmail}</span>
+          )}
           <button
-            onClick={handleConnect}
-            disabled={connecting || !accountUsername.trim()}
-            className="px-4 py-2 rounded-lg bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+            onClick={handleSignOut}
+            className="px-3 py-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] text-xs text-[var(--text-muted)] hover:text-white transition-colors"
           >
-            {connecting ? (
-              <span className="flex items-center gap-1.5">
-                <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full loading-spin" />
-                Verbinde...
-              </span>
-            ) : (
-              'Konten verbinden →'
-            )}
+            Abmelden
           </button>
         </div>
-        {connectError && (
-          <p className="mt-2 text-xs text-red-400">{connectError}</p>
-        )}
-        {!connectError && accountUsername.trim() && (
-          <p className="mt-2 text-xs text-[var(--text-muted)]">
-            Klicke auf &ldquo;Konten verbinden&rdquo;, um Instagram oder TikTok zu verknüpfen. Der Link öffnet sich in einem neuen Tab.
-          </p>
-        )}
-        {!accountUsername.trim() && (
-          <p className="mt-2 text-xs text-[var(--text-muted)]">
-            Du hast noch keinen Benutzernamen? Schreib uns an{' '}
-            <a href="mailto:hello@flowingpost.com" className="text-[var(--accent)] hover:underline">hello@flowingpost.com</a>.
-          </p>
-        )}
       </div>
+      {connectError && (
+        <p className="text-xs text-red-400 text-center mb-4">{connectError}</p>
+      )}
 
       <StepIndicator current={step} />
 
@@ -927,7 +929,7 @@ export default function Home() {
                             ) : (
                               <PlatformIcon platform={plat} size={14} />
                             )}
-                            {plat === 'instagram' ? 'Instagram' : 'TikTok'}
+                            {getPlatform(plat).label}
                             {hasPost && ' ✓'}
                             {hasVariants && !hasPost && ' ●'}
                           </button>

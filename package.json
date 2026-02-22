@@ -10,6 +10,8 @@
     "ig-dms:dry": "tsx scripts/send-ig-dms.ts --dry-run"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.8.0",
+    "@supabase/supabase-js": "^2.97.0",
     "@tailwindcss/postcss": "^4.1.18",
     "@types/node": "^25.2.3",
     "@types/react": "^19.2.14",
