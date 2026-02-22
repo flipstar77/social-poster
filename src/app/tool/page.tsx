@@ -649,10 +649,10 @@ export default function Home() {
       {/* Header */}
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold mb-2">
-          Social Poster <span className="text-[var(--accent)]">AI</span>
+          Flowing<span className="text-[var(--accent)]">Post</span>
         </h1>
         <p className="text-[var(--text-muted)]">
-          Upload photos &rarr; AI generates captions &rarr; Schedule &rarr; Post to IG & TikTok
+          Fotos hochladen &rarr; KI generiert Captions &rarr; Planen &rarr; Auf allen Plattformen posten
         </p>
       </div>
 
@@ -1157,7 +1157,7 @@ export default function Home() {
       )}
 
       <div className="text-center mt-12 text-xs text-[var(--text-muted)]">
-        Built with Next.js, Tailwind CSS & Grok AI
+        FlowingPost &mdash; powered by KI
       </div>
     </div>
   )
