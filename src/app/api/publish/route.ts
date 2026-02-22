@@ -15,6 +15,7 @@ export async function POST(request: Request) {
     const scheduledDate = formData.get('scheduledDate') as string // YYYY-MM-DD
     const scheduledTime = formData.get('scheduledTime') as string // HH:mm
     const tz = formData.get('timezone') as string || 'Europe/Berlin'
+    const usernameParam = formData.get('username') as string | null
 
     if (!photo || !caption || !platform) {
       return NextResponse.json(
@@ -29,15 +30,18 @@ export async function POST(request: Request) {
       : ''
     const title = `${caption}\n\n${hashtagStr}`.trim()
 
-    // Fetch the user's profile username from upload-post.com
-    const profilesRes = await fetch('https://api.upload-post.com/api/uploadposts/users', {
-      headers: { 'Authorization': `Apikey ${apiKey}` },
-    })
-    const profilesData = await profilesRes.json()
-    const username = profilesData.profiles?.[0]?.username
+    // Use the provided username, or fall back to fetching the first profile
+    let username = usernameParam
+    if (!username) {
+      const profilesRes = await fetch('https://api.upload-post.com/api/uploadposts/users', {
+        headers: { 'Authorization': `Apikey ${apiKey}` },
+      })
+      const profilesData = await profilesRes.json()
+      username = profilesData.profiles?.[0]?.username
+    }
     if (!username) {
       return NextResponse.json(
-        { error: 'No profile found on upload-post.com. Create a profile first.' },
+        { error: 'No profile found. Please set up your account first.' },
         { status: 400 }
       )
     }
