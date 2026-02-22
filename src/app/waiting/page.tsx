@@ -16,11 +16,9 @@ const PLAN_PRICES: Record<string, string> = {
   pro: '199',
 }
 
-// ── ZAHLUNGSDETAILS — hier anpassen ──────────────────────────────
-const PAYPAL_LINK = 'https://paypal.me/DEIN_PAYPAL_NAME'   // ← ersetzen
-const IBAN        = 'DE12 3456 7890 1234 5678 90'           // ← ersetzen
-const BANK_NAME   = 'Tobias Mustermann'                     // ← ersetzen
-const BIC         = 'XXXXXXXX'                              // ← ersetzen
+// ── ZAHLUNGSDETAILS ───────────────────────────────────────────────
+const PAYPAL_EMAIL = 'Tobias.Hersemeyer@outlook.de'
+const CRYPTO_ETH   = '0xB85Bf9dAba044FcEa3a8312d589e1616d582BDDc'
 // ─────────────────────────────────────────────────────────────────
 
 export default function WaitingPage() {
@@ -155,37 +153,54 @@ export default function WaitingPage() {
           </div>
 
           {/* PayPal */}
-          <a
-            href={`${PAYPAL_LINK}/${PLAN_PRICES[plan] ?? ''}EUR`}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
+          <div style={{ marginBottom: '1rem' }}>
+            <div style={{ fontSize: '0.7rem', color: '#6b7280', marginBottom: '0.4rem' }}>PayPal</div>
+            <div style={{
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.5rem',
-              width: '100%',
-              padding: '0.7rem',
-              background: '#003087',
-              color: '#fff',
+              justifyContent: 'space-between',
+              background: '#0a0a0a',
+              border: '1px solid #1f2937',
               borderRadius: '0.5rem',
-              textDecoration: 'none',
-              fontSize: '0.875rem',
-              fontWeight: 600,
-              marginBottom: '0.625rem',
-              boxSizing: 'border-box',
-            }}
-          >
-            PayPal — €{PLAN_PRICES[plan] ?? '?'}/Monat →
-          </a>
+              padding: '0.6rem 0.75rem',
+            }}>
+              <span style={{ fontSize: '0.8rem', color: '#e5e7eb', fontFamily: 'monospace' }}>{PAYPAL_EMAIL}</span>
+              <button
+                onClick={() => navigator.clipboard.writeText(PAYPAL_EMAIL)}
+                style={{ background: 'none', border: 'none', color: '#6b7280', cursor: 'pointer', fontSize: '0.75rem', padding: '0 0.25rem' }}
+              >
+                kopieren
+              </button>
+            </div>
+            <div style={{ fontSize: '0.7rem', color: '#6b7280', marginTop: '0.3rem' }}>
+              Betrag: <strong style={{ color: '#9ca3af' }}>€{PLAN_PRICES[plan] ?? '?'}</strong> — Verwendungszweck: FlowingPost {plan}
+            </div>
+          </div>
 
-          {/* Banküberweisung */}
-          <div style={{ fontSize: '0.75rem', color: '#9ca3af', lineHeight: 1.7 }}>
-            <div style={{ marginBottom: '0.25rem', color: '#6b7280' }}>oder Banküberweisung:</div>
-            <div><span style={{ color: '#6b7280' }}>Empfänger: </span>{BANK_NAME}</div>
-            <div><span style={{ color: '#6b7280' }}>IBAN: </span>{IBAN}</div>
-            <div><span style={{ color: '#6b7280' }}>BIC: </span>{BIC}</div>
-            <div><span style={{ color: '#6b7280' }}>Verwendungszweck: </span>FlowingPost {plan} {email}</div>
+          {/* Crypto */}
+          <div>
+            <div style={{ fontSize: '0.7rem', color: '#6b7280', marginBottom: '0.4rem' }}>Crypto (ETH / ERC-20 USDT/USDC)</div>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              background: '#0a0a0a',
+              border: '1px solid #1f2937',
+              borderRadius: '0.5rem',
+              padding: '0.6rem 0.75rem',
+              gap: '0.5rem',
+            }}>
+              <span style={{ fontSize: '0.7rem', color: '#e5e7eb', fontFamily: 'monospace', wordBreak: 'break-all' }}>{CRYPTO_ETH}</span>
+              <button
+                onClick={() => navigator.clipboard.writeText(CRYPTO_ETH)}
+                style={{ background: 'none', border: 'none', color: '#6b7280', cursor: 'pointer', fontSize: '0.75rem', padding: '0 0.25rem', flexShrink: 0 }}
+              >
+                kopieren
+              </button>
+            </div>
+            <div style={{ fontSize: '0.7rem', color: '#6b7280', marginTop: '0.3rem' }}>
+              ETH-Äquivalent zu €{PLAN_PRICES[plan] ?? '?'} senden
+            </div>
           </div>
         </div>
 
