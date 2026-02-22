@@ -750,7 +750,7 @@ export default function LandingPage() {
                   <span style={{ fontSize: 14, fontWeight: 600, color: '#09090b' }}>1 Plattform nach Wahl</span>
                 </div>
                 <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px', display: 'flex', flexDirection: 'column', gap: 11, flex: 1 }}>
-                  {['Unbegrenzte Posts', 'KI-Captions in eurer Sprache', 'Auto-Scheduler inklusive', 'Wir managen alles für euch', 'Persönliche Einrichtung', 'E-Mail Support'].map(item => (
+                  {['Unbegrenzte Posts', 'KI-Captions in eurer Sprache', 'Auto-Scheduler inklusive', 'E-Mail Support'].map(item => (
                     <li key={item} style={{ display: 'flex', gap: 10, fontSize: 14 }}>
                       <span style={{ color: '#22c55e', fontWeight: 700, flexShrink: 0 }}>✓</span>
                       <span style={{ color: '#18181b' }}>{item}</span>
@@ -782,7 +782,7 @@ export default function LandingPage() {
                     <span style={{ fontSize: 14, fontWeight: 600, color: '#3730a3' }}>Bis zu 3 Plattformen</span>
                   </div>
                   <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px', display: 'flex', flexDirection: 'column', gap: 11, flex: 1 }}>
-                    {['Alles aus Starter', 'Instagram + TikTok + Facebook', 'Caption-Stil auf euer Restaurant angepasst', 'E-Mail Support'].map(item => (
+                    {['Alles aus Starter', 'Instagram, TikTok, Facebook + mehr', 'E-Mail Support'].map(item => (
                       <li key={item} style={{ display: 'flex', gap: 10, fontSize: 14 }}>
                         <span style={{ color: '#6366f1', fontWeight: 700, flexShrink: 0 }}>✓</span>
                         <span style={{ color: '#18181b' }}>{item}</span>
@@ -810,10 +810,10 @@ export default function LandingPage() {
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24, padding: '10px 14px', background: '#fdf4ff', borderRadius: 10, border: '1px solid #e9d5ff' }}>
                   <span style={{ fontSize: 18 }}>🌍</span>
-                  <span style={{ fontSize: 14, fontWeight: 600, color: '#7e22ce' }}>Alle 5 Plattformen</span>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: '#7e22ce' }}>Alle 9 Plattformen</span>
                 </div>
                 <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px', display: 'flex', flexDirection: 'column', gap: 11, flex: 1 }}>
-                  {['Alles aus Growth', 'YouTube + X / Twitter dazu', 'Telegram Bot — posten per Sprachnachricht', 'Prioritäts-Support'].map(item => (
+                  {['Alles aus Growth', 'Alle 9 Plattformen (IG, TT, FB, LinkedIn, X, ...)', 'Telegram Bot — posten per Sprachnachricht', 'Prioritäts-Support'].map(item => (
                     <li key={item} style={{ display: 'flex', gap: 10, fontSize: 14 }}>
                       <span style={{ color: '#a855f7', fontWeight: 700, flexShrink: 0 }}>✓</span>
                       <span style={{ color: '#18181b' }}>{item}</span>
@@ -821,7 +821,7 @@ export default function LandingPage() {
                   ))}
                 </ul>
                 <a
-                  href="mailto:hello@flowingpost.com?subject=Pro%20Plan%20Anfrage&body=Hallo%2C%0A%0Aich%20interessiere%20mich%20f%C3%BCr%20den%20Pro%20Plan%20(alle%205%20Plattformen).%0A%0AMein%20Restaurant%2FCaf%C3%A9%3A%20%0A%0AViele%20Gr%C3%BC%C3%9Fe"
+                  href="mailto:hello@flowingpost.com?subject=Pro%20Plan%20Anfrage&body=Hallo%2C%0A%0Aich%20interessiere%20mich%20f%C3%BCr%20den%20Pro%20Plan%20(alle%209%20Plattformen%20%2B%20Telegram%20Bot).%0A%0AMein%20Restaurant%2FCaf%C3%A9%3A%20%0A%0AViele%20Gr%C3%BC%C3%9Fe"
                   style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: '#18181b', color: 'white', padding: '13px', borderRadius: 12, fontWeight: 700, fontSize: 15, textDecoration: 'none' }}
                 >
                   Jetzt anfragen →
