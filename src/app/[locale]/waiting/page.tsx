@@ -2,19 +2,15 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { useRouter, Link } from '@/i18n/navigation'
+import { useRouter } from '@/i18n/navigation'
 import { useTranslations } from 'next-intl'
 
-const PLAN_PRICES: Record<string, string> = {
-  starter: '39',
-  growth: '79',
-  pro: '149',
+const PLAN_PRICES: Record<string, Record<string, string>> = {
+  starter: { monthly: '39', yearly: '390' },
+  growth: { monthly: '79', yearly: '790' },
+  pro: { monthly: '149', yearly: '1.490' },
 }
 
-// ── ZAHLUNGSDETAILS ───────────────────────────────────────────────
-const PAYPAL_EMAIL = 'Tobias.Hersemeyer@outlook.de'
-const CRYPTO_ETH   = '0xB85Bf9dAba044FcEa3a8312d589e1616d582BDDc'
-// ─────────────────────────────────────────────────────────────────
 
 function Step({ num, done }: { num: number; done?: boolean }) {
   return (
@@ -36,25 +32,19 @@ export default function WaitingPage() {
   const tc = useTranslations('common')
   const router = useRouter()
   const supabase = createClient()
-  const [plan, setPlan] = useState<string>('starter')
+  const [plan, setPlan] = useState<string>('')
   const [platforms, setPlatforms] = useState<string[]>([])
   const [email, setEmail] = useState<string>('')
   const [username, setUsername] = useState<string>('')
   const [accountsConnected, setAccountsConnected] = useState(false)
   const [connecting, setConnecting] = useState(false)
   const [connectError, setConnectError] = useState('')
-  const [paymentSent, setPaymentSent] = useState(false)
-  const [sendingPayment, setSendingPayment] = useState(false)
   const [stripeSuccess, setStripeSuccess] = useState(false)
   const [activating, setActivating] = useState(false)
   const [portalLoading, setPortalLoading] = useState(false)
   const [stripeLoading, setStripeLoading] = useState(false)
-
-  const PLAN_LABELS: Record<string, string> = {
-    starter: t('plans.starter'),
-    growth: t('plans.growth'),
-    pro: t('plans.pro'),
-  }
+  const [yearly, setYearly] = useState(false)
+  const [profileLoaded, setProfileLoaded] = useState(false)
 
   useEffect(() => {
     // Detect Stripe success redirect
@@ -86,6 +76,7 @@ export default function WaitingPage() {
         setPlan(profile.plan ?? 'starter')
         setPlatforms(profile.selected_platforms ?? [])
         setUsername(profile.upload_post_username ?? '')
+        setProfileLoaded(true)
       }
 
       // accounts_connected is optional — query separately to avoid breaking if column missing
@@ -162,19 +153,6 @@ export default function WaitingPage() {
     }
   }
 
-  async function handlePaymentSent() {
-    setSendingPayment(true)
-    try {
-      await fetch('/api/payment-claimed', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, plan }),
-      })
-    } catch { /* fire and forget */ }
-    setPaymentSent(true)
-    setSendingPayment(false)
-  }
-
   async function handlePortal() {
     setPortalLoading(true)
     try {
@@ -197,7 +175,7 @@ export default function WaitingPage() {
       const res = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan, yearly: false }),
+        body: JSON.stringify({ plan, yearly }),
       })
       const data = await res.json()
       if (data.url) {
@@ -209,6 +187,15 @@ export default function WaitingPage() {
       setConnectError(`Network error: ${err}`)
     }
     setStripeLoading(false)
+  }
+
+  // Sync plan change to DB when user selects a different plan
+  async function handlePlanChange(newPlan: string) {
+    setPlan(newPlan)
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      await supabase.from('profiles').update({ plan: newPlan }).eq('id', user.id)
+    }
   }
 
   async function handleSignOut() {
@@ -233,8 +220,13 @@ export default function WaitingPage() {
         <span style={{ color: '#3b82f6' }}>Flowing</span>Post
       </div>
 
-      {/* Card */}
-      <div style={{
+      {/* Loading state — wait for profile before showing anything */}
+      {!profileLoaded && (
+        <div style={{ color: '#6b7280', fontSize: '0.9rem' }}>Laden...</div>
+      )}
+
+      {/* Card — only show after profile loaded */}
+      {profileLoaded && <div style={{
         background: '#141414',
         border: '1px solid #222',
         borderRadius: '1.25rem',
@@ -249,23 +241,92 @@ export default function WaitingPage() {
           {t('subtitle')}
         </p>
 
-        {/* Plan badge */}
-        <div style={{
-          background: '#172554', border: '1px solid #1e3a8a', borderRadius: '0.75rem',
-          padding: '0.75rem 1rem', marginBottom: '1.5rem',
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        }}>
-          <div>
-            <div style={{ fontSize: '0.65rem', color: '#93c5fd', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.15rem' }}>{t('yourPlan')}</div>
-            <div style={{ fontSize: '0.875rem', color: '#fff', fontWeight: 600 }}>{PLAN_LABELS[plan] ?? plan}</div>
-            {platforms.length > 0 && (
-              <div style={{ fontSize: '0.7rem', color: '#6b7280', marginTop: '0.1rem' }}>
-                {platforms.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(', ')}
+        {/* Plan selector (before payment) or plan badge (after payment) */}
+        {!stripeSuccess ? (
+          <>
+            {/* Yearly / Monthly toggle */}
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              gap: '0.5rem', marginBottom: '0.75rem',
+            }}>
+              <span style={{ fontSize: '0.8rem', color: yearly ? '#6b7280' : '#e5e7eb', fontWeight: yearly ? 400 : 600 }}>Monatlich</span>
+              <button
+                onClick={() => setYearly(!yearly)}
+                style={{
+                  width: '44px', height: '24px', borderRadius: '999px', border: 'none',
+                  background: yearly ? '#3b82f6' : '#374151', cursor: 'pointer',
+                  position: 'relative', transition: 'background 0.2s',
+                }}
+              >
+                <span style={{
+                  position: 'absolute', top: '2px', left: yearly ? '22px' : '2px',
+                  width: '20px', height: '20px', borderRadius: '50%',
+                  background: '#fff', transition: 'left 0.2s',
+                }} />
+              </button>
+              <span style={{ fontSize: '0.8rem', color: yearly ? '#e5e7eb' : '#6b7280', fontWeight: yearly ? 600 : 400 }}>Jährlich</span>
+              {yearly && (
+                <span style={{ fontSize: '0.65rem', background: '#16a34a', color: '#fff', padding: '0.15rem 0.4rem', borderRadius: '999px', fontWeight: 600 }}>
+                  2 Monate gratis
+                </span>
+              )}
+            </div>
+
+            {/* Plan cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', marginBottom: '1rem' }}>
+              {(['starter', 'growth', 'pro'] as const).map(p => {
+                const selected = plan === p
+                const price = PLAN_PRICES[p]?.[yearly ? 'yearly' : 'monthly'] ?? '?'
+                return (
+                  <button
+                    key={p}
+                    onClick={() => handlePlanChange(p)}
+                    style={{
+                      background: selected ? '#172554' : '#0d0d0d',
+                      border: `1.5px solid ${selected ? '#3b82f6' : '#1f2937'}`,
+                      borderRadius: '0.75rem',
+                      padding: '0.75rem 0.5rem',
+                      cursor: 'pointer',
+                      textAlign: 'center',
+                      transition: 'border-color 0.15s, background 0.15s',
+                    }}
+                  >
+                    <div style={{ fontSize: '0.7rem', color: '#9ca3af', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.25rem' }}>
+                      {p.charAt(0).toUpperCase() + p.slice(1)}
+                    </div>
+                    <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#fff' }}>
+                      €{price}
+                    </div>
+                    <div style={{ fontSize: '0.6rem', color: '#6b7280' }}>
+                      {yearly ? '/Jahr' : '/Monat'}
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          </>
+        ) : (
+          <div style={{
+            background: '#172554', border: '1px solid #1e3a8a', borderRadius: '0.75rem',
+            padding: '0.75rem 1rem', marginBottom: '1rem',
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          }}>
+            <div>
+              <div style={{ fontSize: '0.65rem', color: '#93c5fd', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.15rem' }}>{t('yourPlan')}</div>
+              <div style={{ fontSize: '0.875rem', color: '#fff', fontWeight: 600 }}>
+                {plan.charAt(0).toUpperCase() + plan.slice(1)}
               </div>
-            )}
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: '1.5rem', fontWeight: 800 }}>
+                €{PLAN_PRICES[plan]?.[yearly ? 'yearly' : 'monthly'] ?? '?'}
+              </div>
+              <div style={{ fontSize: '0.65rem', color: '#93c5fd' }}>
+                {yearly ? '/Jahr' : '/Monat'}
+              </div>
+            </div>
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 800 }}>€{PLAN_PRICES[plan] ?? '?'}</div>
-        </div>
+        )}
 
         {/* ── Stripe Success State ── */}
         {stripeSuccess && (
@@ -306,21 +367,21 @@ export default function WaitingPage() {
         )}
 
         {/* ── Stripe Checkout Button (primary payment option) ── */}
-        {!stripeSuccess && !paymentSent && (
+        {!stripeSuccess && (
           <button
             onClick={handleStripeCheckout}
-            disabled={stripeLoading}
+            disabled={stripeLoading || !profileLoaded}
             style={{
               width: '100%', padding: '0.875rem',
-              background: stripeLoading ? '#1e3a8a' : 'linear-gradient(135deg, #3b82f6, #2563eb)',
+              background: (stripeLoading || !profileLoaded) ? '#1e3a8a' : 'linear-gradient(135deg, #3b82f6, #2563eb)',
               color: '#fff', border: 'none', borderRadius: '0.75rem',
               fontSize: '0.95rem', fontWeight: 700,
-              cursor: stripeLoading ? 'not-allowed' : 'pointer',
+              cursor: (stripeLoading || !profileLoaded) ? 'not-allowed' : 'pointer',
               marginBottom: '1.25rem',
               boxShadow: '0 4px 14px rgba(59, 130, 246, 0.35)',
             }}
           >
-            {stripeLoading ? '...' : t('stripe.checkoutButton')}
+            {stripeLoading ? '...' : !profileLoaded ? '...' : t('stripe.checkoutButton')}
           </button>
         )}
 
@@ -377,100 +438,6 @@ export default function WaitingPage() {
           </div>
         </div>
 
-        {/* ── Step 2: Payment ── */}
-        <div style={{
-          border: '1px solid #1f2937',
-          background: '#0d0d0d',
-          borderRadius: '0.75rem',
-          padding: '1rem 1.125rem',
-          marginBottom: '1.25rem',
-        }}>
-          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
-            <Step num={2} />
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.5rem' }}>{t('step2.title')}</div>
-
-              {/* PayPal */}
-              <div style={{ marginBottom: '0.875rem' }}>
-                <div style={{ fontSize: '0.68rem', color: '#6b7280', marginBottom: '0.3rem' }}>{t('step2.paypal')}</div>
-                <div style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  background: '#0a0a0a', border: '1px solid #1f2937', borderRadius: '0.5rem',
-                  padding: '0.5rem 0.75rem',
-                }}>
-                  <span style={{ fontSize: '0.78rem', color: '#e5e7eb', fontFamily: 'monospace' }}>{PAYPAL_EMAIL}</span>
-                  <button
-                    onClick={() => navigator.clipboard.writeText(PAYPAL_EMAIL)}
-                    style={{ background: 'none', border: 'none', color: '#6b7280', cursor: 'pointer', fontSize: '0.72rem' }}
-                  >{tc('copy')}</button>
-                </div>
-                <div style={{ fontSize: '0.68rem', color: '#6b7280', marginTop: '0.25rem' }}>
-                  {t('step2.amount')} <strong style={{ color: '#9ca3af' }}>€{PLAN_PRICES[plan] ?? '?'}</strong> — {t('step2.purpose', { plan })}
-                </div>
-              </div>
-
-              {/* Crypto */}
-              <div>
-                <div style={{ fontSize: '0.68rem', color: '#6b7280', marginBottom: '0.3rem' }}>{t('step2.crypto')}</div>
-                <div style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  background: '#0a0a0a', border: '1px solid #1f2937', borderRadius: '0.5rem',
-                  padding: '0.5rem 0.75rem', gap: '0.5rem',
-                }}>
-                  <span style={{ fontSize: '0.68rem', color: '#e5e7eb', fontFamily: 'monospace', wordBreak: 'break-all' }}>{CRYPTO_ETH}</span>
-                  <button
-                    onClick={() => navigator.clipboard.writeText(CRYPTO_ETH)}
-                    style={{ background: 'none', border: 'none', color: '#6b7280', cursor: 'pointer', fontSize: '0.72rem', flexShrink: 0 }}
-                  >{tc('copy')}</button>
-                </div>
-                <div style={{ fontSize: '0.68rem', color: '#6b7280', marginTop: '0.25rem' }}>
-                  {t('step2.cryptoNote', { price: PLAN_PRICES[plan] ?? '?' })}
-                </div>
-              </div>
-
-              {/* Payment sent button */}
-              <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #1f2937' }}>
-                {paymentSent ? (
-                  <div style={{
-                    background: '#052e16', border: '1px solid #14532d', borderRadius: '0.5rem',
-                    padding: '0.75rem 1rem', fontSize: '0.8rem', color: '#4ade80', textAlign: 'center',
-                  }}>
-                    {t('step2.paymentConfirmed')}
-                  </div>
-                ) : (
-                  <button
-                    onClick={handlePaymentSent}
-                    disabled={sendingPayment}
-                    style={{
-                      width: '100%', padding: '0.65rem',
-                      background: sendingPayment ? '#14532d' : '#16a34a',
-                      color: '#fff', border: 'none', borderRadius: '0.5rem',
-                      fontSize: '0.85rem', fontWeight: 600,
-                      cursor: sendingPayment ? 'not-allowed' : 'pointer',
-                    }}
-                  >
-                    {sendingPayment ? t('step2.sending') : t('step2.paymentSent')}
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* View tool button — shown after payment claimed */}
-        {paymentSent && (
-          <Link
-            href="/tool"
-            style={{
-              display: 'block', padding: '0.75rem', background: '#1f2937',
-              color: '#e5e7eb', borderRadius: '0.75rem', textDecoration: 'none',
-              fontSize: '0.875rem', fontWeight: 600, textAlign: 'center',
-              marginBottom: '0.75rem', border: '1px solid #374151',
-            }}
-          >
-            {t('viewTool')}
-          </Link>
-        )}
 
         {/* Confirmation note */}
         <p style={{ fontSize: '0.75rem', color: '#4b5563', textAlign: 'center', margin: '0 0 1rem', lineHeight: 1.5 }}>
@@ -511,7 +478,7 @@ export default function WaitingPage() {
         >
           {tc('signOut')}
         </button>
-      </div>
+      </div>}
     </div>
   )
 }
