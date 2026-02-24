@@ -64,28 +64,26 @@ export default function WaitingPage() {
 
       const { data: profile } = await supabase
         .from('profiles')
-        .select('plan, selected_platforms, is_active, upload_post_username')
+        .select('plan, selected_platforms, is_active, upload_post_username, accounts_connected')
         .eq('id', user.id)
-        .single()
+        .maybeSingle()
 
-      if (profile?.is_active) {
+      if (!profile) {
+        // No profile exists — send back to login so auth callback creates one
+        router.push('/login')
+        return
+      }
+
+      if (profile.is_active) {
         router.push('/tool')
         return
       }
-      if (profile) {
-        setPlan(profile.plan ?? 'starter')
-        setPlatforms(profile.selected_platforms ?? [])
-        setUsername(profile.upload_post_username ?? '')
-        setProfileLoaded(true)
-      }
 
-      // accounts_connected is optional — query separately to avoid breaking if column missing
-      const { data: extra } = await supabase
-        .from('profiles')
-        .select('accounts_connected')
-        .eq('id', user.id)
-        .single()
-      if (extra?.accounts_connected) setAccountsConnected(true)
+      setPlan(profile.plan ?? 'starter')
+      setPlatforms(profile.selected_platforms ?? [])
+      setUsername(profile.upload_post_username ?? '')
+      if (profile.accounts_connected) setAccountsConnected(true)
+      setProfileLoaded(true)
     }
     loadProfile()
   }, [])
@@ -102,7 +100,7 @@ export default function WaitingPage() {
         .from('profiles')
         .select('is_active')
         .eq('id', user.id)
-        .single()
+        .maybeSingle()
 
       if (profile?.is_active) {
         setActivating(false)
