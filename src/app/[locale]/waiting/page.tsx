@@ -52,6 +52,26 @@ export default function WaitingPage() {
     if (params.get('success') === 'true') {
       setStripeSuccess(true)
       setActivating(true)
+
+      // Verify payment directly with Stripe and activate user
+      const sessionId = params.get('session_id')
+      if (sessionId) {
+        fetch('/api/stripe/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ session_id: sessionId }),
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.is_active) {
+              setActivating(false)
+              router.push('/tool')
+            }
+          })
+          .catch(() => {
+            // Fall back to polling (webhook might still activate)
+          })
+      }
     }
 
     async function loadProfile() {

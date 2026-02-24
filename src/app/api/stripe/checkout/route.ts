@@ -1,11 +1,19 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import Stripe from 'stripe'
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createAdminClient } from '@supabase/supabase-js'
 
 function getStripe() {
   return new Stripe(process.env.STRIPE_SECRET_KEY!, {
     httpClient: Stripe.createFetchHttpClient(),
   })
+}
+
+function getAdmin() {
+  return createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
 }
 
 const PRICE_IDS: Record<string, Record<string, string>> = {
@@ -56,8 +64,8 @@ export async function POST(request: NextRequest) {
       })
       customerId = customer.id
 
-      // Save customer ID to profile
-      await supabase
+      // Save customer ID to profile (use admin to bypass RLS)
+      await getAdmin()
         .from('profiles')
         .update({ stripe_customer_id: customerId })
         .eq('id', user.id)
@@ -71,7 +79,7 @@ export async function POST(request: NextRequest) {
       customer: customerId,
       mode: 'subscription',
       line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${origin}/waiting?success=true`,
+      success_url: `${origin}/waiting?success=true&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/onboarding`,
       metadata: {
         supabase_user_id: user.id,

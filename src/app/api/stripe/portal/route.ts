@@ -21,10 +21,10 @@ export async function POST() {
       .from('profiles')
       .select('stripe_customer_id')
       .eq('id', user.id)
-      .single()
+      .maybeSingle()
 
     if (!profile?.stripe_customer_id) {
-      return NextResponse.json({ error: 'No subscription found' }, { status: 404 })
+      return NextResponse.json({ error: 'No subscription found — please complete payment first' }, { status: 404 })
     }
 
     const session = await getStripe().billingPortal.sessions.create({
