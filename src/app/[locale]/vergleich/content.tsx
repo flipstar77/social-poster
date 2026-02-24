@@ -205,16 +205,19 @@ export default function VergleichContent() {
                   </tr>
                 </thead>
                 <tbody>
-                  {features.map((f, i) => (
-                    <tr key={i} style={{ borderBottom: i < features.length - 1 ? '1px solid #f4f4f5' : 'none' }}>
-                      <td style={{ padding: '14px 20px', fontWeight: 600, color: '#09090b', whiteSpace: 'nowrap' }}>{f.name}</td>
-                      <td style={{ padding: '14px 20px', textAlign: 'center', fontWeight: 600, background: '#eef2ff', color: '#4338ca', borderLeft: '2px solid #c7d2fe', borderRight: '2px solid #c7d2fe' }}>{f.fp}</td>
-                      <td style={{ padding: '14px 20px', textAlign: 'center', color: '#71717a' }}>{f.later}</td>
-                      <td style={{ padding: '14px 20px', textAlign: 'center', color: '#71717a' }}>{f.hootsuite}</td>
-                      <td style={{ padding: '14px 20px', textAlign: 'center', color: '#71717a' }}>{f.buffer}</td>
-                      <td style={{ padding: '14px 20px', textAlign: 'center', color: '#71717a' }}>{f.planoly}</td>
-                    </tr>
-                  ))}
+                  {features.map((f, i) => {
+                    const isNeg = (v: string) => v.startsWith('✗') || v.startsWith('Nur ') || v.startsWith('Only ') || v.includes('Manuell') || v.includes('Manual') || v.includes('manuell') || v.includes('Selbst') || v.includes('yourself') || v.includes('Nicht möglich') || v.includes('Not possible') || v.includes('Generisch') || v.includes('Generic') || v.includes('Enterprise') || v.includes('Instagram-fokus')
+                    return (
+                      <tr key={i} style={{ borderBottom: i < features.length - 1 ? '1px solid #f4f4f5' : 'none' }}>
+                        <td style={{ padding: '14px 20px', fontWeight: 600, color: '#09090b', whiteSpace: 'nowrap' }}>{f.name}</td>
+                        <td style={{ padding: '14px 20px', textAlign: 'center', fontWeight: 600, background: '#eef2ff', color: '#4338ca', borderLeft: '2px solid #c7d2fe', borderRight: '2px solid #c7d2fe' }}>{f.fp}</td>
+                        <td style={{ padding: '14px 20px', textAlign: 'center', color: isNeg(f.later) ? '#dc2626' : '#71717a', fontSize: isNeg(f.later) ? 13 : 14 }}>{f.later}</td>
+                        <td style={{ padding: '14px 20px', textAlign: 'center', color: isNeg(f.hootsuite) ? '#dc2626' : '#71717a', fontSize: isNeg(f.hootsuite) ? 13 : 14 }}>{f.hootsuite}</td>
+                        <td style={{ padding: '14px 20px', textAlign: 'center', color: isNeg(f.buffer) ? '#dc2626' : '#71717a', fontSize: isNeg(f.buffer) ? 13 : 14 }}>{f.buffer}</td>
+                        <td style={{ padding: '14px 20px', textAlign: 'center', color: isNeg(f.planoly) ? '#dc2626' : '#71717a', fontSize: isNeg(f.planoly) ? 13 : 14 }}>{f.planoly}</td>
+                      </tr>
+                    )
+                  })}
                 </tbody>
               </table>
             </div>

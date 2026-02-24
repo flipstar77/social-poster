@@ -423,14 +423,16 @@
       "buffer": "Buffer",
       "planoly": "Planoly",
       "features": [
-        { "name": "AI Captions", "fp": "✓ 3 variants, all languages", "later": "✓ Basic, English only", "hootsuite": "✓ OwlyWriter AI", "buffer": "✓ AI Assistant", "planoly": "✓ Basic" },
-        { "name": "Platforms", "fp": "9", "later": "6", "hootsuite": "7+", "buffer": "8+", "planoly": "4" },
-        { "name": "Starting price", "fp": "€39/mo", "later": "$25/mo", "hootsuite": "$99/mo", "buffer": "$6/channel/mo", "planoly": "$16/mo" },
-        { "name": "Auto-Scheduler", "fp": "✓ Fully automatic", "later": "Manual planning", "hootsuite": "Manual planning", "buffer": "Manual planning", "planoly": "Manual planning" },
-        { "name": "Multi-language", "fp": "✓ All languages", "later": "English only", "hootsuite": "English only", "buffer": "English only", "planoly": "English only" },
-        { "name": "Telegram Bot", "fp": "✓ Voice message → Post", "later": "✗", "hootsuite": "✗", "buffer": "✗", "planoly": "✗" },
-        { "name": "Unlimited posts", "fp": "✓ All plans", "later": "✗ 30/profile (Starter)", "hootsuite": "✓", "buffer": "✓", "planoly": "✗ 60/month (Starter)" },
-        { "name": "Caption variants", "fp": "3 per post", "later": "1", "hootsuite": "1", "buffer": "1", "planoly": "1" }
+        { "name": "Daily effort", "fp": "✓ 30 seconds — upload a photo, done", "later": "15–30 min per post", "hootsuite": "15–30 min per post", "buffer": "15–30 min per post", "planoly": "15–30 min per post" },
+        { "name": "AI Captions", "fp": "✓ 3 variants, all languages, your tone", "later": "Basic, English only", "hootsuite": "OwlyWriter — English only", "buffer": "AI Assistant — suggestions only", "planoly": "Basic — English only" },
+        { "name": "Auto-Scheduler", "fp": "✓ Fully automatic — zero effort", "later": "✗ Manual calendar planning", "hootsuite": "✗ Manual calendar planning", "buffer": "✗ Manual queue", "planoly": "✗ Manual calendar planning" },
+        { "name": "Platforms", "fp": "✓ 9 platforms — flat rate", "later": "6 (from $25/mo)", "hootsuite": "7+ (from $99/mo)", "buffer": "Per channel — 9 = $54/mo", "planoly": "Only 4" },
+        { "name": "Price (9 platforms)", "fp": "€39/mo — everything included", "later": "~$75/mo (addons needed)", "hootsuite": "$99+/mo", "buffer": "$54/mo (scheduling only)", "planoly": "Not possible (max 4)" },
+        { "name": "Multi-language", "fp": "✓ Any language (DE, EN, TR, AR, ...)", "later": "✗ English only", "hootsuite": "✗ English only", "buffer": "✗ English only", "planoly": "✗ English only" },
+        { "name": "Unlimited posts", "fp": "✓ On all plans", "later": "✗ 30/profile on Starter", "hootsuite": "✓ But from $99/mo", "buffer": "✓ But pay per channel", "planoly": "✗ 60/month on Starter" },
+        { "name": "Caption variants", "fp": "✓ 3 per post — you choose", "later": "1 (write manually)", "hootsuite": "1 (write manually)", "buffer": "1 (edit manually)", "planoly": "1 (write manually)" },
+        { "name": "Setup", "fp": "✓ Ready in 24 hours", "later": "Set up yourself", "hootsuite": "Set up yourself", "buffer": "Set up yourself", "planoly": "Set up yourself" },
+        { "name": "Restaurant-focused", "fp": "✓ Built for restaurants & cafés", "later": "✗ Generic", "hootsuite": "✗ Enterprise-focused", "buffer": "✗ Generic", "planoly": "✗ Instagram-focused" }
       ]
     },
     "vsLater": {
