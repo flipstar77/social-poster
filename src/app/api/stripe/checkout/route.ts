@@ -2,10 +2,10 @@ import { NextResponse, type NextRequest } from 'next/server'
 import Stripe from 'stripe'
 import { createClient } from '@/lib/supabase/server'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!)
+}
 
-// These will be filled after running `npx tsx scripts/stripe-setup.ts`
-// For now, use placeholder IDs — the script will output the real ones.
 const PRICE_IDS: Record<string, Record<string, string>> = {
   starter: { monthly: 'price_1T4HYhGet5PrVLmAhYPqXidG', yearly: 'price_1T4HYhGet5PrVLmA0m2iJkSa' },
   growth: { monthly: 'price_1T4HYiGet5PrVLmAa09hgOx2', yearly: 'price_1T4HYiGet5PrVLmA6xbEDFHF' },
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
 
     if (!customerId) {
       // Create Stripe customer
-      const customer = await stripe.customers.create({
+      const customer = await getStripe().customers.create({
         email: user.email,
         metadata: { supabase_user_id: user.id },
       })
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
     const origin = request.headers.get('origin') || 'http://localhost:3000'
 
     // Create Checkout Session
-    const session = await stripe.checkout.sessions.create({
+    const session = await getStripe().checkout.sessions.create({
       customer: customerId,
       mode: 'subscription',
       line_items: [{ price: priceId, quantity: 1 }],

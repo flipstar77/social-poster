@@ -3,14 +3,16 @@ import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
-const resend = new Resend(process.env.RESEND_API_KEY)
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!)
+}
 
-// Use service role to bypass RLS — webhooks are server-to-server
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+function getSupabase() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
 
 const TOBIAS_EMAIL = 'Tobias.Hersemeyer@outlook.de'
 
@@ -21,6 +23,10 @@ export async function POST(request: NextRequest) {
   if (!sig) {
     return NextResponse.json({ error: 'Missing signature' }, { status: 400 })
   }
+
+  const stripe = getStripe()
+  const supabase = getSupabase()
+  const resend = new Resend(process.env.RESEND_API_KEY)
 
   let event: Stripe.Event
   try {
@@ -56,16 +62,10 @@ export async function POST(request: NextRequest) {
 
         // Notify admin
         try {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('email:id')
-            .eq('id', userId)
-            .single()
-
           await resend.emails.send({
             from: 'FlowingPost <hello@flowingpost.com>',
             to: TOBIAS_EMAIL,
-            subject: `✅ Neuer zahlender Kunde: ${session.customer_email || 'unbekannt'}`,
+            subject: `Neuer zahlender Kunde: ${session.customer_email || 'unbekannt'}`,
             html: `
               <h2>Neuer Stripe-Kunde!</h2>
               <p><strong>Email:</strong> ${session.customer_email}</p>
@@ -116,7 +116,7 @@ export async function POST(request: NextRequest) {
           await resend.emails.send({
             from: 'FlowingPost <hello@flowingpost.com>',
             to: TOBIAS_EMAIL,
-            subject: `❌ Abo gekündigt: User ${userId}`,
+            subject: `Abo gekündigt: User ${userId}`,
             html: `<p>User <strong>${userId}</strong> hat sein Abo gekündigt.</p>`,
           })
         } catch {
@@ -144,7 +144,7 @@ export async function POST(request: NextRequest) {
           await resend.emails.send({
             from: 'FlowingPost <hello@flowingpost.com>',
             to: TOBIAS_EMAIL,
-            subject: `⚠️ Zahlung fehlgeschlagen: User ${profile.id}`,
+            subject: `Zahlung fehlgeschlagen: User ${profile.id}`,
             html: `<p>Zahlung fehlgeschlagen für User <strong>${profile.id}</strong>. Bitte prüfen.</p>`,
           })
         } catch {
