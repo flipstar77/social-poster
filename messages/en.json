@@ -62,7 +62,8 @@
       "activating": "Payment received — activating your account...",
       "activatingHint": "This usually takes just a few seconds.",
       "success": "Payment successful! Your account is active.",
-      "manageSubscription": "Manage subscription"
+      "manageSubscription": "Manage subscription",
+      "checkoutButton": "Pay with credit card →"
     }
   },
   "onboarding": {

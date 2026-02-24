@@ -48,6 +48,7 @@ export default function WaitingPage() {
   const [stripeSuccess, setStripeSuccess] = useState(false)
   const [activating, setActivating] = useState(false)
   const [portalLoading, setPortalLoading] = useState(false)
+  const [stripeLoading, setStripeLoading] = useState(false)
 
   const PLAN_LABELS: Record<string, string> = {
     starter: t('plans.starter'),
@@ -189,6 +190,25 @@ export default function WaitingPage() {
     setPortalLoading(false)
   }
 
+  async function handleStripeCheckout() {
+    setStripeLoading(true)
+    try {
+      const res = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan, yearly: false }),
+      })
+      const data = await res.json()
+      if (data.url) {
+        window.location.href = data.url
+        return
+      }
+    } catch {
+      // Fall through
+    }
+    setStripeLoading(false)
+  }
+
   async function handleSignOut() {
     await supabase.auth.signOut()
     router.push('/')
@@ -270,6 +290,25 @@ export default function WaitingPage() {
               </>
             )}
           </div>
+        )}
+
+        {/* ── Stripe Checkout Button (primary payment option) ── */}
+        {!stripeSuccess && !paymentSent && (
+          <button
+            onClick={handleStripeCheckout}
+            disabled={stripeLoading}
+            style={{
+              width: '100%', padding: '0.875rem',
+              background: stripeLoading ? '#1e3a8a' : 'linear-gradient(135deg, #3b82f6, #2563eb)',
+              color: '#fff', border: 'none', borderRadius: '0.75rem',
+              fontSize: '0.95rem', fontWeight: 700,
+              cursor: stripeLoading ? 'not-allowed' : 'pointer',
+              marginBottom: '1.25rem',
+              boxShadow: '0 4px 14px rgba(59, 130, 246, 0.35)',
+            }}
+          >
+            {stripeLoading ? '...' : t('stripe.checkoutButton')}
+          </button>
         )}
 
         {/* ── Step 1: Connect accounts ── */}

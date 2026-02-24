@@ -62,7 +62,8 @@
       "activating": "Zahlung erhalten — Account wird freigeschaltet...",
       "activatingHint": "Dies dauert normalerweise nur wenige Sekunden.",
       "success": "Zahlung erfolgreich! Dein Account ist aktiv.",
-      "manageSubscription": "Abo verwalten"
+      "manageSubscription": "Abo verwalten",
+      "checkoutButton": "Jetzt mit Kreditkarte zahlen →"
     }
   },
   "onboarding": {

@@ -94,7 +94,8 @@ export async function middleware(request: NextRequest) {
   }
 
   if (pathWithoutLocale === '/onboarding') {
-    if (onboardingDone) return NextResponse.redirect(new URL(`${localePrefix}/tool`, request.url))
+    if (onboardingDone && !isActive) return NextResponse.redirect(new URL(`${localePrefix}/waiting`, request.url))
+    if (onboardingDone && isActive) return NextResponse.redirect(new URL(`${localePrefix}/tool`, request.url))
     return supabaseResponse
   }
 
