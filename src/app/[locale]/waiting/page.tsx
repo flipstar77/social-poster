@@ -192,6 +192,7 @@ export default function WaitingPage() {
 
   async function handleStripeCheckout() {
     setStripeLoading(true)
+    setConnectError('')
     try {
       const res = await fetch('/api/stripe/checkout', {
         method: 'POST',
@@ -203,8 +204,9 @@ export default function WaitingPage() {
         window.location.href = data.url
         return
       }
-    } catch {
-      // Fall through
+      setConnectError(`Stripe error: ${data.error || JSON.stringify(data)}`)
+    } catch (err) {
+      setConnectError(`Network error: ${err}`)
     }
     setStripeLoading(false)
   }
@@ -289,6 +291,17 @@ export default function WaitingPage() {
                 </div>
               </>
             )}
+          </div>
+        )}
+
+        {/* ── Error display ── */}
+        {connectError && (
+          <div style={{
+            background: '#1f1010', border: '1px solid #5c1c1c', borderRadius: '0.5rem',
+            padding: '0.75rem 1rem', color: '#f87171', fontSize: '0.8rem',
+            marginBottom: '0.75rem', wordBreak: 'break-all',
+          }}>
+            {connectError}
           </div>
         )}
 
