@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
+import { createClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
 
 export async function GET(request: NextRequest) {
@@ -46,15 +47,20 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${baseUrl}/login?error=no_user`)
   }
 
-  // Check or create profile
-  const { data: existing } = await supabase
+  // Check or create profile — use service role to bypass RLS
+  const admin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+
+  const { data: existing } = await admin
     .from('profiles')
     .select('id, onboarding_completed')
     .eq('id', user.id)
-    .single()
+    .maybeSingle()
 
   if (!existing) {
-    await supabase.from('profiles').insert({
+    const { error: insertError } = await admin.from('profiles').insert({
       id: user.id,
       email: user.email,
       upload_post_username: user.id,
@@ -63,6 +69,9 @@ export async function GET(request: NextRequest) {
       is_active: false,
       onboarding_completed: false,
     })
+    if (insertError) {
+      console.error('[Auth Callback] Profile insert failed:', insertError)
+    }
   }
 
   const destination =
