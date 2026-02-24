@@ -50,15 +50,29 @@ export async function POST(request: NextRequest) {
       const interval = session.metadata?.interval
 
       if (userId) {
-        await supabase
+        // First: activate user (critical — must succeed)
+        const { error: activateError } = await supabase
+          .from('profiles')
+          .update({ is_active: true })
+          .eq('id', userId)
+
+        if (activateError) {
+          console.error(`[Stripe] Failed to activate user ${userId}:`, activateError)
+        }
+
+        // Then: save Stripe IDs (non-critical — columns may not exist yet)
+        const { error: stripeError } = await supabase
           .from('profiles')
           .update({
-            is_active: true,
             stripe_customer_id: session.customer as string,
             stripe_subscription_id: session.subscription as string,
             stripe_plan_interval: interval || 'monthly',
           })
           .eq('id', userId)
+
+        if (stripeError) {
+          console.error(`[Stripe] Failed to save Stripe IDs for ${userId}:`, stripeError)
+        }
 
         console.log(`[Stripe] User ${userId} activated — plan: ${plan}, interval: ${interval}`)
 
