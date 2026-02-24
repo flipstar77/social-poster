@@ -3,7 +3,9 @@ import Stripe from 'stripe'
 import { createClient } from '@/lib/supabase/server'
 
 function getStripe() {
-  return new Stripe(process.env.STRIPE_SECRET_KEY!)
+  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    httpClient: Stripe.createFetchHttpClient(),
+  })
 }
 
 export async function POST() {

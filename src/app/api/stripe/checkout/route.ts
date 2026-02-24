@@ -3,7 +3,9 @@ import Stripe from 'stripe'
 import { createClient } from '@/lib/supabase/server'
 
 function getStripe() {
-  return new Stripe(process.env.STRIPE_SECRET_KEY!)
+  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    httpClient: Stripe.createFetchHttpClient(),
+  })
 }
 
 const PRICE_IDS: Record<string, Record<string, string>> = {
@@ -23,6 +25,11 @@ export async function POST(request: NextRequest) {
     const priceId = yearly ? PRICE_IDS[plan].yearly : PRICE_IDS[plan].monthly
     if (!priceId) {
       return NextResponse.json({ error: 'Price not configured — run stripe-setup first' }, { status: 500 })
+    }
+
+    // Verify Stripe key is set
+    if (!process.env.STRIPE_SECRET_KEY) {
+      return NextResponse.json({ error: 'STRIPE_SECRET_KEY not configured' }, { status: 500 })
     }
 
     // Get authenticated user

@@ -4,7 +4,9 @@ import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 
 function getStripe() {
-  return new Stripe(process.env.STRIPE_SECRET_KEY!)
+  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    httpClient: Stripe.createFetchHttpClient(),
+  })
 }
 
 function getSupabase() {
