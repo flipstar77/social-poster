@@ -1,0 +1,52 @@
+[
+  {
+    "id": 0,
+    "username": "dein_ig_username",
+    "sessionDir": ".ig-session",
+    "proxy": { "host": "", "port": 8080, "username": "", "password": "" },
+    "enabled": true,
+    "dmLimit": 5,
+    "warmupStartDate": null,
+    "schedule": null
+  },
+  {
+    "id": 1,
+    "username": "account_2",
+    "sessionDir": ".ig-session-2",
+    "proxy": { "host": "proxy.example.com", "port": 8080, "username": "proxyuser", "password": "proxypass" },
+    "enabled": false,
+    "dmLimit": 5,
+    "warmupStartDate": null,
+    "schedule": "09:00"
+  },
+  {
+    "id": 2,
+    "username": "account_3",
+    "sessionDir": ".ig-session-3",
+    "proxy": { "host": "", "port": 8080, "username": "", "password": "" },
+    "enabled": false,
+    "dmLimit": 5,
+    "warmupStartDate": null,
+    "schedule": null
+  },
+  {
+    "id": 3,
+    "username": "account_4",
+    "sessionDir": ".ig-session-4",
+    "proxy": { "host": "", "port": 8080, "username": "", "password": "" },
+    "enabled": false,
+    "dmLimit": 5,
+    "warmupStartDate": null,
+    "schedule": null
+  },
+  {
+    "id": 4,
+    "username": "account_5",
+    "sessionDir": ".ig-session-5",
+    "proxy": { "host": "", "port": 8080, "username": "", "password": "" },
+    "enabled": false,
+    "dmLimit": 5,
+    "warmupStartDate": null,
+    "schedule": null
+  }
+]

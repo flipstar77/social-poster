@@ -2,7 +2,9 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
+import { useRouter, Link } from '@/i18n/navigation'
+import { useTranslations } from 'next-intl'
+import LanguageSwitcher from '@/components/LanguageSwitcher'
 
 // --- Types ---
 
@@ -98,12 +100,12 @@ function autoDistribute(posts: GeneratedPost[]): GeneratedPost[] {
 
 // --- Step Indicator ---
 
-function StepIndicator({ current }: { current: number }) {
+function StepIndicator({ current, labels }: { current: number; labels: string[] }) {
   const steps = [
-    { num: 1, label: 'Upload' },
-    { num: 2, label: 'AI Captions' },
-    { num: 3, label: 'Schedule' },
-    { num: 4, label: 'Post' },
+    { num: 1, label: labels[0] },
+    { num: 2, label: labels[1] },
+    { num: 3, label: labels[2] },
+    { num: 4, label: labels[3] },
   ]
   return (
     <div className="flex items-center justify-center gap-2 mb-10">
@@ -114,7 +116,7 @@ function StepIndicator({ current }: { current: number }) {
               ? 'bg-[var(--accent)] text-white'
               : 'bg-[var(--card)] text-[var(--text-muted)] border border-[var(--border)]'
           }`}>
-            {current > s.num ? '✓' : s.num}
+            {current > s.num ? '\u2713' : s.num}
           </div>
           <span className={`text-sm hidden sm:block ${current >= s.num ? 'text-white' : 'text-[var(--text-muted)]'}`}>
             {s.label}
@@ -196,6 +198,16 @@ function PlatformIcon({ platform, size = 14 }: { platform: string; size?: number
 
 // --- Calendar View ---
 
+interface CalendarStrings {
+  dragHint: string
+  autoDistribute: string
+  unscheduled: (count: number) => string
+  weekdays: string[]
+  delete: string
+  yes: string
+  no: string
+}
+
 function CalendarScheduler({
   posts,
   onUpdatePost,
@@ -203,6 +215,7 @@ function CalendarScheduler({
   deleteConfirm,
   onDeleteConfirm,
   onDeletePost,
+  strings,
 }: {
   posts: GeneratedPost[]
   onUpdatePost: (id: string, updates: Partial<GeneratedPost>) => void
@@ -210,6 +223,7 @@ function CalendarScheduler({
   deleteConfirm: string | null
   onDeleteConfirm: (id: string | null) => void
   onDeletePost: (id: string) => void
+  strings: CalendarStrings
 }) {
   // Show 30 days starting from tomorrow
   const today = toDateStr(new Date())
@@ -227,20 +241,20 @@ function CalendarScheduler({
       {/* Controls */}
       <div className="flex items-center justify-between mb-4">
         <span className="text-sm text-[var(--text-muted)]">
-          Drag posts to dates or use auto-distribute
+          {strings.dragHint}
         </span>
         <button
           onClick={onAutoDistribute}
           className="px-4 py-2 rounded-lg bg-[var(--accent)]/20 text-[var(--accent-hover)] text-sm font-medium hover:bg-[var(--accent)]/30 transition-colors"
         >
-          Auto-Distribute Evenly
+          {strings.autoDistribute}
         </button>
       </div>
 
       {/* Unscheduled pool */}
       {unscheduled.length > 0 && (
         <div className="mb-4 p-3 rounded-xl border border-dashed border-[var(--border)] bg-white/[0.02]">
-          <p className="text-xs text-[var(--text-muted)] mb-2">Unscheduled ({unscheduled.length})</p>
+          <p className="text-xs text-[var(--text-muted)] mb-2">{strings.unscheduled(unscheduled.length)}</p>
           <div className="flex flex-wrap gap-2">
             {unscheduled.map(post => (
               <div
@@ -259,14 +273,14 @@ function CalendarScheduler({
         </div>
       )}
 
-      {/* Calendar header — weekdays */}
+      {/* Calendar header -- weekdays */}
       <div className="grid grid-cols-7 gap-1 mb-1">
-        {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => (
+        {strings.weekdays.map(d => (
           <div key={d} className="text-center text-[10px] uppercase tracking-wide text-[var(--text-muted)] py-1">{d}</div>
         ))}
       </div>
 
-      {/* Calendar grid — 30 days in 7-column weeks */}
+      {/* Calendar grid -- 30 days in 7-column weeks */}
       <div className="grid grid-cols-7 gap-1">
         {/* Leading empty cells to align first day to correct weekday */}
         {(() => {
@@ -352,19 +366,19 @@ function CalendarScheduler({
                     {/* Delete confirmation */}
                     {deleteConfirm === post.id && (
                       <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center gap-1 rounded z-10">
-                        <p className="text-[8px] text-white">Delete?</p>
+                        <p className="text-[8px] text-white">{strings.delete}</p>
                         <div className="flex gap-1">
                           <button
                             onClick={e => { e.stopPropagation(); onDeletePost(post.id) }}
                             className="px-1.5 py-0.5 text-[8px] bg-red-500 rounded text-white"
                           >
-                            Yes
+                            {strings.yes}
                           </button>
                           <button
                             onClick={e => { e.stopPropagation(); onDeleteConfirm(null) }}
                             className="px-1.5 py-0.5 text-[8px] bg-white/20 rounded text-white"
                           >
-                            No
+                            {strings.no}
                           </button>
                         </div>
                       </div>
@@ -385,6 +399,8 @@ function CalendarScheduler({
 export default function Home() {
   const router = useRouter()
   const supabase = createClient()
+  const t = useTranslations('tool')
+  const tc = useTranslations('common')
 
   const [step, setStep] = useState(1)
   const [photos, setPhotos] = useState<UploadedPhoto[]>([])
@@ -411,6 +427,8 @@ export default function Home() {
   const [connecting, setConnecting] = useState(false)
   const [connectError, setConnectError] = useState('')
   const [planMaxPlatforms, setPlanMaxPlatforms] = useState(3) // default Starter
+  const [portalLoading, setPortalLoading] = useState(false)
+  const [hasStripe, setHasStripe] = useState(false)
 
   useEffect(() => {
     async function loadProfile() {
@@ -420,7 +438,7 @@ export default function Home() {
 
       const { data: profile } = await supabase
         .from('profiles')
-        .select('upload_post_username, selected_platforms, plan, is_active')
+        .select('upload_post_username, selected_platforms, plan, is_active, stripe_customer_id')
         .eq('id', user.id)
         .single()
 
@@ -430,6 +448,7 @@ export default function Home() {
         const limits: Record<string, number> = { starter: 3, growth: 6, pro: 9 }
         setPlanMaxPlatforms(limits[profile.plan ?? 'starter'] ?? 3)
         setIsActive(profile.is_active ?? false)
+        if (profile.stripe_customer_id) setHasStripe(true)
       }
     }
     loadProfile()
@@ -464,6 +483,21 @@ export default function Home() {
     } finally {
       setConnecting(false)
     }
+  }
+
+  const handlePortal = async () => {
+    setPortalLoading(true)
+    try {
+      const res = await fetch('/api/stripe/portal', { method: 'POST' })
+      const data = await res.json()
+      if (data.url) {
+        window.location.href = data.url
+        return
+      }
+    } catch {
+      // Ignore
+    }
+    setPortalLoading(false)
   }
 
   const handleSignOut = async () => {
@@ -668,11 +702,30 @@ export default function Home() {
 
   const allScheduled = posts.length > 0 && posts.every(p => p.scheduledDate)
 
+  // Calendar translated strings
+  const calendarStrings: CalendarStrings = {
+    dragHint: t('scheduleStep.dragHint'),
+    autoDistribute: t('scheduleStep.autoDistribute'),
+    unscheduled: (count: number) => t('scheduleStep.unscheduled', { count }),
+    weekdays: t.raw('scheduleStep.weekdays') as string[],
+    delete: t('scheduleStep.delete'),
+    yes: t('scheduleStep.yes'),
+    no: t('scheduleStep.no'),
+  }
+
+  // Step labels
+  const stepLabels = [
+    t('steps.upload'),
+    t('steps.captions'),
+    t('steps.schedule'),
+    t('steps.post'),
+  ]
+
   // --- Render ---
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
-      {/* Preview banner — shown while account is not yet active */}
+      {/* Preview banner -- shown while account is not yet active */}
       {!isActive && (
         <div style={{
           background: '#172554', border: '1px solid #1e3a8a', borderRadius: '0.75rem',
@@ -680,14 +733,14 @@ export default function Home() {
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem',
         }}>
           <div>
-            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#93c5fd' }}>Vorschau-Modus</span>
+            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#93c5fd' }}>{t('preview.label')}</span>
             <span style={{ fontSize: '0.8rem', color: '#6b7280', marginLeft: '0.5rem' }}>
-              Dein Account wird nach Zahlungseingang freigeschaltet. Posten ist dann möglich.
+              {t('preview.message')}
             </span>
           </div>
-          <a href="/waiting" style={{ fontSize: '0.75rem', color: '#3b82f6', textDecoration: 'none', whiteSpace: 'nowrap' }}>
-            Zurück →
-          </a>
+          <Link href="/waiting" style={{ fontSize: '0.75rem', color: '#3b82f6', textDecoration: 'none', whiteSpace: 'nowrap' }}>
+            {t('preview.backLink')}
+          </Link>
         </div>
       )}
 
@@ -698,7 +751,7 @@ export default function Home() {
             Flowing<span className="text-[var(--accent)]">Post</span>
           </h1>
           <p className="text-[var(--text-muted)] text-sm mt-1">
-            Fotos hochladen &rarr; KI generiert Captions &rarr; Planen &rarr; Auf allen Plattformen posten
+            {t('header.subtitle')}
           </p>
         </div>
         <div className="flex items-center gap-3 shrink-0">
@@ -708,17 +761,27 @@ export default function Home() {
               disabled={connecting}
               className="px-3 py-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] hover:border-[var(--accent)] text-xs font-medium transition-colors disabled:opacity-50"
             >
-              {connecting ? 'Verbinde...' : 'Konten verbinden →'}
+              {connecting ? t('connect.connecting') : t('connect.button')}
+            </button>
+          )}
+          {hasStripe && (
+            <button
+              onClick={handlePortal}
+              disabled={portalLoading}
+              className="px-3 py-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] hover:border-[var(--accent)] text-xs font-medium transition-colors disabled:opacity-50"
+            >
+              {portalLoading ? '...' : t('subscription.manage')}
             </button>
           )}
           {userEmail && (
             <span className="text-xs text-[var(--text-muted)] hidden sm:block">{userEmail}</span>
           )}
+          <LanguageSwitcher />
           <button
             onClick={handleSignOut}
             className="px-3 py-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] text-xs text-[var(--text-muted)] hover:text-white transition-colors"
           >
-            Abmelden
+            {tc('signOut')}
           </button>
         </div>
       </div>
@@ -726,7 +789,7 @@ export default function Home() {
         <p className="text-xs text-red-400 text-center mb-4">{connectError}</p>
       )}
 
-      <StepIndicator current={step} />
+      <StepIndicator current={step} labels={stepLabels} />
 
       {/* Step 1: Upload */}
       {step === 1 && (
@@ -734,27 +797,27 @@ export default function Home() {
           {/* Business config */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-sm text-[var(--text-muted)] mb-1.5">Business Type</label>
+              <label className="block text-sm text-[var(--text-muted)] mb-1.5">{t('upload.businessType')}</label>
               <input
                 value={businessType}
                 onChange={e => setBusinessType(e.target.value)}
-                placeholder="e.g. ice cream shop, bakery, restaurant..."
+                placeholder={t('upload.businessPlaceholder')}
                 className="w-full px-4 py-2.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-sm focus:border-[var(--accent)] focus:outline-none transition-colors"
               />
             </div>
             <div>
-              <label className="block text-sm text-[var(--text-muted)] mb-1.5">Tone</label>
+              <label className="block text-sm text-[var(--text-muted)] mb-1.5">{t('upload.tone')}</label>
               <input
                 value={tone}
                 onChange={e => setTone(e.target.value)}
-                placeholder="e.g. friendly, professional, playful..."
+                placeholder={t('upload.tonePlaceholder')}
                 className="w-full px-4 py-2.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-sm focus:border-[var(--accent)] focus:outline-none transition-colors"
               />
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-sm text-[var(--text-muted)] mb-1.5">Language</label>
+              <label className="block text-sm text-[var(--text-muted)] mb-1.5">{t('upload.language')}</label>
               <select
                 value={language}
                 onChange={e => setLanguage(e.target.value)}
@@ -769,7 +832,7 @@ export default function Home() {
               </select>
             </div>
             <div>
-              <label className="block text-sm text-[var(--text-muted)] mb-1.5">Timezone</label>
+              <label className="block text-sm text-[var(--text-muted)] mb-1.5">{t('upload.timezone')}</label>
               <select
                 value={timezone}
                 onChange={e => setTimezone(e.target.value)}
@@ -800,7 +863,7 @@ export default function Home() {
           {/* Platform selector */}
           <div className="mb-4">
             <label className="block text-sm text-[var(--text-muted)] mb-2">
-              Plattformen <span className="text-[var(--text-muted)]/60">({selectedPlatforms.length}/{planMaxPlatforms})</span>
+              {t('upload.platforms')} <span className="text-[var(--text-muted)]/60">({selectedPlatforms.length}/{planMaxPlatforms})</span>
             </label>
             <div className="flex flex-wrap gap-2">
               {PLATFORMS.map(p => {
@@ -811,7 +874,7 @@ export default function Home() {
                     key={p.id}
                     onClick={() => togglePlatform(p.id)}
                     disabled={atLimit}
-                    title={atLimit ? `Plan-Limit erreicht (${planMaxPlatforms} Plattformen)` : undefined}
+                    title={atLimit ? t('upload.platformLimit', { max: planMaxPlatforms }) : undefined}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${
                       active
                         ? 'border-[var(--accent)] bg-[var(--accent)]/15 text-white'
@@ -827,22 +890,22 @@ export default function Home() {
               })}
             </div>
             {selectedPlatforms.length === 0 && (
-              <p className="mt-1.5 text-xs text-red-400">Wähle mindestens eine Plattform.</p>
+              <p className="mt-1.5 text-xs text-red-400">{t('upload.platformRequired')}</p>
             )}
             {selectedPlatforms.length >= planMaxPlatforms && (
-              <p className="mt-1.5 text-xs text-amber-500">Plan-Limit erreicht. Upgrade für mehr Plattformen.</p>
+              <p className="mt-1.5 text-xs text-amber-500">{t('upload.platformLimit')}</p>
             )}
           </div>
 
           {/* Example captions */}
           <div className="mb-4">
             <label className="block text-sm text-[var(--text-muted)] mb-1.5">
-              Example Captions <span className="text-[var(--text-muted)]/60">(optional — paste captions you like so the AI matches the style)</span>
+              {t('upload.exampleCaptions')} <span className="text-[var(--text-muted)]/60">{t('upload.exampleOptional')}</span>
             </label>
             <textarea
               value={exampleCaptions}
               onChange={e => setExampleCaptions(e.target.value)}
-              placeholder={"Paste 2-3 example captions you've written before or found inspiring...\n\nExample:\n\"Sommerzeit ist Eiszeit! Unsere neue Mango-Sorbet Kreation wartet auf euch...\"\n\"Wer sagt, man kann kein Eis zum Frühstück essen? 🍦☀️\""}
+              placeholder={t('upload.examplePlaceholder')}
               rows={4}
               className="w-full px-4 py-2.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-sm focus:border-[var(--accent)] focus:outline-none transition-colors resize-y"
             />
@@ -858,8 +921,8 @@ export default function Home() {
             onDrop={e => { e.preventDefault(); setDragOver(false); addFiles(e.dataTransfer.files) }}
           >
             <div className="text-4xl mb-3">📸</div>
-            <p className="text-lg font-medium mb-1">Drop photos here or click to upload</p>
-            <p className="text-sm text-[var(--text-muted)]">Upload up to 20 photos at once. JPG, PNG, WebP supported.</p>
+            <p className="text-lg font-medium mb-1">{t('upload.dropzone')}</p>
+            <p className="text-sm text-[var(--text-muted)]">{t('upload.dropzoneHint')}</p>
             <input
               ref={fileInputRef}
               type="file"
@@ -893,7 +956,7 @@ export default function Home() {
                       <input
                         value={photo.description}
                         onChange={e => updateDescription(photo.id, e.target.value)}
-                        placeholder="Describe this photo..."
+                        placeholder={t('upload.describePlaceholder')}
                         className="w-full text-xs px-2 py-1.5 rounded-lg bg-transparent border border-[var(--border)] focus:border-[var(--accent)] focus:outline-none"
                       />
                     </div>
@@ -907,7 +970,7 @@ export default function Home() {
                   disabled={selectedPlatforms.length === 0}
                   className="px-8 py-3 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Captions generieren — {photos.length} Foto{photos.length > 1 ? 's' : ''} × {selectedPlatforms.length} Plattform{selectedPlatforms.length > 1 ? 'en' : ''} &rarr;
+                  {t('upload.generateButton', { count: photos.length, platforms: selectedPlatforms.length })}
                 </button>
               </div>
             </>
@@ -920,7 +983,7 @@ export default function Home() {
         <div className="fade-in">
           <div className="flex items-center justify-between mb-6">
             <button onClick={() => setStep(1)} className="text-sm text-[var(--text-muted)] hover:text-white transition-colors">
-              &larr; Back to upload
+              {t('captionStep.backToUpload')}
             </button>
             <button
               onClick={generateAll}
@@ -930,10 +993,10 @@ export default function Home() {
               {generating.size > 0 ? (
                 <span className="flex items-center gap-2">
                   <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full loading-spin" />
-                  Generiere...
+                  {t('captionStep.generating')}
                 </span>
               ) : (
-                `Alle generieren (${photos.length * selectedPlatforms.length} Posts)`
+                t('captionStep.generateAll', { count: photos.length * selectedPlatforms.length })
               )}
             </button>
           </div>
@@ -966,8 +1029,8 @@ export default function Home() {
                               <PlatformIcon platform={plat} size={14} />
                             )}
                             {getPlatform(plat).label}
-                            {hasPost && ' ✓'}
-                            {hasVariants && !hasPost && ' ●'}
+                            {hasPost && ' \u2713'}
+                            {hasVariants && !hasPost && ' \u25CF'}
                           </button>
                         )
                       })}
@@ -985,7 +1048,7 @@ export default function Home() {
                         <div key={plat} className="mb-3">
                           <div className="flex items-center gap-1.5 mb-1.5 text-[var(--text-muted)] text-xs">
                             <PlatformIcon platform={plat} size={12} /> {plat}
-                            {selectedPost && <span className="text-[var(--success)] ml-1">&#10003; selected</span>}
+                            {selectedPost && <span className="text-[var(--success)] ml-1">{t('captionStep.selected')}</span>}
                           </div>
 
                           {/* Show variants to pick from */}
@@ -1038,13 +1101,13 @@ export default function Home() {
               {Object.keys(variants).length > 0 && (
                 <>
                   <p className="text-xs text-[var(--text-muted)]">
-                    Pick your favorites or accept the first suggestion for all
+                    {t('captionStep.pickFavorites')}
                   </p>
                   <button
                     onClick={acceptAllVariants}
                     className="px-6 py-2.5 rounded-xl bg-[var(--card)] border border-[var(--border)] hover:border-[var(--accent)] font-medium text-sm transition-colors"
                   >
-                    Accept All (1st variant) &mdash; {Object.keys(variants).length} pending
+                    {t('captionStep.acceptAll', { count: Object.keys(variants).length })}
                   </button>
                 </>
               )}
@@ -1053,7 +1116,7 @@ export default function Home() {
                 disabled={Object.keys(variants).length > 0 || posts.length === 0}
                 className="px-8 py-3 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Schedule {posts.length} posts &rarr;
+                {t('captionStep.schedulePosts', { count: posts.length })}
               </button>
             </div>
           )}
@@ -1065,7 +1128,7 @@ export default function Home() {
         <div className="fade-in">
           <div className="flex items-center justify-between mb-6">
             <button onClick={() => setStep(2)} className="text-sm text-[var(--text-muted)] hover:text-white transition-colors">
-              &larr; Back to captions
+              {t('scheduleStep.backToCaptions')}
             </button>
             <span className="text-sm text-[var(--text-muted)]">{posts.length} posts</span>
           </div>
@@ -1077,6 +1140,7 @@ export default function Home() {
             deleteConfirm={deleteConfirm}
             onDeleteConfirm={setDeleteConfirm}
             onDeletePost={deletePost}
+            strings={calendarStrings}
           />
 
           {allScheduled && (
@@ -1085,13 +1149,13 @@ export default function Home() {
                 onClick={scheduleAll}
                 className="px-8 py-3 rounded-xl bg-[var(--success)] hover:brightness-110 font-medium transition-all"
               >
-                Schedule All {posts.length} Posts ✓
+                {t('scheduleStep.scheduleAll', { count: posts.length })}
               </button>
             </div>
           )}
           {!allScheduled && (
             <p className="text-center mt-4 text-sm text-[var(--text-muted)]">
-              Drag all posts to calendar dates to continue
+              {t('scheduleStep.dragAllHint')}
             </p>
           )}
         </div>
@@ -1103,11 +1167,11 @@ export default function Home() {
           <div className="post-card max-w-lg mx-auto p-8">
             <div className="text-5xl mb-4">🎉</div>
             <h2 className="text-2xl font-bold mb-2">
-              {posts.every(p => p.status === 'posted') ? 'All Posts Published!' : 'Posts Scheduled!'}
+              {posts.every(p => p.status === 'posted') ? t('confirm.allPublished') : t('confirm.scheduled')}
             </h2>
             <p className="text-[var(--text-muted)] mb-6">
-              {posts.length} Posts auf {selectedPlatforms.length} Plattform{selectedPlatforms.length > 1 ? 'en' : ''}
-              {posts.every(p => p.status === 'posted') ? ' wurden veröffentlicht.' : ' — bereit zum Posten.'}
+              {t('confirm.postsSummary', { posts: posts.length, platforms: selectedPlatforms.length })}
+              {posts.every(p => p.status === 'posted') ? ` ${t('confirm.published')}` : ` ${t('confirm.readyToPost')}`}
             </p>
 
             <div className={`grid gap-3 mb-6 ${selectedPlatforms.length <= 2 ? 'grid-cols-2' : selectedPlatforms.length <= 4 ? 'grid-cols-4' : 'grid-cols-3 sm:grid-cols-5'}`}>
@@ -1121,7 +1185,7 @@ export default function Home() {
             </div>
 
             <div className="text-left mb-6">
-              <h3 className="text-sm font-medium mb-3 text-[var(--text-muted)]">Upcoming Schedule</h3>
+              <h3 className="text-sm font-medium mb-3 text-[var(--text-muted)]">{t('confirm.upcomingSchedule')}</h3>
               <div className="space-y-2">
                 {[...posts].sort((a, b) => a.scheduledDate.localeCompare(b.scheduledDate) || a.scheduledTime.localeCompare(b.scheduledTime)).map(post => (
                   <div key={post.id} className="flex items-center gap-3 text-sm">
@@ -1148,7 +1212,7 @@ export default function Home() {
                 <div className="flex items-center justify-between text-sm mb-2">
                   <span className="flex items-center gap-2">
                     <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full loading-spin" />
-                    Publishing...
+                    {t('confirm.publishing')}
                   </span>
                   <span>{publishProgress} / {posts.length}</span>
                 </div>
@@ -1164,7 +1228,7 @@ export default function Home() {
             {/* Publish errors */}
             {publishErrors.length > 0 && (
               <div className="mb-6 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-left">
-                <p className="text-sm font-medium text-red-400 mb-1">Some posts failed:</p>
+                <p className="text-sm font-medium text-red-400 mb-1">{t('confirm.someFailed')}</p>
                 {publishErrors.map((err, i) => (
                   <p key={i} className="text-xs text-red-300/80">{err}</p>
                 ))}
@@ -1179,15 +1243,15 @@ export default function Home() {
                     disabled={publishing}
                     className="px-6 py-2.5 rounded-xl bg-[var(--success)] hover:brightness-110 font-medium text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {publishing ? 'Publishing...' : 'Publish Now'}
+                    {publishing ? t('confirm.publishing') : t('confirm.publishNow')}
                   </button>
                 ) : (
                   <div style={{ textAlign: 'center' }}>
                     <div style={{ padding: '0.65rem 1.5rem', borderRadius: '0.75rem', background: '#172554', border: '1px solid #1e3a8a', fontSize: '0.85rem', color: '#93c5fd', display: 'inline-block' }}>
-                      🔒 Posten wird nach Account-Freischaltung möglich
+                      {t('confirm.locked')}
                     </div>
                     <div style={{ marginTop: '0.5rem' }}>
-                      <a href="/waiting" style={{ fontSize: '0.75rem', color: '#4b5563', textDecoration: 'none' }}>Zahlungsstatus prüfen →</a>
+                      <Link href="/waiting" style={{ fontSize: '0.75rem', color: '#4b5563', textDecoration: 'none' }}>{t('confirm.checkPayment')}</Link>
                     </div>
                   </div>
                 )
@@ -1197,7 +1261,7 @@ export default function Home() {
                 disabled={publishing}
                 className="px-6 py-2.5 rounded-xl bg-[var(--card)] border border-[var(--border)] hover:border-[var(--accent)] font-medium text-sm transition-colors disabled:opacity-50"
               >
-                New Batch
+                {t('confirm.newBatch')}
               </button>
             </div>
 
@@ -1206,7 +1270,7 @@ export default function Home() {
       )}
 
       <div className="text-center mt-12 text-xs text-[var(--text-muted)]">
-        FlowingPost &mdash; powered by KI
+        {t('footer')}
       </div>
     </div>
   )

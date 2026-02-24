@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
+import { Link } from '@/i18n/navigation'
 
 const DEFAULT_HASHTAGS = [
   'restaurantfrankfurt', 'frankfurtfood', 'ffmessen',
@@ -42,6 +44,8 @@ function CopyBtn({ text }: { text: string }) {
 }
 
 export default function LeadsPage() {
+  const t = useTranslations('leads')
+
   const [hashtags, setHashtags] = useState<string[]>(DEFAULT_HASHTAGS)
   const [newTag, setNewTag] = useState('')
   const [limit, setLimit] = useState(25)
@@ -91,8 +95,8 @@ export default function LeadsPage() {
     if (s.notes) setNotes(s.notes)
     if (s.contactInfo) setContactInfo(s.contactInfo)
     if (s.icebreakers) setIcebreakers(s.icebreakers)
-    if (s.leads?.length > 0) { setPhase('done'); setPhaseText(`${s.leads.length} Profile (gespeichert)`) }
-  }, [])
+    if (s.leads?.length > 0) { setPhase('done'); setPhaseText(t('profilesSaved', { count: s.leads.length })) }
+  }, [t])
 
   function persist(updates: Record<string, unknown>) {
     saveLS({ ...(loadLS() ?? {}), ...updates })
@@ -131,13 +135,13 @@ export default function LeadsPage() {
       return ev
     } catch {
       // Fallback so one failed call doesn't break the whole batch
-      const fallback: Evaluation = { score: 5, reason: 'Bewertung fehlgeschlagen.', recommendation: 'Manuell prüfen' }
+      const fallback: Evaluation = { score: 5, reason: t('evalFailed'), recommendation: t('manualCheck') }
       setEvaluations(prev => { const n = { ...prev, [lead.username]: fallback }; persist({ evaluations: n }); return n })
       return fallback
     } finally {
       setEvaluating(prev => { const n = new Set(prev); n.delete(lead.username); return n })
     }
-  }, [])
+  }, [t])
 
   // ─── Evaluate batch (concurrent) ─────────────────────────────
   async function evaluateBatch(batch: Lead[], captionSamples?: Record<string, string>, concurrency = 4): Promise<Record<string, Evaluation>> {
@@ -170,7 +174,7 @@ export default function LeadsPage() {
   async function sendEmail(lead: Lead, to: string) {
     setEmailSending(prev => new Set(prev).add(lead.username))
     try {
-      const subject = emailSubjects[lead.username] || `Kurze Anfrage zu eurem Instagram-Auftritt`
+      const subject = emailSubjects[lead.username] || t('defaultSubject')
       const body = emailBodies[lead.username] || ''
       const res = await fetch('/api/send-email', {
         method: 'POST',
@@ -179,7 +183,7 @@ export default function LeadsPage() {
         signal: AbortSignal.timeout(15000),
       })
       const data = await res.json()
-      if (data.error) { alert(`Fehler: ${data.error}`); return }
+      if (data.error) { alert(`${t('error')}: ${data.error}`); return }
       setEmailSent(prev => new Set(prev).add(lead.username))
       setEmailCompose(null)
       markContacted(lead)
@@ -194,7 +198,7 @@ export default function LeadsPage() {
       setEmailBodies(prev => ({ ...prev, [lead.username]: ib || '' }))
     }
     if (!emailSubjects[lead.username]) {
-      setEmailSubjects(prev => ({ ...prev, [lead.username]: `Kurze Anfrage zu eurem Instagram-Auftritt` }))
+      setEmailSubjects(prev => ({ ...prev, [lead.username]: t('defaultSubject') }))
     }
     setEmailCompose(lead.username)
   }
@@ -206,7 +210,7 @@ export default function LeadsPage() {
       const profInfo = profileInfos[lead.username]
       const ev = evaluations[lead.username]
       const captionSample = profiles[lead.username]
-        ?.map((p, i) => `Post ${i + 1}: "${p.caption.slice(0, 120) || '(keine Caption)'}"`)
+        ?.map((p, i) => `Post ${i + 1}: "${p.caption.slice(0, 120) || t('noCaption')}"`)
         .join('\n')
 
       const res = await fetch('/api/generate-icebreaker', {
@@ -235,7 +239,7 @@ export default function LeadsPage() {
   async function startEnrichFlow() {
     if (pollRef.current) clearInterval(pollRef.current)
     try {
-      setPhase('syncing'); setPhaseText('Lade Leads aus Airtable...'); setPhaseDetail('')
+      setPhase('syncing'); setPhaseText(t('loadingFromAirtable')); setPhaseDetail('')
 
       const res = await fetch('/api/airtable/fetch-leads')
       const data = await res.json()
@@ -277,14 +281,14 @@ export default function LeadsPage() {
         setContactInfo(prev => { const n = { ...prev, ...restoredContactInfo }; persist({ contactInfo: n }); return n })
       }
 
-      if (atLeads.length === 0) { setPhase('done'); setPhaseText('Keine Leads in Airtable gefunden'); return }
+      if (atLeads.length === 0) { setPhase('done'); setPhaseText(t('noLeadsInAirtable')); return }
 
       setLeads(atLeads)
       persist({ leads: atLeads })
-      setPhaseDetail(`${atLeads.length} Leads geladen`)
+      setPhaseDetail(t('leadsLoaded', { count: atLeads.length }))
 
       // Stage 2: batch profile scrape for all leads
-      setPhase('batch-loading'); setPhaseText('Profile laden...'); setPhaseDetail(`${atLeads.length} Leads`)
+      setPhase('batch-loading'); setPhaseText(t('loadingProfiles')); setPhaseDetail(t('leadsCount', { count: atLeads.length }))
 
       const batchStart = await fetch('/api/profile/batch-start', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -319,7 +323,7 @@ export default function LeadsPage() {
       const stage3Leads = [...leadsWithUrl, ...leadsNoUrl]
 
       if (stage3Leads.length > 0) {
-        setPhase('website-scraping'); setPhaseText('Kontaktdaten suchen...'); setPhaseDetail(`0/${stage3Leads.length}`)
+        setPhase('website-scraping'); setPhaseText(t('searchingContacts')); setPhaseDetail(`0/${stage3Leads.length}`)
         const newContactInfo: Record<string, ContactInfo> = {}
         const chunkSize = 5
         for (let i = 0; i < stage3Leads.length; i += chunkSize) {
@@ -357,7 +361,7 @@ export default function LeadsPage() {
       }
 
       // Deep evaluation with multi-post context
-      setPhase('deep-evaluating'); setPhaseText('Tiefbewertung...')
+      setPhase('deep-evaluating'); setPhaseText(t('deepEvaluation'))
       const deepEvs = await evaluateBatch(atLeads.slice(0, topN), captionSamples)
       for (const lead of atLeads) {
         const ev = deepEvs[lead.username]
@@ -367,10 +371,10 @@ export default function LeadsPage() {
       await fetch('/api/airtable/dedup').catch(() => {})
 
       setPhase('done')
-      setPhaseText(`Fertig: ${atLeads.length} Leads angereichert`)
+      setPhaseText(t('doneEnriched', { count: atLeads.length }))
       setPhaseDetail('')
     } catch (err) {
-      setPhase('error'); setPhaseText(`Fehler: ${err}`); setPhaseDetail('')
+      setPhase('error'); setPhaseText(`${t('error')}: ${err}`); setPhaseDetail('')
     }
   }
 
@@ -378,7 +382,7 @@ export default function LeadsPage() {
   async function startWebSearchFlow() {
     if (pollRef.current) clearInterval(pollRef.current)
     try {
-      setPhase('syncing'); setPhaseText('Lade Leads aus Airtable...'); setPhaseDetail('')
+      setPhase('syncing'); setPhaseText(t('loadingFromAirtable')); setPhaseDetail('')
 
       const res = await fetch('/api/airtable/fetch-leads')
       const data = await res.json()
@@ -422,13 +426,13 @@ export default function LeadsPage() {
         setProfileInfos(prev => { const n = { ...prev, ...restoredInfos }; persist({ profileInfos: n }); return n })
       }
 
-      if (searchLeads.length === 0) { setPhase('done'); setPhaseText('Keine Leads gefunden'); return }
+      if (searchLeads.length === 0) { setPhase('done'); setPhaseText(t('noLeadsFound')); return }
 
       setLeads(searchLeads)
       persist({ leads: searchLeads })
 
       setPhase('website-scraping')
-      setPhaseText('Google Suche läuft...')
+      setPhaseText(t('googleSearchRunning'))
       setPhaseDetail(`0/${searchLeads.length}`)
 
       const newContactInfo: Record<string, ContactInfo> = {}
@@ -491,10 +495,10 @@ export default function LeadsPage() {
 
       const found = Object.keys(newContactInfo).length
       setPhase('done')
-      setPhaseText(`Fertig: ${found} Kontakte gefunden von ${searchLeads.length} Leads`)
+      setPhaseText(t('doneContacts', { found, total: searchLeads.length }))
       setPhaseDetail('')
     } catch (err) {
-      setPhase('error'); setPhaseText(`Fehler: ${err}`); setPhaseDetail('')
+      setPhase('error'); setPhaseText(`${t('error')}: ${err}`); setPhaseDetail('')
     }
   }
 
@@ -504,7 +508,7 @@ export default function LeadsPage() {
 
     try {
       // ① Hashtag scrape
-      setPhase('scraping'); setPhaseText('Suche läuft...'); setPhaseDetail('Instagram scraping (1–3 Min.)')
+      setPhase('scraping'); setPhaseText(t('searchRunning')); setPhaseDetail(t('instagramScraping'))
       setLeads([]); setDiscoveredHashtags([])
 
       const startRes = await fetch('/api/scrape/start', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ hashtags, limit }) })
@@ -517,12 +521,12 @@ export default function LeadsPage() {
 
       setLeads(newLeads); setDiscoveredHashtags(newTags)
       persist({ leads: newLeads, discoveredHashtags: newTags })
-      setPhaseDetail(`${newLeads.length} Profile gefunden`)
+      setPhaseDetail(t('profilesFound', { count: newLeads.length }))
 
-      if (newLeads.length === 0) { setPhase('done'); setPhaseText('Keine Profile gefunden'); return }
+      if (newLeads.length === 0) { setPhase('done'); setPhaseText(t('noProfilesFound')); return }
 
       // ② Airtable sync (alle Leads)
-      setPhase('syncing'); setPhaseText('Airtable sync...'); setPhaseDetail(`0/${newLeads.length}`)
+      setPhase('syncing'); setPhaseText(t('airtableSync')); setPhaseDetail(`0/${newLeads.length}`)
       for (let i = 0; i < newLeads.length; i++) {
         await syncToAirtable(newLeads[i], { status: 'Neu' })
         setPhaseDetail(`${i + 1}/${newLeads.length}`)
@@ -530,7 +534,7 @@ export default function LeadsPage() {
       }
 
       // ③ Schnell-Bewertung aller Leads (parallel, 4 gleichzeitig)
-      setPhase('evaluating'); setPhaseText('Schnellbewertung...')
+      setPhase('evaluating'); setPhaseText(t('quickEvaluation'))
       const quickEvs = await evaluateBatch(newLeads)
 
       // Sync evaluations to Airtable
@@ -546,8 +550,8 @@ export default function LeadsPage() {
 
       if (topLeads.length > 0) {
         setPhase('batch-loading')
-        setPhaseText('Profile laden...')
-        setPhaseDetail(`${topLeads.length} Leads zum Kontaktieren`)
+        setPhaseText(t('loadingProfiles'))
+        setPhaseDetail(t('leadsToContact', { count: topLeads.length }))
 
         const batchStart = await fetch('/api/profile/batch-start', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -583,7 +587,7 @@ export default function LeadsPage() {
           const stage3All = [...stage3WithUrl, ...stage3NoUrl]
 
           setPhase('website-scraping')
-          setPhaseText('Kontaktdaten suchen...')
+          setPhaseText(t('searchingContacts'))
           setPhaseDetail(`0/${stage3All.length}`)
 
           const newContactInfo: Record<string, ContactInfo> = {}
@@ -616,7 +620,7 @@ export default function LeadsPage() {
           }
 
           // ⑥ Tiefbewertung der Top-Leads mit Multi-Post-Kontext
-          setPhase('deep-evaluating'); setPhaseText('Tiefbewertung...')
+          setPhase('deep-evaluating'); setPhaseText(t('deepEvaluation'))
           const deepEvs = await evaluateBatch(topLeads, captionSamples)
           for (const lead of topLeads) {
             const ev = deepEvs[lead.username]
@@ -634,12 +638,12 @@ export default function LeadsPage() {
       await fetch('/api/airtable/dedup').catch(() => {})
 
       setPhase('done')
-      setPhaseText(`Fertig: ${newLeads.length} Profile · ${topLeads.length} tief analysiert · ${recommended} empfohlen`)
+      setPhaseText(t('doneAutoFlow', { total: newLeads.length, deep: topLeads.length, recommended }))
       setPhaseDetail('')
 
     } catch (err) {
       setPhase('error')
-      setPhaseText(`Fehler: ${err}`)
+      setPhaseText(`${t('error')}: ${err}`)
       setPhaseDetail('')
     }
   }
@@ -658,8 +662,8 @@ export default function LeadsPage() {
     syncToAirtable(lead, { status: 'Nicht interessant' })
   }
   function addTag(tag?: string) {
-    const t = (tag ?? newTag).trim().replace(/^#/, '')
-    if (t && !hashtags.includes(t)) setHashtags(prev => [...prev, t])
+    const tVal = (tag ?? newTag).trim().replace(/^#/, '')
+    if (tVal && !hashtags.includes(tVal)) setHashtags(prev => [...prev, tVal])
     if (!tag) setNewTag('')
   }
   function clearAll() {
@@ -690,18 +694,18 @@ export default function LeadsPage() {
       {/* NAV */}
       <nav style={{ borderBottom: '1px solid #1a1a1a', padding: '0 24px', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, background: 'rgba(10,10,10,0.92)', backdropFilter: 'blur(10px)', zIndex: 50 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <a href="/" style={{ color: '#555', textDecoration: 'none', fontSize: 13 }}>← Zurück</a>
+          <Link href="/" style={{ color: '#555', textDecoration: 'none', fontSize: 13 }}>{t('back')}</Link>
           <span style={{ color: '#333' }}>|</span>
-          <span style={{ fontWeight: 700, fontSize: 15 }}>🔍 Lead Research</span>
+          <span style={{ fontWeight: 700, fontSize: 15 }}>{t('title')}</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           {leads.length > 0 && <>
-            <span style={{ fontSize: 11, color: '#3f3f46' }}>{visible.length} sichtbar · {syncedCount}/{leads.length} in Airtable</span>
+            <span style={{ fontSize: 11, color: '#3f3f46' }}>{visible.length} {t('visible')} · {syncedCount}/{leads.length} {t('inAirtable')}</span>
             <a href="https://airtable.com/appeFF8GsXuX5Lia3" target="_blank" rel="noopener noreferrer"
               style={{ ...BTN, background: 'rgba(99,102,241,0.15)', color: '#818cf8', border: '1px solid rgba(99,102,241,0.3)', textDecoration: 'none', fontSize: 12 }}>
-              📋 Airtable
+              {t('airtableButton')}
             </a>
-            <button onClick={clearAll} style={{ ...BTN, background: '#1a1a1a', color: '#ef4444', fontSize: 12 }}>✕ Reset</button>
+            <button onClick={clearAll} style={{ ...BTN, background: '#1a1a1a', color: '#ef4444', fontSize: 12 }}>{t('reset')}</button>
           </>}
         </div>
       </nav>
@@ -714,39 +718,39 @@ export default function LeadsPage() {
             {hashtags.map(tag => (
               <span key={tag} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '4px 11px', borderRadius: 999, fontSize: 12, background: 'rgba(99,102,241,0.12)', border: '1px solid rgba(99,102,241,0.3)', color: '#818cf8' }}>
                 #{tag}
-                <button onClick={() => setHashtags(p => p.filter(t => t !== tag))} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#555', padding: 0, lineHeight: 1, fontSize: 14 }}>×</button>
+                <button onClick={() => setHashtags(p => p.filter(tVal => tVal !== tag))} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#555', padding: 0, lineHeight: 1, fontSize: 14 }}>×</button>
               </span>
             ))}
           </div>
           <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
-            <input placeholder="Hashtag hinzufügen..." value={newTag} onChange={e => setNewTag(e.target.value)} onKeyDown={e => e.key === 'Enter' && addTag()}
+            <input placeholder={t('addHashtag')} value={newTag} onChange={e => setNewTag(e.target.value)} onKeyDown={e => e.key === 'Enter' && addTag()}
               style={{ flex: 1, background: '#0d0d0d', border: '1px solid #262626', borderRadius: 8, padding: '7px 11px', color: '#fafafa', fontSize: 13, outline: 'none', fontFamily: 'inherit' }} />
-            <button onClick={() => addTag()} style={{ ...BTN, background: '#262626', color: '#a1a1aa', fontSize: 12 }}>+ Add</button>
+            <button onClick={() => addTag()} style={{ ...BTN, background: '#262626', color: '#a1a1aa', fontSize: 12 }}>{t('add')}</button>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
             <label style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 13, color: '#a1a1aa' }}>
-              Posts/Tag:
+              {t('postsPerDay')}
               <select value={limit} onChange={e => setLimit(Number(e.target.value))} style={{ background: '#0d0d0d', border: '1px solid #262626', borderRadius: 6, padding: '4px 8px', color: '#fafafa', fontSize: 13, fontFamily: 'inherit', outline: 'none' }}>
                 {[10, 25, 50].map(n => <option key={n} value={n}>{n}</option>)}
               </select>
             </label>
             <label style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 13, color: '#a1a1aa' }}>
-              Max. Deep-Scan:
+              {t('maxDeepScan')}
               <select value={topN} onChange={e => setTopN(Number(e.target.value))} style={{ background: '#0d0d0d', border: '1px solid #262626', borderRadius: 6, padding: '4px 8px', color: '#fafafa', fontSize: 13, fontFamily: 'inherit', outline: 'none' }}>
                 {[20, 30, 50, 100].map(n => <option key={n} value={n}>{n}</option>)}
               </select>
             </label>
             <button onClick={startAutoFlow} disabled={isRunning}
               style={{ ...BTN, padding: '9px 22px', fontSize: 14, background: isRunning ? '#1e1e1e' : '#6366f1', color: isRunning ? '#555' : 'white' }}>
-              {isRunning ? '⏳ Läuft...' : '🚀 Auto-Analyse starten'}
+              {isRunning ? t('running') : t('autoAnalyze')}
             </button>
             <button onClick={startEnrichFlow} disabled={isRunning}
               style={{ ...BTN, padding: '9px 16px', fontSize: 13, background: isRunning ? '#1e1e1e' : '#1a1a2e', color: isRunning ? '#555' : '#818cf8', border: '1px solid rgba(99,102,241,0.35)' }}>
-              {isRunning ? '⏳' : '🔄 Airtable anreichern'}
+              {isRunning ? '⏳' : t('enrichAirtable')}
             </button>
             <button onClick={startWebSearchFlow} disabled={isRunning}
               style={{ ...BTN, padding: '9px 16px', fontSize: 13, background: isRunning ? '#1e1e1e' : '#0d1f0d', color: isRunning ? '#555' : '#4ade80', border: '1px solid rgba(74,222,128,0.3)' }}>
-              {isRunning ? '⏳' : '🌐 Websites suchen'}
+              {isRunning ? '⏳' : t('searchWebsites')}
             </button>
           </div>
         </div>
@@ -764,12 +768,12 @@ export default function LeadsPage() {
             {isRunning && (
               <div style={{ display: 'flex', gap: 12, marginTop: 10, flexWrap: 'wrap' }}>
                 {([
-                  ['scraping', '🔍 Scrape'],
-                  ['syncing', '🔗 Airtable'],
-                  ['evaluating', '✦ Schnellbewertung'],
-                  ['batch-loading', '📊 Profile'],
-                  ['website-scraping', '🌐 Websites'],
-                  ['deep-evaluating', '✦ Tiefbewertung'],
+                  ['scraping', t('phaseScrape')],
+                  ['syncing', t('phaseAirtable')],
+                  ['evaluating', t('phaseQuickEval')],
+                  ['batch-loading', t('phaseProfiles')],
+                  ['website-scraping', t('phaseWebsites')],
+                  ['deep-evaluating', t('phaseDeepEval')],
                 ] as [Phase, string][]).map(([p, label]) => (
                   <span key={p} style={{ fontSize: 11, color: phaseSteps.indexOf(p) < phaseIdx ? '#22c55e' : phaseSteps.indexOf(p) === phaseIdx ? '#f59e0b' : '#3f3f46' }}>
                     {phaseSteps.indexOf(p) < phaseIdx ? '✓' : phaseSteps.indexOf(p) === phaseIdx ? '→' : '·'} {label}
@@ -783,7 +787,7 @@ export default function LeadsPage() {
         {/* DISCOVERED HASHTAGS */}
         {newDiscoveredTags.length > 0 && (
           <div style={{ ...CARD, padding: 16, marginBottom: 14 }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: '#71717a', marginBottom: 8 }}>💡 Entdeckte Hashtags aus den Ergebnissen:</div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: '#71717a', marginBottom: 8 }}>{t('discoveredHashtags')}</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
               {newDiscoveredTags.slice(0, 20).map(({ tag, count }) => (
                 <button key={tag} onClick={() => addTag(tag)} style={{ ...BTN, padding: '3px 9px', background: '#1a1a1a', border: '1px solid #2a2a2a', color: '#71717a', fontSize: 11 }}>
@@ -833,7 +837,7 @@ export default function LeadsPage() {
                       )}
                       {ev && <div style={{ position: 'absolute', top: 7, right: 7, background: 'rgba(0,0,0,0.88)', border: `2px solid ${SCORE_COLOR(ev.score)}`, borderRadius: 6, padding: '2px 8px', fontSize: 13, fontWeight: 800, color: SCORE_COLOR(ev.score) }}>{ev.score}/10</div>}
                       {profPosts && <div style={{ position: 'absolute', top: 7, left: 7, background: 'rgba(99,102,241,0.9)', borderRadius: 5, padding: '2px 6px', fontSize: 10, fontWeight: 600 }}>📊 {profPosts.length}</div>}
-                      {isContacted && <div style={{ position: 'absolute', bottom: 7, left: 7, background: 'rgba(34,197,94,0.88)', borderRadius: 5, padding: '2px 6px', fontSize: 10, fontWeight: 600 }}>✓ Kontaktiert</div>}
+                      {isContacted && <div style={{ position: 'absolute', bottom: 7, left: 7, background: 'rgba(34,197,94,0.88)', borderRadius: 5, padding: '2px 6px', fontSize: 10, fontWeight: 600 }}>✓ {t('contacted')}</div>}
                       <div style={{ position: 'absolute', bottom: 7, right: 7, fontSize: 10 }}>
                         {syncStatus === 'synced' ? <span style={{ color: '#22c55e' }}>🔗</span> : syncStatus === 'error' ? <span style={{ color: '#ef4444' }}>⚠</span> : null}
                       </div>
@@ -892,7 +896,7 @@ export default function LeadsPage() {
 
                       {/* Caption */}
                       <div style={{ background: '#0d0d0d', border: '1px solid #1e1e1e', borderRadius: 6, padding: '6px 9px', marginBottom: 7, fontSize: 11, color: lead.caption ? '#a1a1aa' : '#3f3f46', lineHeight: 1.55, maxHeight: 52, overflow: 'hidden' }}>
-                        {lead.caption ? lead.caption.slice(0, 130) + (lead.caption.length > 130 ? '...' : '') : '(keine Caption)'}
+                        {lead.caption ? lead.caption.slice(0, 130) + (lead.caption.length > 130 ? '...' : '') : t('noCaption')}
                       </div>
 
                       {/* Evaluation */}
@@ -904,13 +908,13 @@ export default function LeadsPage() {
                         </div>
                       )}
 
-                      {evaluating.has(lead.username) && <div style={{ fontSize: 11, color: '#f59e0b', marginBottom: 7 }}>⏳ Bewertet...</div>}
+                      {evaluating.has(lead.username) && <div style={{ fontSize: 11, color: '#f59e0b', marginBottom: 7 }}>{t('evaluating')}</div>}
 
                       {/* Icebreaker */}
                       {icebreaker && icebreakerExpanded && (
                         <div style={{ background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.25)', borderRadius: 6, padding: '8px 10px', marginBottom: 7 }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
-                            <span style={{ fontSize: 10, fontWeight: 700, color: '#818cf8' }}>💬 Icebreaker</span>
+                            <span style={{ fontSize: 10, fontWeight: 700, color: '#818cf8' }}>{t('icebreaker')}</span>
                             <div style={{ display: 'flex', gap: 5 }}>
                               <CopyBtn text={icebreaker} />
                               <button onClick={() => setExpandedIcebreaker(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#555', fontSize: 11 }}>✕</button>
@@ -924,19 +928,19 @@ export default function LeadsPage() {
                       {isEmailCompose && emailTarget && (
                         <div style={{ background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.25)', borderRadius: 6, padding: '9px 10px', marginBottom: 7 }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                            <span style={{ fontSize: 10, fontWeight: 700, color: '#4ade80' }}>✉️ Email an {emailTarget}</span>
+                            <span style={{ fontSize: 10, fontWeight: 700, color: '#4ade80' }}>{t('emailTo', { target: emailTarget })}</span>
                             <button onClick={() => setEmailCompose(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#555', fontSize: 11 }}>✕</button>
                           </div>
                           <input
                             value={emailSubjects[lead.username] || ''}
                             onChange={e => setEmailSubjects(p => ({ ...p, [lead.username]: e.target.value }))}
-                            placeholder="Betreff..."
+                            placeholder={t('subject')}
                             style={{ width: '100%', background: '#0d0d0d', border: '1px solid #262626', borderRadius: 5, padding: '5px 8px', color: '#fafafa', fontSize: 11, fontFamily: 'inherit', outline: 'none', marginBottom: 5, boxSizing: 'border-box' }}
                           />
                           <textarea
                             value={emailBodies[lead.username] || ''}
                             onChange={e => setEmailBodies(p => ({ ...p, [lead.username]: e.target.value }))}
-                            placeholder="Nachricht..."
+                            placeholder={t('message')}
                             rows={5}
                             style={{ width: '100%', background: '#0d0d0d', border: '1px solid #262626', borderRadius: 5, padding: '5px 8px', color: '#fafafa', fontSize: 11, fontFamily: 'inherit', outline: 'none', resize: 'vertical', boxSizing: 'border-box', marginBottom: 6 }}
                           />
@@ -944,7 +948,7 @@ export default function LeadsPage() {
                             onClick={() => sendEmail(lead, emailTarget)}
                             disabled={isEmailSending || !emailBodies[lead.username]}
                             style={{ ...BTN, background: isEmailSending ? '#1a1a1a' : '#16a34a', color: isEmailSending ? '#555' : 'white', fontSize: 11, width: '100%' }}>
-                            {isEmailSending ? '⏳ Sende...' : '📤 Senden'}
+                            {isEmailSending ? t('sending') : t('send')}
                           </button>
                         </div>
                       )}
@@ -972,7 +976,7 @@ export default function LeadsPage() {
                       {isEditingNote ? (
                         <div style={{ marginBottom: 7 }}>
                           <textarea value={noteVal} onChange={e => setNotes(p => ({ ...p, [lead.username]: e.target.value }))}
-                            placeholder="Notiz: z.B. Angefragt 15.2., keine Antwort..."
+                            placeholder={t('notePlaceholder')}
                             rows={2} style={{ width: '100%', background: '#0d0d0d', border: '1px solid #262626', borderRadius: 6, padding: '6px 9px', color: '#fafafa', fontSize: 11, fontFamily: 'inherit', outline: 'none', resize: 'vertical', boxSizing: 'border-box' }} />
                           <div style={{ display: 'flex', gap: 5, marginTop: 4 }}>
                             <button onClick={() => saveNote(lead)} style={{ ...BTN, background: '#22c55e', color: '#000', fontSize: 11, padding: '4px 10px' }}>💾</button>
@@ -1003,7 +1007,7 @@ export default function LeadsPage() {
                         {emailTarget && (
                           <button onClick={() => isEmailCompose ? setEmailCompose(null) : openEmailCompose(lead)}
                             style={{ ...BTN, background: isEmailSent ? 'rgba(34,197,94,0.2)' : isEmailCompose ? 'rgba(34,197,94,0.15)' : '#1a1a1a', color: isEmailSent ? '#4ade80' : isEmailCompose ? '#4ade80' : '#71717a', border: isEmailCompose ? '1px solid rgba(34,197,94,0.35)' : '1px solid transparent', fontSize: 11 }}>
-                            {isEmailSent ? '✓ Gesendet' : '📧'}
+                            {isEmailSent ? t('sent') : '📧'}
                           </button>
                         )}
                         {lead.postUrl && (
@@ -1026,15 +1030,15 @@ export default function LeadsPage() {
 
         {dismissed.size > 0 && (
           <div style={{ marginTop: 16, textAlign: 'center' }}>
-            <span style={{ fontSize: 12, color: '#3f3f46' }}>{dismissed.size} ausgeblendet · <button onClick={() => { setDismissed(new Set()); persist({ dismissed: [] }) }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#555', fontSize: 12, textDecoration: 'underline' }}>einblenden</button></span>
+            <span style={{ fontSize: 12, color: '#3f3f46' }}>{dismissed.size} {t('hidden')} · <button onClick={() => { setDismissed(new Set()); persist({ dismissed: [] }) }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#555', fontSize: 12, textDecoration: 'underline' }}>{t('show')}</button></span>
           </div>
         )}
 
         {phase === 'idle' && leads.length === 0 && (
           <div style={{ textAlign: 'center', padding: '80px 0' }}>
             <div style={{ fontSize: 36, marginBottom: 14 }}>🚀</div>
-            <p style={{ color: '#555', fontSize: 14, marginBottom: 6 }}>Einmal klicken – alles läuft automatisch.</p>
-            <p style={{ color: '#3f3f46', fontSize: 12 }}>Scrape → Bewertung → Profil-Analyse → Websites → Airtable-Sync</p>
+            <p style={{ color: '#555', fontSize: 14, marginBottom: 6 }}>{t('idleTitle')}</p>
+            <p style={{ color: '#3f3f46', fontSize: 12 }}>{t('idleSubtitle')}</p>
           </div>
         )}
       </div>

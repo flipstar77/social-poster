@@ -3,3 +3,10 @@ node_modules
 .env.local
 
 .vercel
+
+# Bot session data (Instagram login tokens — never commit)
+.ig-session*/
+scripts/accounts.json
+scripts/bot-stats.json
+scripts/followups.json
+scripts/logs/

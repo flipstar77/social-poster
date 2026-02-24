@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/i18n/navigation'
+import { useTranslations } from 'next-intl'
 
 const PLATFORMS = [
   { id: 'instagram', label: 'Instagram', color: '#E1306C' },
@@ -16,45 +17,47 @@ const PLATFORMS = [
   { id: 'reddit', label: 'Reddit', color: '#FF4500' },
 ]
 
-const PLANS = [
-  {
-    id: 'starter',
-    name: 'Starter',
-    price: '€49',
-    period: '/Monat',
-    description: 'Perfekt für den Einstieg',
-    features: ['Instagram + TikTok + Facebook', 'KI-Captions & Hashtags', 'Post-Planung & Kalender', 'E-Mail Support'],
-    maxPlatforms: 3,
-    highlight: false,
-  },
-  {
-    id: 'growth',
-    name: 'Growth',
-    price: '€99',
-    period: '/Monat',
-    description: 'Für wachsende Betriebe',
-    features: ['Alles aus Starter', 'Instagram, TikTok, Facebook + mehr', 'Bis zu 6 Plattformen', 'E-Mail Support'],
-    maxPlatforms: 6,
-    highlight: true,
-  },
-  {
-    id: 'pro',
-    name: 'Pro',
-    price: '€199',
-    period: '/Monat',
-    description: 'Maximale Reichweite',
-    features: ['Alles aus Growth', 'Alle 9 Plattformen', 'Telegram Bot — posten per Sprachnachricht', 'Prioritäts-Support'],
-    maxPlatforms: 9,
-    highlight: false,
-  },
-]
+interface PlanData {
+  name: string
+  price: string
+  period: string
+  description: string
+  features: string[]
+}
 
 export default function OnboardingPage() {
+  const t = useTranslations('onboarding')
   const router = useRouter()
   const supabase = createClient()
 
+  const starterData = t.raw('plans.starter') as PlanData
+  const growthData = t.raw('plans.growth') as PlanData
+  const proData = t.raw('plans.pro') as PlanData
+
+  const PLANS = [
+    {
+      id: 'starter',
+      ...starterData,
+      maxPlatforms: 3,
+      highlight: false,
+    },
+    {
+      id: 'growth',
+      ...growthData,
+      maxPlatforms: 6,
+      highlight: true,
+    },
+    {
+      id: 'pro',
+      ...proData,
+      maxPlatforms: 9,
+      highlight: false,
+    },
+  ]
+
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(['instagram', 'tiktok'])
   const [selectedPlan, setSelectedPlan] = useState<string>('growth')
+  const [yearly, setYearly] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -98,7 +101,7 @@ export default function OnboardingPage() {
       .eq('id', user.id)
 
     if (updateError) {
-      setError('Fehler beim Speichern. Bitte versuche es erneut.')
+      setError(t('saveError'))
       setSaving(false)
       return
     }
@@ -112,6 +115,22 @@ export default function OnboardingPage() {
       })
     } catch {
       // Non-critical — can be retried later
+    }
+
+    // Redirect to Stripe Checkout
+    try {
+      const res = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan: selectedPlan, yearly }),
+      })
+      const data = await res.json()
+      if (data.url) {
+        window.location.href = data.url
+        return
+      }
+    } catch {
+      // Stripe not configured yet — fall back to waiting page
     }
 
     router.push('/waiting')
@@ -132,18 +151,44 @@ export default function OnboardingPage() {
             <span style={{ color: '#3b82f6' }}>Flowing</span>Post
           </div>
           <h1 style={{ fontSize: '1.5rem', fontWeight: 700, margin: '0 0 0.5rem' }}>
-            Richte deinen Account ein
+            {t('title')}
           </h1>
           <p style={{ color: '#6b7280', margin: 0 }}>
-            Wähle deinen Plan und die Plattformen, auf denen du posten möchtest.
+            {t('subtitle')}
           </p>
         </div>
 
         {/* Step 1: Plan Selection */}
         <section style={{ marginBottom: '3rem' }}>
-          <h2 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem', color: '#e5e7eb' }}>
-            1. Plan wählen
-          </h2>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+            <h2 style={{ fontSize: '1rem', fontWeight: 600, color: '#e5e7eb', margin: 0 }}>
+              {t('step1')}
+            </h2>
+            {/* Yearly toggle */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span style={{ fontSize: '0.8rem', color: yearly ? '#6b7280' : '#e5e7eb', fontWeight: yearly ? 400 : 600 }}>{t('monthly')}</span>
+              <button
+                onClick={() => setYearly(!yearly)}
+                style={{
+                  width: '44px', height: '24px', borderRadius: '999px', border: 'none',
+                  background: yearly ? '#3b82f6' : '#374151', cursor: 'pointer',
+                  position: 'relative', transition: 'background 0.2s',
+                }}
+              >
+                <span style={{
+                  position: 'absolute', top: '2px', left: yearly ? '22px' : '2px',
+                  width: '20px', height: '20px', borderRadius: '50%',
+                  background: '#fff', transition: 'left 0.2s',
+                }} />
+              </button>
+              <span style={{ fontSize: '0.8rem', color: yearly ? '#e5e7eb' : '#6b7280', fontWeight: yearly ? 600 : 400 }}>{t('yearly')}</span>
+              {yearly && (
+                <span style={{ fontSize: '0.65rem', background: '#16a34a', color: '#fff', padding: '0.15rem 0.4rem', borderRadius: '999px', fontWeight: 600 }}>
+                  {t('yearlyBadge')}
+                </span>
+              )}
+            </div>
+          </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem' }}>
             {PLANS.map(plan => (
               <button
@@ -175,7 +220,7 @@ export default function OnboardingPage() {
                     whiteSpace: 'nowrap',
                     letterSpacing: '0.05em',
                     textTransform: 'uppercase',
-                  }}>Beliebt</span>
+                  }}>{t('popular')}</span>
                 )}
                 <div style={{ color: '#9ca3af', fontSize: '0.75rem', fontWeight: 600, marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   {plan.name}
@@ -185,7 +230,7 @@ export default function OnboardingPage() {
                   <span style={{ color: '#6b7280', fontSize: '0.8rem' }}>{plan.period}</span>
                 </div>
                 <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                  {plan.features.map(f => (
+                  {plan.features.map((f: string) => (
                     <li key={f} style={{ fontSize: '0.75rem', color: '#9ca3af', padding: '0.2rem 0', display: 'flex', gap: '0.4rem' }}>
                       <span style={{ color: '#3b82f6' }}>✓</span> {f}
                     </li>
@@ -199,11 +244,10 @@ export default function OnboardingPage() {
         {/* Step 2: Platform Selection */}
         <section style={{ marginBottom: '3rem' }}>
           <h2 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.375rem', color: '#e5e7eb' }}>
-            2. Plattformen wählen
+            {t('step2')}
           </h2>
           <p style={{ color: '#6b7280', fontSize: '0.8rem', marginBottom: '1rem' }}>
-            Dein Plan enthält bis zu {planMaxPlatforms} Plattform{planMaxPlatforms !== 1 ? 'en' : ''}.{' '}
-            {selectedPlatforms.length}/{planMaxPlatforms} ausgewählt.
+            {t('platformCount', { selected: selectedPlatforms.length, max: planMaxPlatforms })}
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
             {PLATFORMS.map(p => {
@@ -233,7 +277,7 @@ export default function OnboardingPage() {
           </div>
           {selectedPlatforms.length >= planMaxPlatforms && (
             <p style={{ color: '#f59e0b', fontSize: '0.75rem', marginTop: '0.5rem' }}>
-              Maximum für deinen Plan erreicht. Upgrade für mehr Plattformen.
+              {t('platformLimit')}
             </p>
           )}
         </section>
@@ -267,7 +311,7 @@ export default function OnboardingPage() {
             cursor: saving ? 'not-allowed' : 'pointer',
           }}
         >
-          {saving ? 'Wird gespeichert...' : 'Weiter →'}
+          {saving ? t('saving') : t('submit')}
         </button>
       </div>
     </div>

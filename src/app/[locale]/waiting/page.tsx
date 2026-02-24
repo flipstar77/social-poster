@@ -2,18 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
-
-const PLAN_LABELS: Record<string, string> = {
-  starter: 'Starter — €49/Monat',
-  growth: 'Growth — €99/Monat',
-  pro: 'Pro — €199/Monat',
-}
+import { useRouter, Link } from '@/i18n/navigation'
+import { useTranslations } from 'next-intl'
 
 const PLAN_PRICES: Record<string, string> = {
-  starter: '49',
-  growth: '99',
-  pro: '199',
+  starter: '39',
+  growth: '79',
+  pro: '149',
 }
 
 // ── ZAHLUNGSDETAILS ───────────────────────────────────────────────
@@ -37,6 +32,8 @@ function Step({ num, done }: { num: number; done?: boolean }) {
 }
 
 export default function WaitingPage() {
+  const t = useTranslations('waiting')
+  const tc = useTranslations('common')
   const router = useRouter()
   const supabase = createClient()
   const [plan, setPlan] = useState<string>('starter')
@@ -48,8 +45,24 @@ export default function WaitingPage() {
   const [connectError, setConnectError] = useState('')
   const [paymentSent, setPaymentSent] = useState(false)
   const [sendingPayment, setSendingPayment] = useState(false)
+  const [stripeSuccess, setStripeSuccess] = useState(false)
+  const [activating, setActivating] = useState(false)
+  const [portalLoading, setPortalLoading] = useState(false)
+
+  const PLAN_LABELS: Record<string, string> = {
+    starter: t('plans.starter'),
+    growth: t('plans.growth'),
+    pro: t('plans.pro'),
+  }
 
   useEffect(() => {
+    // Detect Stripe success redirect
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('success') === 'true') {
+      setStripeSuccess(true)
+      setActivating(true)
+    }
+
     async function loadProfile() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
@@ -85,9 +98,41 @@ export default function WaitingPage() {
     loadProfile()
   }, [])
 
+  // Poll for activation after Stripe success (webhook sets is_active=true)
+  useEffect(() => {
+    if (!stripeSuccess) return
+
+    const interval = setInterval(async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('is_active')
+        .eq('id', user.id)
+        .single()
+
+      if (profile?.is_active) {
+        setActivating(false)
+        router.push('/tool')
+      }
+    }, 2000) // Poll every 2 seconds
+
+    // Stop polling after 60 seconds
+    const timeout = setTimeout(() => {
+      clearInterval(interval)
+      setActivating(false)
+    }, 60000)
+
+    return () => {
+      clearInterval(interval)
+      clearTimeout(timeout)
+    }
+  }, [stripeSuccess])
+
   async function handleConnect() {
     if (!username) {
-      setConnectError('Profil nicht geladen — bitte Seite neu laden.')
+      setConnectError(t('profileError'))
       return
     }
     setConnecting(true)
@@ -100,7 +145,7 @@ export default function WaitingPage() {
       })
       const data = await res.json()
       if (!res.ok || !data.connectUrl) {
-        setConnectError(data.error || 'Fehler beim Generieren des Links')
+        setConnectError(data.error || t('linkError'))
         return
       }
       // Mark as connected in DB (optimistic — they'll actually connect in the new tab)
@@ -110,7 +155,7 @@ export default function WaitingPage() {
       setAccountsConnected(true)
       window.open(data.connectUrl, '_blank')
     } catch {
-      setConnectError('Netzwerkfehler — bitte versuche es erneut')
+      setConnectError(t('networkError'))
     } finally {
       setConnecting(false)
     }
@@ -127,6 +172,21 @@ export default function WaitingPage() {
     } catch { /* fire and forget */ }
     setPaymentSent(true)
     setSendingPayment(false)
+  }
+
+  async function handlePortal() {
+    setPortalLoading(true)
+    try {
+      const res = await fetch('/api/stripe/portal', { method: 'POST' })
+      const data = await res.json()
+      if (data.url) {
+        window.location.href = data.url
+        return
+      }
+    } catch {
+      // Ignore
+    }
+    setPortalLoading(false)
   }
 
   async function handleSignOut() {
@@ -161,10 +221,10 @@ export default function WaitingPage() {
         width: '100%',
       }}>
         <h1 style={{ fontSize: '1.15rem', fontWeight: 700, margin: '0 0 0.375rem', textAlign: 'center' }}>
-          Fast fertig — 2 Schritte noch
+          {t('title')}
         </h1>
         <p style={{ color: '#6b7280', fontSize: '0.8rem', textAlign: 'center', margin: '0 0 1.75rem', lineHeight: 1.5 }}>
-          Wir schalten deinen Account nach Zahlungseingang innerhalb von 24h frei.
+          {t('subtitle')}
         </p>
 
         {/* Plan badge */}
@@ -174,7 +234,7 @@ export default function WaitingPage() {
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         }}>
           <div>
-            <div style={{ fontSize: '0.65rem', color: '#93c5fd', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.15rem' }}>Dein Plan</div>
+            <div style={{ fontSize: '0.65rem', color: '#93c5fd', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.15rem' }}>{t('yourPlan')}</div>
             <div style={{ fontSize: '0.875rem', color: '#fff', fontWeight: 600 }}>{PLAN_LABELS[plan] ?? plan}</div>
             {platforms.length > 0 && (
               <div style={{ fontSize: '0.7rem', color: '#6b7280', marginTop: '0.1rem' }}>
@@ -185,7 +245,34 @@ export default function WaitingPage() {
           <div style={{ fontSize: '1.5rem', fontWeight: 800 }}>€{PLAN_PRICES[plan] ?? '?'}</div>
         </div>
 
-        {/* ── Schritt 1: Konten verbinden ── */}
+        {/* ── Stripe Success State ── */}
+        {stripeSuccess && (
+          <div style={{
+            background: '#052e16', border: '1px solid #14532d', borderRadius: '0.75rem',
+            padding: '1rem 1.25rem', marginBottom: '0.75rem', textAlign: 'center',
+          }}>
+            {activating ? (
+              <>
+                <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>⏳</div>
+                <div style={{ fontSize: '0.875rem', fontWeight: 600, color: '#4ade80', marginBottom: '0.25rem' }}>
+                  {t('stripe.activating')}
+                </div>
+                <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
+                  {t('stripe.activatingHint')}
+                </div>
+              </>
+            ) : (
+              <>
+                <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>✅</div>
+                <div style={{ fontSize: '0.875rem', fontWeight: 600, color: '#4ade80' }}>
+                  {t('stripe.success')}
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* ── Step 1: Connect accounts ── */}
         <div style={{
           border: `1px solid ${accountsConnected ? '#14532d' : '#1f2937'}`,
           background: accountsConnected ? '#052e16' : '#0d0d0d',
@@ -197,12 +284,12 @@ export default function WaitingPage() {
             <Step num={1} done={accountsConnected} />
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.25rem' }}>
-                Social Media Konten verbinden
+                {t('step1.title')}
               </div>
               <div style={{ fontSize: '0.75rem', color: '#6b7280', lineHeight: 1.5, marginBottom: accountsConnected ? 0 : '0.75rem' }}>
                 {accountsConnected
-                  ? 'Konten verbunden ✓ — Du kannst den Link erneut öffnen um weitere Accounts hinzuzufügen.'
-                  : `Verbinde ${platforms.length > 0 ? platforms.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(', ') : 'deine Plattformen'} damit wir direkt posten können.`
+                  ? t('step1.connected')
+                  : t('step1.connectPrompt', { platforms: platforms.length > 0 ? platforms.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(', ') : t('step1.connectDefault') })
                 }
               </div>
               {connectError && (
@@ -219,7 +306,7 @@ export default function WaitingPage() {
                   fontSize: '0.8rem', fontWeight: 600, cursor: connecting ? 'not-allowed' : 'pointer',
                 }}
               >
-                {connecting ? 'Link wird erstellt...' : 'Konten verbinden →'}
+                {connecting ? t('step1.connecting') : t('step1.connectButton')}
               </button>
               {accountsConnected && (
                 <button
@@ -231,14 +318,14 @@ export default function WaitingPage() {
                     display: 'block',
                   }}
                 >
-                  {connecting ? 'Wird geöffnet...' : 'Link erneut öffnen'}
+                  {connecting ? t('step1.reopening') : t('step1.reopenLink')}
                 </button>
               )}
             </div>
           </div>
         </div>
 
-        {/* ── Schritt 2: Bezahlen ── */}
+        {/* ── Step 2: Payment ── */}
         <div style={{
           border: '1px solid #1f2937',
           background: '#0d0d0d',
@@ -249,11 +336,11 @@ export default function WaitingPage() {
           <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
             <Step num={2} />
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.5rem' }}>Zahlung senden</div>
+              <div style={{ fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.5rem' }}>{t('step2.title')}</div>
 
               {/* PayPal */}
               <div style={{ marginBottom: '0.875rem' }}>
-                <div style={{ fontSize: '0.68rem', color: '#6b7280', marginBottom: '0.3rem' }}>PayPal</div>
+                <div style={{ fontSize: '0.68rem', color: '#6b7280', marginBottom: '0.3rem' }}>{t('step2.paypal')}</div>
                 <div style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                   background: '#0a0a0a', border: '1px solid #1f2937', borderRadius: '0.5rem',
@@ -263,16 +350,16 @@ export default function WaitingPage() {
                   <button
                     onClick={() => navigator.clipboard.writeText(PAYPAL_EMAIL)}
                     style={{ background: 'none', border: 'none', color: '#6b7280', cursor: 'pointer', fontSize: '0.72rem' }}
-                  >kopieren</button>
+                  >{tc('copy')}</button>
                 </div>
                 <div style={{ fontSize: '0.68rem', color: '#6b7280', marginTop: '0.25rem' }}>
-                  Betrag: <strong style={{ color: '#9ca3af' }}>€{PLAN_PRICES[plan] ?? '?'}</strong> — Verwendungszweck: FlowingPost {plan}
+                  {t('step2.amount')} <strong style={{ color: '#9ca3af' }}>€{PLAN_PRICES[plan] ?? '?'}</strong> — {t('step2.purpose', { plan })}
                 </div>
               </div>
 
               {/* Crypto */}
               <div>
-                <div style={{ fontSize: '0.68rem', color: '#6b7280', marginBottom: '0.3rem' }}>Crypto (ETH / ERC-20 USDT/USDC)</div>
+                <div style={{ fontSize: '0.68rem', color: '#6b7280', marginBottom: '0.3rem' }}>{t('step2.crypto')}</div>
                 <div style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                   background: '#0a0a0a', border: '1px solid #1f2937', borderRadius: '0.5rem',
@@ -282,21 +369,21 @@ export default function WaitingPage() {
                   <button
                     onClick={() => navigator.clipboard.writeText(CRYPTO_ETH)}
                     style={{ background: 'none', border: 'none', color: '#6b7280', cursor: 'pointer', fontSize: '0.72rem', flexShrink: 0 }}
-                  >kopieren</button>
+                  >{tc('copy')}</button>
                 </div>
                 <div style={{ fontSize: '0.68rem', color: '#6b7280', marginTop: '0.25rem' }}>
-                  ETH-Äquivalent zu €{PLAN_PRICES[plan] ?? '?'} senden
+                  {t('step2.cryptoNote', { price: PLAN_PRICES[plan] ?? '?' })}
                 </div>
               </div>
 
-              {/* Zahlung gesendet Button */}
+              {/* Payment sent button */}
               <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #1f2937' }}>
                 {paymentSent ? (
                   <div style={{
                     background: '#052e16', border: '1px solid #14532d', borderRadius: '0.5rem',
                     padding: '0.75rem 1rem', fontSize: '0.8rem', color: '#4ade80', textAlign: 'center',
                   }}>
-                    ✓ Danke! Wir prüfen deine Zahlung und schalten deinen Account innerhalb von 24h frei.
+                    {t('step2.paymentConfirmed')}
                   </div>
                 ) : (
                   <button
@@ -310,7 +397,7 @@ export default function WaitingPage() {
                       cursor: sendingPayment ? 'not-allowed' : 'pointer',
                     }}
                   >
-                    {sendingPayment ? 'Wird gesendet...' : 'Zahlung gesendet ✓'}
+                    {sendingPayment ? t('step2.sending') : t('step2.paymentSent')}
                   </button>
                 )}
               </div>
@@ -318,9 +405,9 @@ export default function WaitingPage() {
           </div>
         </div>
 
-        {/* Weiter Button — shown after payment claimed */}
+        {/* View tool button — shown after payment claimed */}
         {paymentSent && (
-          <a
+          <Link
             href="/tool"
             style={{
               display: 'block', padding: '0.75rem', background: '#1f2937',
@@ -329,15 +416,30 @@ export default function WaitingPage() {
               marginBottom: '0.75rem', border: '1px solid #374151',
             }}
           >
-            Tool schon mal ansehen →
-          </a>
+            {t('viewTool')}
+          </Link>
         )}
 
         {/* Confirmation note */}
         <p style={{ fontSize: '0.75rem', color: '#4b5563', textAlign: 'center', margin: '0 0 1rem', lineHeight: 1.5 }}>
-          Nach Zahlungseingang senden wir eine Bestätigung an{' '}
-          <strong style={{ color: '#6b7280' }}>{email}</strong> und schalten deinen Account frei.
+          {t('confirmationNote', { email })}
         </p>
+
+        {/* Manage subscription (Stripe portal) */}
+        {stripeSuccess && (
+          <button
+            onClick={handlePortal}
+            disabled={portalLoading}
+            style={{
+              display: 'block', width: '100%', padding: '0.65rem', background: '#1f2937',
+              color: '#e5e7eb', borderRadius: '0.625rem', border: '1px solid #374151',
+              fontSize: '0.825rem', fontWeight: 500, textAlign: 'center',
+              marginBottom: '0.75rem', cursor: portalLoading ? 'not-allowed' : 'pointer',
+            }}
+          >
+            {portalLoading ? '...' : t('stripe.manageSubscription')}
+          </button>
+        )}
 
         {/* Contact */}
         <a
@@ -348,14 +450,14 @@ export default function WaitingPage() {
             fontWeight: 500, textAlign: 'center', marginBottom: '0.75rem',
           }}
         >
-          Fragen? hello@flowingpost.com
+          {t('contact')}
         </a>
 
         <button
           onClick={handleSignOut}
           style={{ background: 'none', border: 'none', color: '#374151', fontSize: '0.78rem', cursor: 'pointer', display: 'block', margin: '0 auto' }}
         >
-          Abmelden
+          {tc('signOut')}
         </button>
       </div>
     </div>

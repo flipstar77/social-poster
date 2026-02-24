@@ -1,7 +1,9 @@
 'use client'
 
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
+import { useTranslations } from 'next-intl'
 import React, { useState, useEffect, useRef } from 'react'
+import LanguageSwitcher from '@/components/LanguageSwitcher'
 
 // ── CSS animations ────────────────────────────────────────────────────────────
 const GLOBAL_CSS = `
@@ -18,6 +20,15 @@ const GLOBAL_CSS = `
 .hero-fadeup { animation: fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) both; }
 .hero-fadeup-2 { animation: fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) 0.15s both; }
 .hero-fadeup-3 { animation: fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) 0.3s both; }
+@media (max-width: 768px) {
+  .showcase-grid { grid-template-columns: 1fr !important; }
+  .showcase-phone { display: none !important; }
+  .pricing-grid { grid-template-columns: 1fr !important; }
+}
+@media (hover: hover) {
+  .cta-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(99,102,241,0.5) !important; }
+  .cta-secondary:hover { border-color: #6366f1 !important; color: #6366f1 !important; }
+}
 `
 
 // ── Scroll-in hook ────────────────────────────────────────────────────────────
@@ -157,29 +168,12 @@ function XIcon() {
 }
 
 // ── Scrolling pill ticker ─────────────────────────────────────────────────────
-const PILL_ITEMS: { icon: React.ReactNode; text: string }[] = [
-  { icon: '⏱️', text: '2–3 Stunden / Woche gespart' },
-  { icon: '📈', text: 'Mehr Reichweite, mehr Gäste' },
-  { icon: '🔁', text: '9 Plattformen · 1 Upload' },
-  { icon: '🤖', text: 'Automatisch geplant & gepostet' },
-  { icon: <IgIcon />, text: 'Instagram' },
-  { icon: <TikTokIcon />, text: 'TikTok' },
-  { icon: <FbIcon />, text: 'Facebook' },
-  { icon: <YtIcon />, text: 'YouTube' },
-  { icon: <XIcon />, text: 'X / Twitter' },
-  { icon: '🎨', text: '3 Varianten zur Auswahl' },
-  { icon: '🗣️', text: 'Euer Ton, eure Stimme' },
-  { icon: '💸', text: 'Günstiger als jede Agentur' },
-  { icon: '🌍', text: 'Weltweit nutzbar' },
-  { icon: '🚀', text: 'In 30 Sekunden gepostet' },
-]
-
-function Ticker() {
-  const items = [...PILL_ITEMS, ...PILL_ITEMS] // duplicate for infinite loop
+function Ticker({ items }: { items: { icon: React.ReactNode; text: string }[] }) {
+  const doubled = [...items, ...items] // duplicate for infinite loop
   return (
     <div style={{ overflow: 'hidden', padding: '20px 0', borderTop: '1px solid #e4e4e7', borderBottom: '1px solid #e4e4e7', background: '#fff' }}>
       <div className="ticker-track" style={{ display: 'flex', gap: 12, width: 'max-content' }}>
-        {items.map((p, i) => (
+        {doubled.map((p, i) => (
           <div key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#f8fafc', border: '1px solid #e4e4e7', borderRadius: 999, padding: '9px 20px', fontSize: 14, color: '#18181b', fontWeight: 500, whiteSpace: 'nowrap' }}>
             <span style={{ display: 'flex', alignItems: 'center', fontSize: 17 }}>{p.icon}</span>{p.text}
           </div>
@@ -190,20 +184,6 @@ function Ticker() {
 }
 
 // ── FAQ accordion ─────────────────────────────────────────────────────────────
-const FAQS = [
-  { q: 'Wie lange dauert die Einrichtung?', a: 'Wir richten alles innerhalb von 24 Stunden ein. Ihr bekommt einen persönlichen Zugang und seid sofort startklar — keine technischen Vorkenntnisse nötig.' },
-  { q: 'Brauche ich technisches Wissen?', a: 'Nein. Ihr ladet ein Bild hoch, schreibt optional eine kurze Notiz dazu — alles andere passiert automatisch. Kein Coding, kein Setup, kein Aufwand.' },
-  { q: 'Welche Plattformen sind in welchem Plan?', a: 'Starter: bis zu 3 Plattformen nach Wahl (z.B. Instagram, TikTok, Facebook). Growth: bis zu 6 Plattformen. Pro: alle 9 Plattformen gleichzeitig (Instagram, TikTok, Facebook, LinkedIn, X, YouTube und mehr). Ihr könnt jederzeit upgraden.' },
-  { q: 'Muss ich selbst planen wann gepostet wird?', a: 'Nein. Das System übernimmt das automatisch. Ihr ladet Bilder hoch — wann, wie oft und auf welchen Plattformen gepostet wird, steuert der Auto-Scheduler. Ihr müsst den Kalender nie anfassen.' },
-  { q: 'Kann ich kündigen?', a: 'Ja, jederzeit. Monatliche Pläne sind ohne Frist kündbar. Jährliche Pläne laufen 12 Monate und verlängern sich danach automatisch — ihr könnt jederzeit vor Ablauf kündigen.' },
-  { q: 'Kann ich meinen Plan wechseln?', a: 'Ja. Upgrade von Starter auf Growth oder Pro jederzeit möglich — ihr zahlt nur die Differenz. Downgrade ist zum nächsten Abrechnungszeitraum möglich.' },
-  { q: 'Schreibt die KI auch auf Englisch oder anderen Sprachen?', a: 'Ja. Die KI schreibt in jeder Sprache — Deutsch, Englisch, Türkisch, Arabisch und mehr. Einfach beim Setup angeben.' },
-  { q: 'Was ist das Launch-Angebot?', a: 'Die ersten 50 Kunden zahlen keine Einrichtungsgebühr — normalerweise 99 €. Das Angebot gilt bis die 50 Plätze vergeben sind, danach kehren wir zum regulären Preis zurück.' },
-  { q: 'Performen geplante Posts genauso gut wie manuelle?', a: 'Ja. Geplante Posts performen genauso gut wie manuell veröffentlichte. Moderne Algorithmen werten Relevanz und Qualität des Contents — nicht ob jemand manuell auf "Posten" geklickt hat. Regelmäßigkeit ist sogar ein Vorteil.' },
-  { q: 'Ist das sicher für meine Social-Media-Accounts?', a: 'Ja. Wir nutzen ausschließlich die offiziellen, verifizierten APIs von Instagram, TikTok, Facebook und Co. — kein Scraping, keine Bots, keine Workarounds. Eure Accounts sind zu 100% geschützt.' },
-  { q: 'Wie viel Zeit spare ich wirklich?', a: 'Unsere Nutzer berichten von bis zu 90% Zeitersparnis gegenüber manuellem Posten auf mehreren Plattformen. Statt 2–4 Stunden pro Woche: ein Bild hochladen, fertig.' },
-]
-
 function FaqItem({ q, a, open, onToggle }: { q: string; a: string; open: boolean; onToggle: () => void }) {
   return (
     <div style={{ borderBottom: '1px solid #e4e4e7' }}>
@@ -223,7 +203,6 @@ function FaqItem({ q, a, open, onToggle }: { q: string; a: string; open: boolean
 
 
 // ── Calendar section ──────────────────────────────────────────────────────────
-const CAL_DAYS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So']
 const CAL_SCHEDULE = [
   [['IG'], [],          ['TT','FB'], [],     ['IG'],      [],    []        ],
   [[],     ['IG','TT'], [],          ['FB'], [],          ['IG'], []       ],
@@ -233,7 +212,27 @@ const CAL_SCHEDULE = [
 const PLAT_COLOR: Record<string, string> = {
   IG: '#e1306c', TT: '#010101', FB: '#1877f2',
 }
-function CalendarSection() {
+
+interface CalendarBenefit {
+  icon: string
+  title: string
+  desc: string
+}
+
+interface CalendarTranslations {
+  badge: string
+  title1: string
+  title2: string
+  subtitle: string
+  days: string[]
+  benefits: CalendarBenefit[]
+  cta: string
+  calendarMonth: string
+  calendarPlanned: string
+  calendarAutoPosted: string
+}
+
+function CalendarSection({ translations }: { translations: CalendarTranslations }) {
   const { ref: headRef, style: headStyle } = useScrollIn(0)
   const { ref: calRef,  style: calStyle  } = useScrollIn(150)
   const { ref: listRef, style: listStyle } = useScrollIn(250)
@@ -242,17 +241,16 @@ function CalendarSection() {
       <div style={{ maxWidth: 1080, margin: '0 auto' }}>
         <div ref={headRef} style={{ ...headStyle, textAlign: 'center', marginBottom: 56 }}>
           <div style={{ display: 'inline-block', padding: '5px 16px', borderRadius: 999, background: 'linear-gradient(135deg,#ede9fe,#fce7f3)', border: '1px solid #c4b5fd', color: '#7c3aed', fontSize: 13, fontWeight: 600, marginBottom: 20 }}>
-            Auto-Scheduler
+            {translations.badge}
           </div>
           <h2 style={{ fontSize: 'clamp(28px,4vw,42px)', fontWeight: 800, color: '#09090b', lineHeight: 1.15, marginBottom: 14 }}>
-            Bild hochladen.<br />
+            {translations.title1}<br />
             <span style={{ background: 'linear-gradient(135deg,#6366f1,#a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-              Rest passiert automatisch.
+              {translations.title2}
             </span>
           </h2>
           <p style={{ color: '#71717a', fontSize: 16, maxWidth: 520, margin: '0 auto' }}>
-            Kein manuelles Planen. Das System plant und postet automatisch — ihr müsst den Kalender nie anfassen.
-            Ladet einfach Bilder hoch, die KI erledigt den Rest.
+            {translations.subtitle}
           </p>
         </div>
 
@@ -261,7 +259,7 @@ function CalendarSection() {
           <div ref={calRef} style={calStyle}>
             <HoverCard style={{ padding: 24 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <span style={{ fontWeight: 700, fontSize: 15, color: '#09090b' }}>März 2026</span>
+                <span style={{ fontWeight: 700, fontSize: 15, color: '#09090b' }}>{translations.calendarMonth}</span>
                 <div style={{ display: 'flex', gap: 10 }}>
                   {Object.entries(PLAT_COLOR).map(([k, c]) => (
                     <div key={k} style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 11, color: '#71717a' }}>
@@ -271,7 +269,7 @@ function CalendarSection() {
                 </div>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 4, marginBottom: 6 }}>
-                {CAL_DAYS.map(d => (
+                {translations.days.map(d => (
                   <div key={d} style={{ textAlign: 'center', fontSize: 11, fontWeight: 600, color: '#a1a1aa' }}>{d}</div>
                 ))}
               </div>
@@ -288,18 +286,14 @@ function CalendarSection() {
                 </div>
               ))}
               <div style={{ marginTop: 14, fontSize: 12, color: '#71717a', textAlign: 'center' }}>
-                <span style={{ color: '#6366f1', fontWeight: 600 }}>16 Posts</span> geplant · <span style={{ color: '#22c55e', fontWeight: 600 }}>Automatisch gepostet</span>
+                <span style={{ color: '#6366f1', fontWeight: 600 }}>{translations.calendarPlanned}</span> · <span style={{ color: '#22c55e', fontWeight: 600 }}>{translations.calendarAutoPosted}</span>
               </div>
             </HoverCard>
           </div>
 
           {/* Benefits */}
           <div ref={listRef} style={{ ...listStyle, display: 'flex', flexDirection: 'column', gap: 28 }}>
-            {[
-              { icon: '🤖', title: 'Vollautomatisch — kein Kalender nötig', desc: 'Das System plant und postet selbstständig. Ihr ladet Bilder hoch — wann und wie oft gepostet wird, entscheidet die KI.' },
-              { icon: '⏰', title: 'Optimales Timing, immer', desc: 'Posts gehen raus wenn eure Gäste online sind — morgens, mittags, abends. Automatisch, ohne dass ihr dabei sein müsst.' },
-              { icon: '🧘', title: 'Null täglicher Aufwand', desc: 'Kein „Ich muss heute noch was posten". Ladet ein Bild hoch — alles andere passiert von selbst.' },
-            ].map(b => (
+            {translations.benefits.map(b => (
               <div key={b.title} style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
                 <div style={{ width: 44, height: 44, borderRadius: 14, background: 'linear-gradient(135deg,#ede9fe,#fce7f3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>{b.icon}</div>
                 <div>
@@ -308,9 +302,9 @@ function CalendarSection() {
                 </div>
               </div>
             ))}
-            <a href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#6366f1', color: '#fff', padding: '13px 28px', borderRadius: 12, fontSize: 15, fontWeight: 700, textDecoration: 'none', alignSelf: 'flex-start', boxShadow: '0 4px 20px rgba(99,102,241,0.35)' }}>
-              Jetzt starten →
-            </a>
+            <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#6366f1', color: '#fff', padding: '13px 28px', borderRadius: 12, fontSize: 15, fontWeight: 700, textDecoration: 'none', alignSelf: 'flex-start', boxShadow: '0 4px 20px rgba(99,102,241,0.35)' }}>
+              {translations.cta}
+            </Link>
           </div>
         </div>
       </div>
@@ -338,13 +332,14 @@ function useCountUp(target: number, isVisible: boolean, duration = 1400) {
 }
 
 // ── Stats strip ───────────────────────────────────────────────────────────────
-const STATS = [
-  { value: 3, suffix: 'h', label: 'pro Woche gespart', icon: '⏱️' },
-  { value: 9, suffix: '', label: 'Plattformen gleichzeitig', icon: '🚀' },
-  { value: 30, suffix: 's', label: 'pro Post', icon: '⚡' },
-  { value: 90, suffix: '%', label: 'weniger Aufwand', icon: '📈' },
-]
-function StatCount({ stat, visible, delay }: { stat: typeof STATS[0]; visible: boolean; delay: number }) {
+interface StatItem {
+  value: number
+  suffix: string
+  label: string
+  icon: string
+}
+
+function StatCount({ stat, visible, delay }: { stat: StatItem; visible: boolean; delay: number }) {
   const n = useCountUp(stat.value, visible)
   return (
     <div style={{ textAlign: 'center', opacity: visible ? 1 : 0, transform: visible ? 'translateY(0)' : 'translateY(24px)', transition: `opacity 0.6s ease ${delay}ms, transform 0.6s ease ${delay}ms` }}>
@@ -354,7 +349,8 @@ function StatCount({ stat, visible, delay }: { stat: typeof STATS[0]; visible: b
     </div>
   )
 }
-function StatsStrip() {
+
+function StatsStrip({ stats }: { stats: StatItem[] }) {
   const ref = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(false)
   useEffect(() => {
@@ -366,48 +362,59 @@ function StatsStrip() {
   return (
     <div ref={ref} style={{ background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #a855f7 100%)', padding: '56px 24px' }}>
       <div style={{ maxWidth: 900, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 40 }}>
-        {STATS.map((s, i) => <StatCount key={i} stat={s} visible={visible} delay={i * 120} />)}
+        {stats.map((s, i) => <StatCount key={i} stat={s} visible={visible} delay={i * 120} />)}
       </div>
     </div>
   )
 }
 
 // ── Sticky showcase ───────────────────────────────────────────────────────────
-const SHOWCASE_STEPS = [
-  { n: '01', title: 'Bild hochladen', desc: 'Foto oder Video direkt vom Handy. Optional eine kurze Notiz — wir schreiben den Rest.', color: '#6366f1' },
-  { n: '02', title: '3 Varianten wählen', desc: 'Die KI schreibt drei Versionen in eurem Ton. Ihr wählt den besten — oder postet direkt.', color: '#a855f7' },
-  { n: '03', title: 'Automatisch geplant & gepostet', desc: 'Kein manuelles Planen. Das System postet automatisch auf bis zu 9 Plattformen — zur richtigen Zeit, ohne euer Zutun.', color: '#ec4899' },
-]
-function PhoneScreen({ step }: { step: number }) {
+interface ShowcaseStep {
+  n: string
+  title: string
+  desc: string
+  color: string
+}
+
+interface PhoneScreenTranslations {
+  selectImage: string
+  optionalNote: string
+  noteExample: string
+  variants: string
+  variantTexts: string[]
+  platforms: string
+  postNow: string
+}
+
+function PhoneScreen({ step, translations }: { step: number; translations: PhoneScreenTranslations }) {
   if (step === 0) return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: 16, gap: 12 }}>
       <div style={{ flex: 1, background: 'linear-gradient(135deg, #ede9fe, #fce7f3)', borderRadius: 16, border: '2px dashed #c4b5fd', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
         <span style={{ fontSize: 40 }}>📸</span>
-        <span style={{ fontSize: 12, color: '#7c3aed', fontWeight: 600 }}>Bild auswählen</span>
+        <span style={{ fontSize: 12, color: '#7c3aed', fontWeight: 600 }}>{translations.selectImage}</span>
       </div>
       <div style={{ background: '#f8fafc', borderRadius: 10, padding: '10px 12px', border: '1px solid #e4e4e7' }}>
-        <div style={{ fontSize: 10, color: '#a1a1aa', marginBottom: 4, fontWeight: 700, letterSpacing: '0.05em' }}>OPTIONALE NOTIZ</div>
-        <div style={{ fontSize: 12, color: '#52525b' }}>„Heute: Pasta Carbonara 🍝"</div>
+        <div style={{ fontSize: 10, color: '#a1a1aa', marginBottom: 4, fontWeight: 700, letterSpacing: '0.05em' }}>{translations.optionalNote}</div>
+        <div style={{ fontSize: 12, color: '#52525b' }}>{translations.noteExample}</div>
       </div>
     </div>
   )
   if (step === 1) return (
     <div style={{ flex: 1, padding: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
-      <div style={{ fontSize: 10, fontWeight: 700, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>3 Varianten</div>
-      {[
-        { sel: true,  text: '🍝 Heute bei uns: Pasta Carbonara nach Originalrezept. Kommt vorbei!' },
-        { sel: false, text: 'Klassisch. Cremig. Perfekt. Unsere Carbonara wärmt Herz & Seele 🤍' },
-        { sel: false, text: 'Was gibts heute? Pasta Carbonara! Reservierung: Link in Bio 👆' },
-      ].map((v, i) => (
-        <div key={i} style={{ background: v.sel ? '#eef2ff' : '#f8fafc', border: `1.5px solid ${v.sel ? '#6366f1' : '#e4e4e7'}`, borderRadius: 10, padding: '8px 10px' }}>
-          <div style={{ fontSize: 11, color: v.sel ? '#3730a3' : '#71717a', lineHeight: 1.5 }}>{v.text}</div>
-        </div>
-      ))}
+      <div style={{ fontSize: 10, fontWeight: 700, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>{translations.variants}</div>
+      {translations.variantTexts.map((text, i) => {
+        const sel = i === 0
+        return (
+          <div key={i} style={{ background: sel ? '#eef2ff' : '#f8fafc', border: `1.5px solid ${sel ? '#6366f1' : '#e4e4e7'}`, borderRadius: 10, padding: '8px 10px' }}>
+            <div style={{ fontSize: 11, color: sel ? '#3730a3' : '#71717a', lineHeight: 1.5 }}>{text}</div>
+          </div>
+        )
+      })}
     </div>
   )
   return (
     <div style={{ flex: 1, padding: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
-      <div style={{ fontSize: 10, fontWeight: 700, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Plattformen</div>
+      <div style={{ fontSize: 10, fontWeight: 700, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>{translations.platforms}</div>
       {[
         { Icon: IgIcon,      name: 'Instagram', active: true,  color: '#e1306c' },
         { Icon: TikTokIcon,  name: 'TikTok',    active: true,  color: '#010101' },
@@ -422,12 +429,13 @@ function PhoneScreen({ step }: { step: number }) {
         </div>
       ))}
       <div style={{ marginTop: 4, background: 'linear-gradient(135deg, #6366f1, #a855f7)', borderRadius: 10, padding: '10px', textAlign: 'center', fontSize: 12, fontWeight: 700, color: '#fff' }}>
-        Jetzt posten →
+        {translations.postNow}
       </div>
     </div>
   )
 }
-function StickyShowcase({ scrollY, vh }: { scrollY: number; vh: number }) {
+
+function StickyShowcase({ scrollY, vh, steps, label, title1, title2, phoneTranslations }: { scrollY: number; vh: number; steps: ShowcaseStep[]; label: string; title1: string; title2: string; phoneTranslations: PhoneScreenTranslations }) {
   const ref = useRef<HTMLDivElement>(null)
   const [top, setTop] = useState(9999)
   useEffect(() => {
@@ -438,24 +446,24 @@ function StickyShowcase({ scrollY, vh }: { scrollY: number; vh: number }) {
   }, [])
   const progress = Math.max(0, Math.min(1, (scrollY - top) / (vh * 1.2)))
   const step = Math.min(Math.floor(progress * 3.2), 2)
-  const stepColor = SHOWCASE_STEPS[step].color
+  const stepColor = steps[step].color
 
   return (
     <div ref={ref} style={{ position: 'relative', minHeight: '220vh' }}>
       <div style={{ position: 'sticky', top: 0, height: '100vh', display: 'flex', alignItems: 'center', overflow: 'hidden', background: '#fff' }}>
-        <div style={{ maxWidth: 1080, margin: '0 auto', padding: '0 24px', width: '100%', display: 'grid', gridTemplateColumns: '1fr auto', gap: 48, alignItems: 'center' }}>
+        <div className="showcase-grid" style={{ maxWidth: 1080, margin: '0 auto', padding: '0 24px', width: '100%', display: 'grid', gridTemplateColumns: '1fr auto', gap: 48, alignItems: 'center' }}>
 
           {/* Left: step list */}
           <div>
-            <div style={{ fontSize: 12, fontWeight: 700, color: '#a1a1aa', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>So funktioniert&apos;s</div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#a1a1aa', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>{label}</div>
             <h2 style={{ fontSize: 'clamp(28px, 4vw, 52px)', fontWeight: 800, color: '#09090b', lineHeight: 1.1, marginBottom: 40 }}>
-              Drei Schritte.<br />
+              {title1}<br />
               <span style={{ background: `linear-gradient(135deg, ${stepColor}, #a855f7)`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', transition: 'all 0.5s ease' }}>
-                Kein Training.
+                {title2}
               </span>
             </h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
-              {SHOWCASE_STEPS.map((s, i) => {
+              {steps.map((s, i) => {
                 const active = i === step
                 const done = i < step
                 return (
@@ -474,7 +482,7 @@ function StickyShowcase({ scrollY, vh }: { scrollY: number; vh: number }) {
           </div>
 
           {/* Right: CSS phone mockup */}
-          <div style={{ flexShrink: 0 }}>
+          <div className="showcase-phone" style={{ flexShrink: 0 }}>
             <div style={{ width: 260, height: 520, background: '#09090b', borderRadius: 44, border: '2px solid #27272a', boxShadow: `0 32px 100px rgba(0,0,0,0.18), 0 0 60px ${stepColor}30`, position: 'relative', overflow: 'hidden', transition: 'box-shadow 0.6s ease' }}>
               {/* Notch */}
               <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: 88, height: 24, background: '#09090b', borderRadius: '0 0 14px 14px', zIndex: 10 }} />
@@ -486,11 +494,11 @@ function StickyShowcase({ scrollY, vh }: { scrollY: number; vh: number }) {
                   <span style={{ fontSize: 11, fontWeight: 700, color: '#09090b', flex: 1 }}>FlowingPost</span>
                   <div style={{ display: 'flex', gap: 4 }}>
                     {[0, 1, 2].map(i => (
-                      <div key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: i <= step ? SHOWCASE_STEPS[Math.min(i, step)].color : '#e4e4e7', transition: 'background 0.4s ease' }} />
+                      <div key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: i <= step ? steps[Math.min(i, step)].color : '#e4e4e7', transition: 'background 0.4s ease' }} />
                     ))}
                   </div>
                 </div>
-                <PhoneScreen step={step} />
+                <PhoneScreen step={step} translations={phoneTranslations} />
               </div>
             </div>
           </div>
@@ -507,6 +515,9 @@ function StickyShowcase({ scrollY, vh }: { scrollY: number; vh: number }) {
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default function LandingPage() {
+  const t = useTranslations('landing')
+  const tc = useTranslations('common')
+
   const [faqOpen, setFaqOpen] = useState<number | null>(null)
   const [yearly, setYearly] = useState(false)
   const [scrollY, setScrollY] = useState(0)
@@ -541,6 +552,86 @@ export default function LandingPage() {
   const heroBlobBlur = heroProgress * 10
   const heroTextY = heroProgress * -45
 
+  // ── Build translation-dependent data ────────────────────────────────────────
+
+  // Ticker
+  const tickerTexts = t.raw('ticker') as string[]
+  const PILL_ITEMS: { icon: React.ReactNode; text: string }[] = [
+    { icon: '⏱️', text: tickerTexts[0] },
+    { icon: '📈', text: tickerTexts[1] },
+    { icon: '🔁', text: tickerTexts[2] },
+    { icon: '🤖', text: tickerTexts[3] },
+    { icon: <IgIcon />, text: tickerTexts[4] },
+    { icon: <TikTokIcon />, text: tickerTexts[5] },
+    { icon: <FbIcon />, text: tickerTexts[6] },
+    { icon: <YtIcon />, text: tickerTexts[7] },
+    { icon: <XIcon />, text: tickerTexts[8] },
+    { icon: '🎨', text: tickerTexts[9] },
+    { icon: '🗣️', text: tickerTexts[10] },
+    { icon: '💸', text: tickerTexts[11] },
+    { icon: '🌍', text: tickerTexts[12] },
+    { icon: '🚀', text: tickerTexts[13] },
+  ]
+
+  // Stats
+  const statsData = t.raw('stats') as Array<{ suffix: string; label: string }>
+  const STATS: StatItem[] = [
+    { value: 3, suffix: statsData[0].suffix, label: statsData[0].label, icon: '⏱️' },
+    { value: 9, suffix: statsData[1].suffix, label: statsData[1].label, icon: '🚀' },
+    { value: 30, suffix: statsData[2].suffix, label: statsData[2].label, icon: '⚡' },
+    { value: 90, suffix: statsData[3].suffix, label: statsData[3].label, icon: '📈' },
+  ]
+
+  // Showcase steps
+  const showcaseStepsData = t.raw('showcase.steps') as Array<{ title: string; desc: string }>
+  const SHOWCASE_STEPS: ShowcaseStep[] = [
+    { n: '01', title: showcaseStepsData[0].title, desc: showcaseStepsData[0].desc, color: '#6366f1' },
+    { n: '02', title: showcaseStepsData[1].title, desc: showcaseStepsData[1].desc, color: '#a855f7' },
+    { n: '03', title: showcaseStepsData[2].title, desc: showcaseStepsData[2].desc, color: '#ec4899' },
+  ]
+
+  // Phone screen translations
+  const phoneTranslations: PhoneScreenTranslations = {
+    selectImage: t('showcase.phone.selectImage'),
+    optionalNote: t('showcase.phone.optionalNote'),
+    noteExample: t('showcase.phone.noteExample'),
+    variants: t('showcase.phone.variants'),
+    variantTexts: t.raw('showcase.phone.variantTexts') as string[],
+    platforms: t('showcase.phone.platforms'),
+    postNow: t('showcase.phone.postNow'),
+  }
+
+  // Calendar translations
+  const calendarBenefits = t.raw('calendar.benefits') as CalendarBenefit[]
+  const calendarTranslations: CalendarTranslations = {
+    badge: t('calendar.badge'),
+    title1: t('calendar.title1'),
+    title2: t('calendar.title2'),
+    subtitle: t('calendar.subtitle'),
+    days: t.raw('calendar.days') as string[],
+    benefits: calendarBenefits,
+    cta: t('calendar.cta'),
+    calendarMonth: t('calendar.calendarMonth'),
+    calendarPlanned: t('calendar.calendarPlanned'),
+    calendarAutoPosted: t('calendar.calendarAutoPosted'),
+  }
+
+  // Comparison
+  const comparisonWithoutItems = t.raw('comparison.without.items') as string[]
+  const comparisonWithItems = t.raw('comparison.with.items') as string[]
+
+  // Audience
+  const audiencePlatforms = t.raw('audience.platforms') as string[]
+  const audienceTargets = t.raw('audience.targets') as string[]
+
+  // Pricing
+  const starterFeatures = t.raw('pricing.starter.features') as string[]
+  const growthFeatures = t.raw('pricing.growth.features') as string[]
+  const proFeatures = t.raw('pricing.pro.features') as string[]
+
+  // FAQ
+  const faqItems = t.raw('faq.items') as Array<{ q: string; a: string }>
+
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
@@ -559,10 +650,11 @@ export default function LandingPage() {
               <span style={{ fontWeight: 700, fontSize: 16 }}>FlowingPost</span>
             </div>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <Link href="/login" style={{ fontSize: 14, color: '#71717a', textDecoration: 'none', padding: '8px 14px' }}>Anmelden →</Link>
-              <a href="/login" style={{ background: '#6366f1', color: 'white', padding: '9px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600, textDecoration: 'none' }}>
-                Jetzt starten
-              </a>
+              <LanguageSwitcher />
+              <Link href="/login" style={{ fontSize: 14, color: '#71717a', textDecoration: 'none', padding: '8px 14px' }}>{t('nav.login')}</Link>
+              <Link href="/login" style={{ background: '#6366f1', color: 'white', padding: '9px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600, textDecoration: 'none' }}>
+                {t('nav.cta')}
+              </Link>
             </div>
           </div>
         </nav>
@@ -581,19 +673,19 @@ export default function LandingPage() {
             <ParallaxBlobs y={scrollY} />
           </div>
           {/* Hero content — floats upward on scroll */}
-          <div style={{ maxWidth: 1080, margin: '0 auto', padding: '112px 24px 96px', textAlign: 'center', position: 'relative', transform: `translateY(${heroTextY}px)`, willChange: 'transform' }}>
-            <div className="hero-fadeup" style={{ display: 'inline-block', padding: '5px 16px', borderRadius: 999, background: '#f3f4f6', border: '1px solid #e4e4e7', color: '#6366f1', fontSize: 13, fontWeight: 600, marginBottom: 28 }}>
-              Für Restaurants · Cafés · Bars
+          <div style={{ maxWidth: 1080, margin: '0 auto', padding: 'clamp(72px, 12vw, 112px) 24px clamp(64px, 10vw, 96px)', textAlign: 'center', position: 'relative', transform: `translateY(${heroTextY}px)`, willChange: 'transform' }}>
+            <div className="hero-fadeup" style={{ display: 'inline-block', padding: '6px 18px', borderRadius: 999, background: 'linear-gradient(135deg, #eef2ff, #fdf4ff)', border: '1px solid #c7d2fe', color: '#6366f1', fontSize: 13, fontWeight: 700, marginBottom: 28, letterSpacing: '0.02em' }}>
+              {t('hero.badge')}
             </div>
-            <h1 className="hero-fadeup-2" style={{ fontSize: 'clamp(38px, 7vw, 72px)', fontWeight: 800, lineHeight: 1.08, marginBottom: 24, letterSpacing: '-2px', color: '#09090b' }}>
-              2 Stunden zurück.<br />
+            <h1 className="hero-fadeup-2" style={{ fontSize: 'clamp(36px, 7vw, 72px)', fontWeight: 800, lineHeight: 1.08, marginBottom: 24, letterSpacing: '-2px', color: '#09090b' }}>
+              {t('hero.title1')}<br />
               <span style={{ background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                Jede Woche.
+                {t('hero.title2')}
               </span>
             </h1>
-            <p className="hero-fadeup-3" style={{ fontSize: 19, color: '#52525b', maxWidth: 560, margin: '0 auto 20px', lineHeight: 1.75 }}>
-              Bild hochladen, fertig. FlowingPost schreibt die Caption und postet automatisch —
-              <strong style={{ color: '#09090b' }}> auf bis zu 9 Plattformen gleichzeitig.</strong>
+            <p className="hero-fadeup-3" style={{ fontSize: 'clamp(16px, 2vw, 19px)', color: '#52525b', maxWidth: 560, margin: '0 auto 20px', lineHeight: 1.75 }}>
+              {t('hero.subtitle')}
+              <strong style={{ color: '#09090b' }}> {t('hero.subtitleBold')}</strong>
             </p>
             {/* Platform logos strip */}
             <div className="hero-fadeup-3" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 36, flexWrap: 'wrap' }}>
@@ -611,47 +703,55 @@ export default function LandingPage() {
                 </div>
               ))}
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'linear-gradient(135deg, #6366f1, #a855f7)', borderRadius: 999, padding: '6px 14px', fontSize: 13, fontWeight: 700, color: '#fff' }}>
-                1 Upload
+                {t('hero.upload')}
               </div>
             </div>
-            <div className="hero-fadeup-3" style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <a href="/login" style={{ background: '#6366f1', color: 'white', padding: '15px 36px', borderRadius: 12, fontSize: 16, fontWeight: 700, textDecoration: 'none', boxShadow: '0 4px 24px rgba(99,102,241,0.4)' }}>
-                Jetzt Zeit sparen →
-              </a>
-              <a href="#kaufen" style={{ border: '1px solid #d4d4d8', color: '#3f3f46', background: '#fff', padding: '15px 36px', borderRadius: 12, fontSize: 16, fontWeight: 600, textDecoration: 'none' }}>
-                Preise ansehen
+            <div className="hero-fadeup-3" style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', alignItems: 'center' }}>
+              <Link href="/login" className="cta-primary" style={{ background: 'linear-gradient(135deg, #6366f1, #7c3aed)', color: 'white', padding: '16px 40px', borderRadius: 14, fontSize: 17, fontWeight: 700, textDecoration: 'none', boxShadow: '0 6px 28px rgba(99,102,241,0.45)', transition: 'transform 0.2s ease, box-shadow 0.2s ease' }}>
+                {t('hero.ctaPrimary')}
+              </Link>
+              <a href="#kaufen" className="cta-secondary" style={{ border: '2px solid #e4e4e7', color: '#3f3f46', background: '#fff', padding: '15px 32px', borderRadius: 14, fontSize: 16, fontWeight: 600, textDecoration: 'none', transition: 'border-color 0.2s ease, color 0.2s ease' }}>
+                {t('hero.ctaSecondary')}
               </a>
             </div>
           </div>
         </section>
 
         {/* ── TICKER ──────────────────────────────────────────────────────── */}
-        <Ticker />
+        <Ticker items={PILL_ITEMS} />
 
         {/* ── STATS ───────────────────────────────────────────────────────── */}
-        <StatsStrip />
+        <StatsStrip stats={STATS} />
 
         {/* ── STICKY SHOWCASE ─────────────────────────────────────────────── */}
-        <StickyShowcase scrollY={scrollY} vh={vh} />
+        <StickyShowcase
+          scrollY={scrollY}
+          vh={vh}
+          steps={SHOWCASE_STEPS}
+          label={t('showcase.label')}
+          title1={t('showcase.title1')}
+          title2={t('showcase.title2')}
+          phoneTranslations={phoneTranslations}
+        />
 
         {/* ── AUTO-SCHEDULER ──────────────────────────────────────────────── */}
-        <CalendarSection />
+        <CalendarSection translations={calendarTranslations} />
 
-        {/* ── WIE ES SICH ANFÜHLT ──────────────────────────────────────────── */}
+        {/* ── COMPARISON ──────────────────────────────────────────────────── */}
         <section style={{ background: '#fff', borderTop: '1px solid #e4e4e7', borderBottom: '1px solid #e4e4e7' }}>
           <div style={{ maxWidth: 1080, margin: '0 auto', padding: '72px 24px' }}>
-            <h2 style={{ fontSize: 36, fontWeight: 800, textAlign: 'center', marginBottom: 10, color: '#09090b' }}>Wie es sich anfühlt</h2>
-            <p style={{ color: '#71717a', textAlign: 'center', marginBottom: 48, fontSize: 16 }}>Der Unterschied zwischen Social Media mit und ohne uns.</p>
+            <h2 style={{ fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 800, textAlign: 'center', marginBottom: 10, color: '#09090b' }}>{t('comparison.title')}</h2>
+            <p style={{ color: '#71717a', textAlign: 'center', marginBottom: 48, fontSize: 16 }}>{t('comparison.subtitle')}</p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20, maxWidth: 720, margin: '0 auto' }}>
               <HoverCard style={{ padding: 28, background: '#fafafa' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 18 }}>
                   <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#ef4444', display: 'inline-block' }} />
-                  <span style={{ fontSize: 13, fontWeight: 500, color: '#a1a1aa' }}>Ohne FlowingPost</span>
+                  <span style={{ fontSize: 13, fontWeight: 500, color: '#a1a1aa' }}>{t('comparison.without.label')}</span>
                 </div>
                 <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 11 }}>
-                  {['Stundenlang nach Ideen suchen', 'Posts vergessen oder aufschieben', 'Unregelmäßig posten = weniger Reichweite', '2–4 Stunden pro Woche verloren', 'Agentur zu teuer, selber zu aufwändig'].map(t => (
-                    <li key={t} style={{ display: 'flex', gap: 10, fontSize: 14, color: '#71717a', alignItems: 'flex-start' }}>
-                      <span style={{ color: '#ef4444', flexShrink: 0, fontWeight: 700 }}>✗</span>{t}
+                  {comparisonWithoutItems.map(item => (
+                    <li key={item} style={{ display: 'flex', gap: 10, fontSize: 14, color: '#71717a', alignItems: 'flex-start' }}>
+                      <span style={{ color: '#ef4444', flexShrink: 0, fontWeight: 700 }}>✗</span>{item}
                     </li>
                   ))}
                 </ul>
@@ -659,12 +759,12 @@ export default function LandingPage() {
               <HoverCard accent style={{ padding: 28 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 18 }}>
                   <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', display: 'inline-block' }} />
-                  <span style={{ fontSize: 13, fontWeight: 500, color: '#6366f1' }}>Mit FlowingPost</span>
+                  <span style={{ fontSize: 13, fontWeight: 500, color: '#6366f1' }}>{t('comparison.with.label')}</span>
                 </div>
                 <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 11 }}>
-                  {['Bild hochladen — fertig. 30 Sekunden.', 'Jeden Tag automatisch präsent', 'Regelmäßige Posts = mehr neue Gäste', 'Stunden zurückgewinnen, Küche im Fokus', 'Günstiger als jede Agentur weltweit'].map(t => (
-                    <li key={t} style={{ display: 'flex', gap: 10, fontSize: 14, color: '#18181b', alignItems: 'flex-start' }}>
-                      <span style={{ color: '#22c55e', flexShrink: 0, fontWeight: 700 }}>✓</span>{t}
+                  {comparisonWithItems.map(item => (
+                    <li key={item} style={{ display: 'flex', gap: 10, fontSize: 14, color: '#18181b', alignItems: 'flex-start' }}>
+                      <span style={{ color: '#22c55e', flexShrink: 0, fontWeight: 700 }}>✓</span>{item}
                     </li>
                   ))}
                 </ul>
@@ -673,42 +773,42 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── FÜR WEN ──────────────────────────────────────────────────────── */}
+        {/* ── AUDIENCE ──────────────────────────────────────────────────────── */}
         <section style={{ maxWidth: 1080, margin: '0 auto', padding: '72px 24px', textAlign: 'center' }}>
-          <h2 style={{ fontSize: 36, fontWeight: 800, marginBottom: 10, color: '#09090b' }}>Für wen ist das?</h2>
+          <h2 style={{ fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 800, marginBottom: 10, color: '#09090b' }}>{t('audience.title')}</h2>
           <p style={{ color: '#71717a', marginBottom: 16, fontSize: 16 }}>
-            Für alle, die täglich auf Social Media präsent sein wollen — ohne Stunden dafür zu opfern.
+            {t('audience.subtitle')}
           </p>
           <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 28 }}>
-            {['📸 Instagram', '🎵 TikTok', '👥 Facebook', '▶️ YouTube', '✖️ X', '💼 LinkedIn', '📌 Pinterest', '✈️ Telegram', '🎬 und mehr'].map(p => (
+            {audiencePlatforms.map(p => (
               <span key={p} style={{ padding: '7px 16px', borderRadius: 999, fontSize: 13, fontWeight: 600, background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)', color: '#6366f1' }}>{p}</span>
             ))}
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center' }}>
-            {['🍝 Restaurants', '☕ Cafés', '🍹 Cocktailbars', '🍦 Eisdielen', '🚚 Food Trucks', '🥐 Bäckereien', '🍣 Sushi', '🍔 Burger', '🌮 Mexican'].map(item => (
+            {audienceTargets.map(item => (
               <span key={item} style={{ padding: '10px 22px', borderRadius: 999, fontSize: 14, fontWeight: 500, background: '#fff', border: '1px solid #e4e4e7', color: '#3f3f46' }}>{item}</span>
             ))}
           </div>
         </section>
 
-        {/* ── KAUFEN / PRICING ─────────────────────────────────────────────── */}
-        <section id="kaufen" style={{ background: '#fff', borderTop: '1px solid #e4e4e7', borderBottom: '1px solid #e4e4e7' }}>
-          <div style={{ maxWidth: 1080, margin: '0 auto', padding: '80px 24px' }}>
-            <h2 style={{ fontSize: 36, fontWeight: 800, textAlign: 'center', marginBottom: 10, color: '#09090b' }}>Jetzt starten</h2>
-            <p style={{ color: '#71717a', textAlign: 'center', marginBottom: 24, fontSize: 16 }}>
-              Günstiger als ein einziger Mitarbeiter für Social Media. Jederzeit kündbar.
+        {/* ── PRICING ─────────────────────────────────────────────── */}
+        <section id="kaufen" style={{ background: 'linear-gradient(180deg, #f8fafc 0%, #fff 100%)', borderTop: '1px solid #e4e4e7', borderBottom: '1px solid #e4e4e7' }}>
+          <div style={{ maxWidth: 1080, margin: '0 auto', padding: 'clamp(56px, 8vw, 80px) 24px' }}>
+            <h2 style={{ fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 800, textAlign: 'center', marginBottom: 10, color: '#09090b' }}>{t('pricing.title')}</h2>
+            <p style={{ color: '#71717a', textAlign: 'center', marginBottom: 24, fontSize: 16, maxWidth: 480, margin: '0 auto 24px' }}>
+              {t('pricing.subtitle')}
             </p>
 
             {/* Promo banner */}
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 32 }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'linear-gradient(135deg, #fef3c7, #fde68a)', border: '1px solid #fbbf24', borderRadius: 999, padding: '8px 20px', fontSize: 13, fontWeight: 700, color: '#92400e' }}>
-                🚀 Launch-Angebot: Erste 50 Kunden — keine Einrichtungsgebühr (–99 €)
+                {t('pricing.promo')}
               </div>
             </div>
 
             {/* Billing toggle */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, marginBottom: 48 }}>
-              <span style={{ fontSize: 14, fontWeight: 600, color: yearly ? '#71717a' : '#09090b' }}>Monatlich</span>
+              <span style={{ fontSize: 14, fontWeight: 600, color: yearly ? '#71717a' : '#09090b' }}>{t('pricing.monthly')}</span>
               <button
                 onClick={() => setYearly(!yearly)}
                 style={{
@@ -727,120 +827,120 @@ export default function LandingPage() {
                 }} />
               </button>
               <span style={{ fontSize: 14, fontWeight: 600, color: yearly ? '#09090b' : '#71717a' }}>
-                Jährlich
-                <span style={{ marginLeft: 6, background: '#dcfce7', color: '#16a34a', fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 999 }}>2 Monate gratis</span>
+                {t('pricing.yearly')}
+                <span style={{ marginLeft: 6, background: '#dcfce7', color: '#16a34a', fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 999 }}>{t('pricing.yearlyBadge')}</span>
               </span>
             </div>
 
             {/* 3 Tier cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
+            <div className="pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
 
               {/* Starter */}
               <HoverCard style={{ padding: 36, display: 'flex', flexDirection: 'column' }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Starter</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>{t('pricing.starter.name')}</div>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 2 }}>
-                  <span style={{ fontSize: 48, fontWeight: 800, color: '#09090b', lineHeight: 1 }}>{yearly ? '41' : '49'} €</span>
-                  <span style={{ fontSize: 14, color: '#71717a' }}>/ Monat</span>
+                  <span style={{ fontSize: 48, fontWeight: 800, color: '#09090b', lineHeight: 1 }}>{yearly ? '33' : '39'} €</span>
+                  <span style={{ fontSize: 14, color: '#71717a' }}>{t('pricing.perMonth')}</span>
                 </div>
                 <div style={{ fontSize: 13, color: '#a1a1aa', marginBottom: 28 }}>
-                  {yearly ? 'Jährlich 490 € — 2 Monate gespart' : 'Monatlich kündbar'}
+                  {yearly ? t('pricing.starter.yearlyNote') : t('pricing.cancelMonthly')}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24, padding: '10px 14px', background: '#f8fafc', borderRadius: 10, border: '1px solid #e4e4e7' }}>
                   <span style={{ fontSize: 18 }}>📱</span>
-                  <span style={{ fontSize: 14, fontWeight: 600, color: '#09090b' }}>3 Plattformen nach Wahl</span>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: '#09090b' }}>{t('pricing.starter.highlight')}</span>
                 </div>
                 <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px', display: 'flex', flexDirection: 'column', gap: 11, flex: 1 }}>
-                  {['Unbegrenzte Posts', 'KI-Captions in eurer Sprache', 'Auto-Scheduler inklusive', 'E-Mail Support'].map(item => (
+                  {starterFeatures.map(item => (
                     <li key={item} style={{ display: 'flex', gap: 10, fontSize: 14 }}>
                       <span style={{ color: '#22c55e', fontWeight: 700, flexShrink: 0 }}>✓</span>
                       <span style={{ color: '#18181b' }}>{item}</span>
                     </li>
                   ))}
                 </ul>
-                <a
+                <Link
                   href="/login"
                   style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: '#18181b', color: 'white', padding: '13px', borderRadius: 12, fontWeight: 700, fontSize: 15, textDecoration: 'none' }}
                 >
-                  Jetzt starten →
-                </a>
+                  {t('pricing.cta')}
+                </Link>
               </HoverCard>
 
-              {/* Growth — BELIEBT */}
+              {/* Growth — POPULAR */}
               <div style={{ position: 'relative' }}>
-                <div style={{ position: 'absolute', top: -14, left: '50%', transform: 'translateX(-50%)', background: '#6366f1', color: '#fff', fontSize: 11, fontWeight: 700, padding: '5px 16px', borderRadius: 999, letterSpacing: '0.06em', zIndex: 1, whiteSpace: 'nowrap' }}>★ BELIEBT</div>
+                <div style={{ position: 'absolute', top: -14, left: '50%', transform: 'translateX(-50%)', background: '#6366f1', color: '#fff', fontSize: 11, fontWeight: 700, padding: '5px 16px', borderRadius: 999, letterSpacing: '0.06em', zIndex: 1, whiteSpace: 'nowrap' }}>{t('pricing.popular')}</div>
                 <HoverCard accent style={{ padding: 36, display: 'flex', flexDirection: 'column', height: '100%' }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: '#6366f1', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Growth</div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#6366f1', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>{t('pricing.growth.name')}</div>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 2 }}>
-                    <span style={{ fontSize: 48, fontWeight: 800, color: '#09090b', lineHeight: 1 }}>{yearly ? '83' : '99'} €</span>
-                    <span style={{ fontSize: 14, color: '#71717a' }}>/ Monat</span>
+                    <span style={{ fontSize: 48, fontWeight: 800, color: '#09090b', lineHeight: 1 }}>{yearly ? '66' : '79'} €</span>
+                    <span style={{ fontSize: 14, color: '#71717a' }}>{t('pricing.perMonth')}</span>
                   </div>
                   <div style={{ fontSize: 13, color: '#a1a1aa', marginBottom: 28 }}>
-                    {yearly ? 'Jährlich 990 € — 2 Monate gespart' : 'Monatlich kündbar'}
+                    {yearly ? t('pricing.growth.yearlyNote') : t('pricing.cancelMonthly')}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24, padding: '10px 14px', background: '#eef2ff', borderRadius: 10, border: '1px solid #c7d2fe' }}>
                     <span style={{ fontSize: 18 }}>🚀</span>
-                    <span style={{ fontSize: 14, fontWeight: 600, color: '#3730a3' }}>Bis zu 6 Plattformen</span>
+                    <span style={{ fontSize: 14, fontWeight: 600, color: '#3730a3' }}>{t('pricing.growth.highlight')}</span>
                   </div>
                   <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px', display: 'flex', flexDirection: 'column', gap: 11, flex: 1 }}>
-                    {['Alles aus Starter', 'Instagram, TikTok, Facebook + mehr', 'E-Mail Support'].map(item => (
+                    {growthFeatures.map(item => (
                       <li key={item} style={{ display: 'flex', gap: 10, fontSize: 14 }}>
                         <span style={{ color: '#6366f1', fontWeight: 700, flexShrink: 0 }}>✓</span>
                         <span style={{ color: '#18181b' }}>{item}</span>
                       </li>
                     ))}
                   </ul>
-                  <a
+                  <Link
                     href="/login"
                     style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: 'linear-gradient(135deg, #6366f1, #a855f7)', color: 'white', padding: '13px', borderRadius: 12, fontWeight: 700, fontSize: 15, textDecoration: 'none', boxShadow: '0 4px 20px rgba(99,102,241,0.35)' }}
                   >
-                    Jetzt starten →
-                  </a>
+                    {t('pricing.cta')}
+                  </Link>
                 </HoverCard>
               </div>
 
               {/* Pro */}
               <HoverCard style={{ padding: 36, display: 'flex', flexDirection: 'column' }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>Pro</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>{t('pricing.pro.name')}</div>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 2 }}>
-                  <span style={{ fontSize: 48, fontWeight: 800, color: '#09090b', lineHeight: 1 }}>{yearly ? '166' : '199'} €</span>
-                  <span style={{ fontSize: 14, color: '#71717a' }}>/ Monat</span>
+                  <span style={{ fontSize: 48, fontWeight: 800, color: '#09090b', lineHeight: 1 }}>{yearly ? '125' : '149'} €</span>
+                  <span style={{ fontSize: 14, color: '#71717a' }}>{t('pricing.perMonth')}</span>
                 </div>
                 <div style={{ fontSize: 13, color: '#a1a1aa', marginBottom: 28 }}>
-                  {yearly ? 'Jährlich 1.990 € — 2 Monate gespart' : 'Monatlich kündbar'}
+                  {yearly ? t('pricing.pro.yearlyNote') : t('pricing.cancelMonthly')}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24, padding: '10px 14px', background: '#fdf4ff', borderRadius: 10, border: '1px solid #e9d5ff' }}>
                   <span style={{ fontSize: 18 }}>🌍</span>
-                  <span style={{ fontSize: 14, fontWeight: 600, color: '#7e22ce' }}>Alle 9 Plattformen</span>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: '#7e22ce' }}>{t('pricing.pro.highlight')}</span>
                 </div>
                 <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px', display: 'flex', flexDirection: 'column', gap: 11, flex: 1 }}>
-                  {['Alles aus Growth', 'Alle 9 Plattformen (IG, TT, FB, LinkedIn, X, ...)', 'Telegram Bot — posten per Sprachnachricht', 'Prioritäts-Support'].map(item => (
+                  {proFeatures.map(item => (
                     <li key={item} style={{ display: 'flex', gap: 10, fontSize: 14 }}>
                       <span style={{ color: '#a855f7', fontWeight: 700, flexShrink: 0 }}>✓</span>
                       <span style={{ color: '#18181b' }}>{item}</span>
                     </li>
                   ))}
                 </ul>
-                <a
+                <Link
                   href="/login"
                   style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: '#18181b', color: 'white', padding: '13px', borderRadius: 12, fontWeight: 700, fontSize: 15, textDecoration: 'none' }}
                 >
-                  Jetzt starten →
-                </a>
+                  {t('pricing.cta')}
+                </Link>
               </HoverCard>
             </div>
 
             <p style={{ textAlign: 'center', fontSize: 13, color: '#a1a1aa', marginTop: 28 }}>
-              Zum Vergleich: Social-Media-Agenturen in Deutschland kosten 500–2.000 € / Monat.
+              {t('pricing.comparison')}
             </p>
           </div>
         </section>
 
         {/* ── FAQ ──────────────────────────────────────────────────────────── */}
         <section style={{ maxWidth: 720, margin: '0 auto', padding: '80px 24px' }}>
-          <h2 style={{ fontSize: 36, fontWeight: 800, textAlign: 'center', marginBottom: 10, color: '#09090b' }}>Häufige Fragen</h2>
-          <p style={{ color: '#71717a', textAlign: 'center', marginBottom: 48, fontSize: 16 }}>Alles was ihr wissen müsst, bevor ihr loslegt.</p>
+          <h2 style={{ fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 800, textAlign: 'center', marginBottom: 10, color: '#09090b' }}>{t('faq.title')}</h2>
+          <p style={{ color: '#71717a', textAlign: 'center', marginBottom: 48, fontSize: 16 }}>{t('faq.subtitle')}</p>
           <div>
-            {FAQS.map((f, i) => (
+            {faqItems.map((f, i) => (
               <FaqItem key={i} q={f.q} a={f.a} open={faqOpen === i} onToggle={() => setFaqOpen(faqOpen === i ? null : i)} />
             ))}
           </div>
@@ -848,7 +948,10 @@ export default function LandingPage() {
 
         {/* ── FOOTER ──────────────────────────────────────────────────────── */}
         <footer style={{ borderTop: '1px solid #e4e4e7', padding: '28px 24px', textAlign: 'center', background: '#f8fafc' }}>
-          <p style={{ color: '#a1a1aa', fontSize: 13, margin: 0 }}>© 2026 FlowingPost</p>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
+            <p style={{ color: '#a1a1aa', fontSize: 13, margin: 0 }}>{tc('footer')}</p>
+            <Link href="/vergleich" style={{ color: '#6366f1', fontSize: 13, textDecoration: 'none', fontWeight: 600 }}>{t('footerCompare')}</Link>
+          </div>
         </footer>
 
       </div>

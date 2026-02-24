@@ -1,0 +1,521 @@
+{
+  "common": {
+    "meta": {
+      "title": "FlowingPost — KI Social Media Posts für Restaurants",
+      "description": "Bild hochladen, KI schreibt die Caption, direkt auf Instagram & Co. posten. Spart 2–3 Stunden pro Woche – ohne Agentur."
+    },
+    "brand": "FlowingPost",
+    "footer": "© 2026 FlowingPost",
+    "signOut": "Abmelden",
+    "back": "Zurück",
+    "copy": "kopieren"
+  },
+  "login": {
+    "subtitle": "KI Social Media Posts — automatisch",
+    "welcome": "Willkommen",
+    "description": "Melde dich an, um loszulegen",
+    "error": "Anmeldung fehlgeschlagen. Bitte versuche es erneut.",
+    "googleButton": "Mit Google anmelden",
+    "redirecting": "Weiterleitung...",
+    "terms": "Mit der Anmeldung stimmst du unseren",
+    "termsLink": "Nutzungsbedingungen",
+    "termsEnd": "zu.",
+    "backToHome": "← Zurück zur Startseite"
+  },
+  "waiting": {
+    "title": "Fast fertig — 2 Schritte noch",
+    "subtitle": "Wir schalten deinen Account nach Zahlungseingang innerhalb von 24h frei.",
+    "yourPlan": "Dein Plan",
+    "plans": {
+      "starter": "Starter — €39/Monat",
+      "growth": "Growth — €79/Monat",
+      "pro": "Pro — €149/Monat"
+    },
+    "step1": {
+      "title": "Social Media Konten verbinden",
+      "connected": "Konten verbunden ✓ — Du kannst den Link erneut öffnen um weitere Accounts hinzuzufügen.",
+      "connectPrompt": "Verbinde {platforms} damit wir direkt posten können.",
+      "connectDefault": "deine Plattformen",
+      "connectButton": "Konten verbinden →",
+      "connecting": "Link wird erstellt...",
+      "reopenLink": "Link erneut öffnen",
+      "reopening": "Wird geöffnet..."
+    },
+    "step2": {
+      "title": "Zahlung senden",
+      "paypal": "PayPal",
+      "crypto": "Crypto (ETH / ERC-20 USDT/USDC)",
+      "amount": "Betrag:",
+      "purpose": "Verwendungszweck: FlowingPost {plan}",
+      "cryptoNote": "ETH-Äquivalent zu €{price} senden",
+      "paymentSent": "Zahlung gesendet ✓",
+      "sending": "Wird gesendet...",
+      "paymentConfirmed": "✓ Danke! Wir prüfen deine Zahlung und schalten deinen Account innerhalb von 24h frei."
+    },
+    "viewTool": "Tool schon mal ansehen →",
+    "confirmationNote": "Nach Zahlungseingang senden wir eine Bestätigung an {email} und schalten deinen Account frei.",
+    "contact": "Fragen? hello@flowingpost.com",
+    "profileError": "Profil nicht geladen — bitte Seite neu laden.",
+    "linkError": "Fehler beim Generieren des Links",
+    "networkError": "Netzwerkfehler — bitte versuche es erneut",
+    "stripe": {
+      "activating": "Zahlung erhalten — Account wird freigeschaltet...",
+      "activatingHint": "Dies dauert normalerweise nur wenige Sekunden.",
+      "success": "Zahlung erfolgreich! Dein Account ist aktiv.",
+      "manageSubscription": "Abo verwalten"
+    }
+  },
+  "onboarding": {
+    "title": "Richte deinen Account ein",
+    "subtitle": "Wähle deinen Plan und die Plattformen, auf denen du posten möchtest.",
+    "step1": "1. Plan wählen",
+    "step2": "2. Plattformen wählen",
+    "platformCount": "{selected}/{max} ausgewählt.",
+    "platformLimit": "Maximum für deinen Plan erreicht. Upgrade für mehr Plattformen.",
+    "popular": "Beliebt",
+    "monthly": "Monatlich",
+    "yearly": "Jährlich",
+    "yearlyBadge": "2 Monate gratis",
+    "saveError": "Fehler beim Speichern. Bitte versuche es erneut.",
+    "submit": "Weiter →",
+    "saving": "Wird gespeichert...",
+    "plans": {
+      "starter": {
+        "name": "Starter",
+        "price": "€39",
+        "period": "/Monat",
+        "description": "Perfekt für den Einstieg",
+        "features": ["Instagram + TikTok + Facebook", "KI-Captions & Hashtags", "Auto-Scheduler inklusive", "E-Mail Support"]
+      },
+      "growth": {
+        "name": "Growth",
+        "price": "€79",
+        "period": "/Monat",
+        "description": "Für wachsende Betriebe",
+        "features": ["Alles aus Starter", "Bis zu 6 Plattformen", "3 Caption-Varianten pro Post", "Prioritäts-Support"]
+      },
+      "pro": {
+        "name": "Pro",
+        "price": "€149",
+        "period": "/Monat",
+        "description": "Maximale Reichweite",
+        "features": ["Alles aus Growth", "Alle 9 Plattformen", "Telegram Bot — posten per Sprachnachricht", "Persönlicher Ansprechpartner"]
+      }
+    }
+  },
+  "tool": {
+    "preview": {
+      "label": "Vorschau-Modus",
+      "message": "Dein Account wird nach Zahlungseingang freigeschaltet. Posten ist dann möglich.",
+      "backLink": "Zurück →"
+    },
+    "header": {
+      "subtitle": "Fotos hochladen → KI generiert Captions → Planen → Auf allen Plattformen posten"
+    },
+    "connect": {
+      "button": "Konten verbinden →",
+      "connecting": "Verbinde..."
+    },
+    "steps": {
+      "upload": "Upload",
+      "captions": "AI Captions",
+      "schedule": "Schedule",
+      "post": "Post"
+    },
+    "upload": {
+      "businessType": "Business Type",
+      "businessPlaceholder": "e.g. ice cream shop, bakery, restaurant...",
+      "tone": "Tone",
+      "tonePlaceholder": "e.g. friendly, professional, playful...",
+      "language": "Language",
+      "timezone": "Timezone",
+      "platforms": "Plattformen",
+      "platformLimit": "Plan-Limit erreicht. Upgrade für mehr Plattformen.",
+      "platformRequired": "Wähle mindestens eine Plattform.",
+      "exampleCaptions": "Example Captions",
+      "exampleOptional": "(optional — paste captions you like so the AI matches the style)",
+      "examplePlaceholder": "Paste 2-3 example captions you've written before or found inspiring...",
+      "dropzone": "Drop photos here or click to upload",
+      "dropzoneHint": "Upload up to 20 photos at once. JPG, PNG, WebP supported.",
+      "describePlaceholder": "Describe this photo...",
+      "generateButton": "Captions generieren — {count} Foto(s) × {platforms} Plattform(en) →"
+    },
+    "captionStep": {
+      "backToUpload": "← Back to upload",
+      "generateAll": "Alle generieren ({count} Posts)",
+      "generating": "Generiere...",
+      "selected": "✓ selected",
+      "pickFavorites": "Pick your favorites or accept the first suggestion for all",
+      "acceptAll": "Accept All (1st variant) — {count} pending",
+      "schedulePosts": "Schedule {count} posts →"
+    },
+    "scheduleStep": {
+      "backToCaptions": "← Back to captions",
+      "dragHint": "Drag posts to dates or use auto-distribute",
+      "autoDistribute": "Auto-Distribute Evenly",
+      "unscheduled": "Unscheduled ({count})",
+      "weekdays": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+      "delete": "Delete?",
+      "yes": "Yes",
+      "no": "No",
+      "scheduleAll": "Schedule All {count} Posts ✓",
+      "dragAllHint": "Drag all posts to calendar dates to continue"
+    },
+    "confirm": {
+      "allPublished": "All Posts Published!",
+      "scheduled": "Posts Scheduled!",
+      "postsSummary": "{posts} Posts auf {platforms} Plattform(en)",
+      "published": "wurden veröffentlicht.",
+      "readyToPost": "— bereit zum Posten.",
+      "upcomingSchedule": "Upcoming Schedule",
+      "publishing": "Publishing...",
+      "publishNow": "Publish Now",
+      "locked": "🔒 Posten wird nach Account-Freischaltung möglich",
+      "checkPayment": "Zahlungsstatus prüfen →",
+      "newBatch": "New Batch",
+      "someFailed": "Some posts failed:"
+    },
+    "subscription": {
+      "manage": "Abo verwalten"
+    },
+    "footer": "FlowingPost — powered by KI"
+  },
+  "landing": {
+    "nav": {
+      "login": "Anmelden →",
+      "cta": "Jetzt starten"
+    },
+    "hero": {
+      "badge": "Für Restaurants · Cafés · Bars",
+      "title1": "Social Media auf Autopilot.",
+      "title2": "Während du kochst.",
+      "subtitle": "Bild hochladen, fertig. FlowingPost schreibt die Caption und postet automatisch —",
+      "subtitleBold": "auf bis zu 9 Plattformen gleichzeitig.",
+      "upload": "1 Upload",
+      "ctaPrimary": "Kostenlos testen →",
+      "ctaSecondary": "Ab 39 €/Monat"
+    },
+    "ticker": [
+      "2–3 Stunden / Woche gespart",
+      "Mehr Reichweite, mehr Gäste",
+      "9 Plattformen · 1 Upload",
+      "Automatisch geplant & gepostet",
+      "Instagram",
+      "TikTok",
+      "Facebook",
+      "YouTube",
+      "X / Twitter",
+      "3 Varianten zur Auswahl",
+      "Euer Ton, eure Stimme",
+      "Günstiger als jede Agentur",
+      "Weltweit nutzbar",
+      "In 30 Sekunden gepostet"
+    ],
+    "stats": [
+      { "suffix": "h", "label": "pro Woche gespart" },
+      { "suffix": "", "label": "Plattformen gleichzeitig" },
+      { "suffix": "s", "label": "pro Post" },
+      { "suffix": "%", "label": "weniger Aufwand" }
+    ],
+    "showcase": {
+      "label": "So funktioniert's",
+      "title1": "Drei Schritte.",
+      "title2": "Kein Training.",
+      "steps": [
+        { "title": "Bild hochladen", "desc": "Foto oder Video direkt vom Handy. Optional eine kurze Notiz — wir schreiben den Rest." },
+        { "title": "3 Varianten wählen", "desc": "Die KI schreibt drei Versionen in eurem Ton. Ihr wählt den besten — oder postet direkt." },
+        { "title": "Automatisch geplant & gepostet", "desc": "Kein manuelles Planen. Das System postet automatisch auf bis zu 9 Plattformen — zur richtigen Zeit, ohne euer Zutun." }
+      ],
+      "phone": {
+        "selectImage": "Bild auswählen",
+        "optionalNote": "OPTIONALE NOTIZ",
+        "noteExample": "\u201EHeute: Pasta Carbonara \ud83c\udf5d\u201C",
+        "variants": "3 Varianten",
+        "variantTexts": [
+          "\ud83c\udf5d Heute bei uns: Pasta Carbonara nach Originalrezept. Kommt vorbei!",
+          "Klassisch. Cremig. Perfekt. Unsere Carbonara w\u00e4rmt Herz & Seele \ud83e\udd0d",
+          "Was gibts heute? Pasta Carbonara! Reservierung: Link in Bio \ud83d\udc46"
+        ],
+        "platforms": "Plattformen",
+        "postNow": "Jetzt posten →"
+      }
+    },
+    "calendar": {
+      "badge": "Auto-Scheduler",
+      "title1": "Bild hochladen.",
+      "title2": "Rest passiert automatisch.",
+      "subtitle": "Kein manuelles Planen. Das System plant und postet automatisch — ihr müsst den Kalender nie anfassen. Ladet einfach Bilder hoch, die KI erledigt den Rest.",
+      "month": "März 2026",
+      "days": ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"],
+      "postsPlanned": "16 Posts",
+      "planned": "geplant ·",
+      "autoPosted": "Automatisch gepostet",
+      "benefits": [
+        { "title": "Vollautomatisch — kein Kalender nötig", "desc": "Das System plant und postet selbstständig. Ihr ladet Bilder hoch — wann und wie oft gepostet wird, entscheidet die KI." },
+        { "title": "Optimales Timing, immer", "desc": "Posts gehen raus wenn eure Gäste online sind — morgens, mittags, abends. Automatisch, ohne dass ihr dabei sein müsst." },
+        { "title": "Null täglicher Aufwand", "desc": "Kein \u201EIch muss heute noch was posten\u201C. Ladet ein Bild hoch \u2014 alles andere passiert von selbst." }
+      ],
+      "cta": "Jetzt starten →",
+      "calendarMonth": "März 2026",
+      "calendarPlanned": "16 Posts",
+      "calendarAutoPosted": "Automatisch gepostet"
+    },
+    "comparison": {
+      "title": "Wie es sich anfühlt",
+      "subtitle": "Der Unterschied zwischen Social Media mit und ohne uns.",
+      "without": {
+        "label": "Ohne FlowingPost",
+        "items": [
+          "Stundenlang nach Ideen suchen",
+          "Posts vergessen oder aufschieben",
+          "Unregelmäßig posten = weniger Reichweite",
+          "2–4 Stunden pro Woche verloren",
+          "Agentur zu teuer, selber zu aufwändig"
+        ]
+      },
+      "with": {
+        "label": "Mit FlowingPost",
+        "items": [
+          "Bild hochladen — fertig. 30 Sekunden.",
+          "Jeden Tag automatisch präsent",
+          "Regelmäßige Posts = mehr neue Gäste",
+          "Stunden zurückgewinnen, Küche im Fokus",
+          "Günstiger als jede Agentur weltweit"
+        ]
+      }
+    },
+    "audience": {
+      "title": "Für wen ist das?",
+      "subtitle": "Für alle, die täglich auf Social Media präsent sein wollen — ohne Stunden dafür zu opfern.",
+      "platforms": ["📸 Instagram", "🎵 TikTok", "👥 Facebook", "▶️ YouTube", "✖️ X", "💼 LinkedIn", "📌 Pinterest", "✈️ Telegram", "🎬 und mehr"],
+      "targets": ["🍝 Restaurants", "☕ Cafés", "🍹 Cocktailbars", "🍦 Eisdielen", "🚚 Food Trucks", "🥐 Bäckereien", "🍣 Sushi", "🍔 Burger", "🌮 Mexican"]
+    },
+    "pricing": {
+      "title": "Jetzt starten",
+      "subtitle": "Kostet weniger als ein Abendessen — spart euch Stunden pro Woche. Jederzeit kündbar.",
+      "promo": "🚀 Launch-Angebot: Erste 50 Kunden — keine Einrichtungsgebühr (spare 99 €)",
+      "monthly": "Monatlich",
+      "yearly": "Jährlich",
+      "yearlyBadge": "2 Monate gratis",
+      "perMonth": "/ Monat",
+      "cancelMonthly": "Monatlich kündbar",
+      "popular": "★ BELIEBT",
+      "cta": "Jetzt starten →",
+      "comparison": "Zum Vergleich: Social-Media-Agenturen kosten 500–2.000 € / Monat. FlowingPost ab 39 €.",
+      "starter": {
+        "name": "Starter",
+        "yearlyNote": "Jährlich 390 € — 2 Monate gespart",
+        "highlight": "3 Plattformen nach Wahl",
+        "features": ["Unbegrenzte Posts", "KI-Captions in eurer Sprache", "Auto-Scheduler inklusive", "E-Mail Support"]
+      },
+      "growth": {
+        "name": "Growth",
+        "yearlyNote": "Jährlich 790 € — 2 Monate gespart",
+        "highlight": "Bis zu 6 Plattformen",
+        "features": ["Alles aus Starter", "3 Caption-Varianten pro Post", "Instagram, TikTok, Facebook + mehr", "Prioritäts-Support"]
+      },
+      "pro": {
+        "name": "Pro",
+        "yearlyNote": "Jährlich 1.490 € — 2 Monate gespart",
+        "highlight": "Alle 9 Plattformen",
+        "features": ["Alles aus Growth", "Alle 9 Plattformen (IG, TT, FB, LinkedIn, X, ...)", "Telegram Bot — posten per Sprachnachricht", "Persönlicher Ansprechpartner"]
+      }
+    },
+    "faq": {
+      "title": "Häufige Fragen",
+      "subtitle": "Alles was ihr wissen müsst, bevor ihr loslegt.",
+      "items": [
+        { "q": "Wie lange dauert die Einrichtung?", "a": "Wir richten alles innerhalb von 24 Stunden ein. Ihr bekommt einen persönlichen Zugang und seid sofort startklar — keine technischen Vorkenntnisse nötig." },
+        { "q": "Brauche ich technisches Wissen?", "a": "Nein. Ihr ladet ein Bild hoch, schreibt optional eine kurze Notiz dazu — alles andere passiert automatisch. Kein Coding, kein Setup, kein Aufwand." },
+        { "q": "Welche Plattformen sind in welchem Plan?", "a": "Starter (€39/Monat): bis zu 3 Plattformen nach Wahl (z.B. Instagram, TikTok, Facebook). Growth (€79/Monat): bis zu 6 Plattformen. Pro (€149/Monat): alle 9 Plattformen gleichzeitig (Instagram, TikTok, Facebook, LinkedIn, X, YouTube und mehr). Ihr könnt jederzeit upgraden." },
+        { "q": "Muss ich selbst planen wann gepostet wird?", "a": "Nein. Das System übernimmt das automatisch. Ihr ladet Bilder hoch — wann, wie oft und auf welchen Plattformen gepostet wird, steuert der Auto-Scheduler. Ihr müsst den Kalender nie anfassen." },
+        { "q": "Kann ich kündigen?", "a": "Ja, jederzeit. Monatliche Pläne sind ohne Frist kündbar. Jährliche Pläne laufen 12 Monate und verlängern sich danach automatisch — ihr könnt jederzeit vor Ablauf kündigen." },
+        { "q": "Kann ich meinen Plan wechseln?", "a": "Ja. Upgrade von Starter auf Growth oder Pro jederzeit möglich — ihr zahlt nur die Differenz. Downgrade ist zum nächsten Abrechnungszeitraum möglich." },
+        { "q": "Schreibt die KI auch auf Englisch oder anderen Sprachen?", "a": "Ja. Die KI schreibt in jeder Sprache — Deutsch, Englisch, Türkisch, Arabisch und mehr. Einfach beim Setup angeben." },
+        { "q": "Was ist das Launch-Angebot?", "a": "Die ersten 50 Kunden zahlen keine Einrichtungsgebühr — normalerweise 99 €. Das Angebot gilt bis die 50 Plätze vergeben sind, danach kehren wir zum regulären Preis zurück." },
+        { "q": "Performen geplante Posts genauso gut wie manuelle?", "a": "Ja. Geplante Posts performen genauso gut wie manuell veröffentlichte. Moderne Algorithmen werten Relevanz und Qualität des Contents — nicht ob jemand manuell auf \"Posten\" geklickt hat. Regelmäßigkeit ist sogar ein Vorteil." },
+        { "q": "Ist das sicher für meine Social-Media-Accounts?", "a": "Ja. Wir nutzen ausschließlich die offiziellen, verifizierten APIs von Instagram, TikTok, Facebook und Co. — kein Scraping, keine Bots, keine Workarounds. Eure Accounts sind zu 100% geschützt." },
+        { "q": "Wie viel Zeit spare ich wirklich?", "a": "Unsere Nutzer berichten von bis zu 90% Zeitersparnis gegenüber manuellem Posten auf mehreren Plattformen. Statt 2–4 Stunden pro Woche: ein Bild hochladen, fertig." }
+      ]
+    },
+    "footerCompare": "Vergleich"
+  },
+  "leads": {
+    "back": "← Zurück",
+    "title": "🔍 Lead Research",
+    "visible": "sichtbar",
+    "inAirtable": "in Airtable",
+    "airtableButton": "📋 Airtable",
+    "reset": "✕ Reset",
+    "addHashtag": "Hashtag hinzufügen...",
+    "add": "+ Add",
+    "postsPerDay": "Posts/Tag:",
+    "maxDeepScan": "Max. Deep-Scan:",
+    "autoAnalyze": "🚀 Auto-Analyse starten",
+    "running": "⏳ Läuft...",
+    "enrichAirtable": "🔄 Airtable anreichern",
+    "searchWebsites": "🌐 Websites suchen",
+    "discoveredHashtags": "💡 Entdeckte Hashtags aus den Ergebnissen:",
+    "contacted": "Kontaktiert",
+    "evaluating": "⏳ Bewertet...",
+    "icebreaker": "💬 Icebreaker",
+    "emailTo": "✉️ Email an {target}",
+    "subject": "Betreff...",
+    "message": "Nachricht...",
+    "send": "📤 Senden",
+    "sending": "⏳ Sende...",
+    "sent": "✓ Gesendet",
+    "notePlaceholder": "Notiz: z.B. Angefragt 15.2., keine Antwort...",
+    "hidden": "ausgeblendet",
+    "show": "einblenden",
+    "idleTitle": "Einmal klicken – alles läuft automatisch.",
+    "idleSubtitle": "Scrape → Bewertung → Profil-Analyse → Websites → Airtable-Sync",
+    "evalFailed": "Bewertung fehlgeschlagen.",
+    "manualCheck": "Manuell prüfen",
+    "defaultSubject": "Kurze Anfrage zu eurem Instagram-Auftritt",
+    "noCaption": "(keine Caption)",
+    "error": "Fehler",
+    "profilesSaved": "{count} Profile (gespeichert)",
+    "loadingFromAirtable": "Lade Leads aus Airtable...",
+    "noLeadsInAirtable": "Keine Leads in Airtable gefunden",
+    "leadsLoaded": "{count} Leads geladen",
+    "loadingProfiles": "Profile laden...",
+    "leadsCount": "{count} Leads",
+    "searchingContacts": "Kontaktdaten suchen...",
+    "deepEvaluation": "Tiefbewertung...",
+    "doneEnriched": "Fertig: {count} Leads angereichert",
+    "noLeadsFound": "Keine Leads gefunden",
+    "googleSearchRunning": "Google Suche läuft...",
+    "doneContacts": "Fertig: {found} Kontakte gefunden von {total} Leads",
+    "searchRunning": "Suche läuft...",
+    "instagramScraping": "Instagram scraping (1–3 Min.)",
+    "profilesFound": "{count} Profile gefunden",
+    "noProfilesFound": "Keine Profile gefunden",
+    "airtableSync": "Airtable sync...",
+    "quickEvaluation": "Schnellbewertung...",
+    "leadsToContact": "{count} Leads zum Kontaktieren",
+    "doneAutoFlow": "Fertig: {total} Profile · {deep} tief analysiert · {recommended} empfohlen",
+    "phaseScrape": "🔍 Scrape",
+    "phaseAirtable": "🔗 Airtable",
+    "phaseQuickEval": "✦ Schnellbewertung",
+    "phaseProfiles": "📊 Profile",
+    "phaseWebsites": "🌐 Websites",
+    "phaseDeepEval": "✦ Tiefbewertung"
+  },
+  "vergleich": {
+    "meta": {
+      "title": "FlowingPost vs Later, Hootsuite, Buffer & Planoly — Vergleich 2026",
+      "description": "Vergleiche FlowingPost mit Later, Hootsuite, Buffer und Planoly. Feature-Matrix, Preisvergleich und warum FlowingPost die bessere Wahl für Restaurants ist."
+    },
+    "hero": {
+      "badge": "Vergleich 2026",
+      "title1": "Warum FlowingPost",
+      "title2": "statt Hootsuite oder Later?",
+      "subtitle": "Andere Tools planen Posts. FlowingPost schreibt, plant und postet — vollautomatisch, auf bis zu 9 Plattformen, in jeder Sprache."
+    },
+    "table": {
+      "title": "Feature-Vergleich",
+      "subtitle": "Alle wichtigen Features auf einen Blick.",
+      "feature": "Feature",
+      "flowingpost": "FlowingPost",
+      "later": "Later",
+      "hootsuite": "Hootsuite",
+      "buffer": "Buffer",
+      "planoly": "Planoly",
+      "features": [
+        { "name": "KI-Captions", "fp": "✓ 3 Varianten, alle Sprachen", "later": "✓ Basic, nur Englisch", "hootsuite": "✓ OwlyWriter AI", "buffer": "✓ AI Assistant", "planoly": "✓ Basic" },
+        { "name": "Plattformen", "fp": "9", "later": "6", "hootsuite": "7+", "buffer": "8+", "planoly": "4" },
+        { "name": "Preis ab", "fp": "39 €/Mo", "later": "$25/Mo", "hootsuite": "$99/Mo", "buffer": "$6/Kanal/Mo", "planoly": "$16/Mo" },
+        { "name": "Auto-Scheduler", "fp": "✓ Vollautomatisch", "later": "Manuell planen", "hootsuite": "Manuell planen", "buffer": "Manuell planen", "planoly": "Manuell planen" },
+        { "name": "Mehrere Sprachen", "fp": "✓ Alle Sprachen", "later": "Nur Englisch", "hootsuite": "Nur Englisch", "buffer": "Nur Englisch", "planoly": "Nur Englisch" },
+        { "name": "Telegram Bot", "fp": "✓ Sprachnachricht → Post", "later": "✗", "hootsuite": "✗", "buffer": "✗", "planoly": "✗" },
+        { "name": "Unbegrenzte Posts", "fp": "✓ In allen Plänen", "later": "✗ 30/Profil (Starter)", "hootsuite": "✓", "buffer": "✓", "planoly": "✗ 60/Monat (Starter)" },
+        { "name": "Caption-Varianten", "fp": "3 pro Post", "later": "1", "hootsuite": "1", "buffer": "1", "planoly": "1" }
+      ]
+    },
+    "vsLater": {
+      "title": "FlowingPost vs Later",
+      "subtitle": "Later ist ein visueller Planner — FlowingPost übernimmt den kompletten Workflow.",
+      "points": [
+        { "fp": "KI schreibt 3 Caption-Varianten in eurem Ton", "other": "Einfacher Caption-Editor ohne KI-Varianten" },
+        { "fp": "Vollautomatischer Scheduler — kein Kalender nötig", "other": "Manuelles Planen im Kalender" },
+        { "fp": "9 Plattformen ab 39 €/Mo", "other": "1 Social Set (6 Kanäle) ab $25/Mo" },
+        { "fp": "Captions in jeder Sprache", "other": "KI nur auf Englisch" }
+      ]
+    },
+    "vsHootsuite": {
+      "title": "FlowingPost vs Hootsuite",
+      "subtitle": "Hootsuite ist mächtig — aber auch teuer und komplex. FlowingPost macht es einfach.",
+      "points": [
+        { "fp": "Ab 39 €/Mo — klar und transparent", "other": "Ab $99/Mo — schnell über $200 für Teams" },
+        { "fp": "Bild hochladen, fertig. Kein Training nötig", "other": "Komplexes Dashboard, lange Einarbeitung" },
+        { "fp": "Vollautomatisch — kein manuelles Planen", "other": "Manuell Posts erstellen und terminieren" },
+        { "fp": "Telegram Bot für Posting per Sprachnachricht", "other": "Kein Telegram-Support" }
+      ]
+    },
+    "vsBuffer": {
+      "title": "FlowingPost vs Buffer",
+      "subtitle": "Buffer ist günstig pro Kanal — aber die Kosten explodieren bei mehreren Plattformen.",
+      "points": [
+        { "fp": "9 Plattformen ab 39 €/Mo — Flatrate", "other": "$6/Kanal/Mo — bei 9 Kanälen = $54/Mo" },
+        { "fp": "KI schreibt komplette Captions in eurem Stil", "other": "AI Assistant nur für Textvorschläge" },
+        { "fp": "3 Varianten pro Post — ihr wählt den besten", "other": "Ein Vorschlag, manuell überarbeiten" },
+        { "fp": "Vollautomatischer Scheduler", "other": "Queue-basiertes Scheduling" }
+      ]
+    },
+    "vsPlanoly": {
+      "title": "FlowingPost vs Planoly",
+      "subtitle": "Planoly fokussiert sich auf Instagram. FlowingPost deckt alle 9 Plattformen ab.",
+      "points": [
+        { "fp": "9 Plattformen gleichzeitig", "other": "Nur 4 Plattformen (Instagram, TikTok, Pinterest, Facebook)" },
+        { "fp": "Unbegrenzte Posts in allen Plänen", "other": "Nur 60 Uploads/Monat im Starter" },
+        { "fp": "KI-Captions in jeder Sprache", "other": "Einfache KI, nur Englisch" },
+        { "fp": "Auto-Scheduler postet zur besten Zeit", "other": "Visueller Planner, manuelles Timing" }
+      ]
+    },
+    "pricing": {
+      "title": "Preisvergleich",
+      "subtitle": "Was ihr für euer Geld bekommt — auf einen Blick.",
+      "perMonth": "/Monat",
+      "platforms": "Plattformen",
+      "posts": "Posts",
+      "unlimited": "Unbegrenzt",
+      "limited": "Begrenzt",
+      "aiCaptions": "KI-Captions",
+      "autoScheduler": "Auto-Scheduler",
+      "full": "Vollautomatisch",
+      "manual": "Manuell",
+      "basic": "Basic",
+      "best": "Bestes Preis-Leistungs-Verhältnis",
+      "cards": {
+        "flowingpost": { "price": "39 €", "platforms": "9 Plattformen", "posts": "Unbegrenzte Posts", "note": "KI-Captions + Auto-Scheduler inklusive" },
+        "later": { "price": "$25", "platforms": "6 Plattformen", "posts": "30 Posts/Profil", "note": "Visueller Planner" },
+        "hootsuite": { "price": "$99", "platforms": "7+ Plattformen", "posts": "Unbegrenzte Posts", "note": "Enterprise Analytics" },
+        "buffer": { "price": "$6/Kanal", "platforms": "8+ Plattformen", "posts": "Unbegrenzte Posts", "note": "9 Kanäle = $54/Mo" },
+        "planoly": { "price": "$16", "platforms": "4 Plattformen", "posts": "60 Uploads/Monat", "note": "Instagram-fokussiert" }
+      }
+    },
+    "cta": {
+      "title": "Bereit zu wechseln?",
+      "subtitle": "Starte jetzt mit FlowingPost und spare Stunden pro Woche. Keine Einrichtungsgebühr für die ersten 50 Kunden.",
+      "button": "Jetzt zu FlowingPost wechseln →",
+      "note": "Jederzeit kündbar · Keine Kreditkarte nötig"
+    },
+    "faq": {
+      "title": "Häufige Fragen zum Wechsel",
+      "items": [
+        { "q": "Kann ich von Later zu FlowingPost wechseln?", "a": "Ja, der Wechsel ist einfach. Ihr meldet euch bei FlowingPost an, verbindet eure Social-Media-Accounts und könnt sofort loslegen. Kein Datenexport nötig — FlowingPost erstellt neue, KI-generierte Captions für eure Bilder." },
+        { "q": "Ist FlowingPost wirklich günstiger als Hootsuite?", "a": "Ja. Hootsuite kostet ab $99/Monat. FlowingPost startet bei 39 €/Monat und bietet dabei KI-Captions, Auto-Scheduler und bis zu 9 Plattformen — Features, die bei Hootsuite deutlich teurer sind." },
+        { "q": "Was passiert mit meinen geplanten Posts bei Buffer?", "a": "Eure bestehenden Posts bei Buffer bleiben aktiv bis sie gepostet sind. Parallel könnt ihr FlowingPost starten. Sobald ihr zufrieden seid, kündigt ihr einfach Buffer." },
+        { "q": "Brauche ich technisches Wissen für den Wechsel?", "a": "Nein. FlowingPost ist so einfach wie ein Bild hochladen. Wir richten alles innerhalb von 24 Stunden ein — ihr bekommt einen persönlichen Zugang und seid sofort startklar." },
+        { "q": "Kann FlowingPost auch auf Englisch oder anderen Sprachen posten?", "a": "Ja. Im Gegensatz zu den meisten Alternativen schreibt die FlowingPost-KI in jeder Sprache — Deutsch, Englisch, Türkisch, Arabisch und mehr." },
+        { "q": "Was macht den Auto-Scheduler von FlowingPost besonders?", "a": "Bei anderen Tools plant ihr manuell im Kalender. FlowingPost ist vollautomatisch: Ihr ladet ein Bild hoch — das System entscheidet wann, wie oft und auf welchen Plattformen gepostet wird. Null manueller Aufwand." }
+      ]
+    },
+    "footer": {
+      "backToHome": "← Zurück zur Startseite",
+      "compare": "Vergleich"
+    },
+    "footerLink": "Vergleich"
+  }
+}
