@@ -82,7 +82,7 @@ export async function middleware(request: NextRequest) {
     .from('profiles')
     .select('is_active, onboarding_completed')
     .eq('id', user.id)
-    .single()
+    .maybeSingle()
 
   const isActive = profile?.is_active ?? false
   const onboardingDone = profile?.onboarding_completed ?? false

@@ -90,18 +90,15 @@ export default function OnboardingPage() {
       return
     }
 
-    // Save plan + platforms to profile
-    const { error: updateError } = await supabase
-      .from('profiles')
-      .update({
-        selected_platforms: selectedPlatforms,
-        plan: selectedPlan,
-        onboarding_completed: true,
-      })
-      .eq('id', user.id)
-
-    if (updateError) {
-      setError(t('saveError'))
+    // Save plan + platforms via API (uses service role to bypass RLS / create if missing)
+    const saveRes = await fetch('/api/onboarding', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ plan: selectedPlan, selectedPlatforms }),
+    })
+    if (!saveRes.ok) {
+      const err = await saveRes.json().catch(() => ({}))
+      setError(err.error || t('saveError'))
       setSaving(false)
       return
     }
