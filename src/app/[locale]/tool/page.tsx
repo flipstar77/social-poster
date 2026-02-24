@@ -42,6 +42,7 @@ const PLATFORMS = [
   { id: 'pinterest', label: 'Pinterest', bestTime: '20:00', color: '#E60023' },
   { id: 'bluesky', label: 'Bluesky', bestTime: '12:00', color: '#0085ff' },
   { id: 'reddit', label: 'Reddit', bestTime: '10:00', color: '#FF4500' },
+  { id: 'youtube', label: 'YouTube', bestTime: '15:00', color: '#FF0000' },
 ] as const
 
 type PlatformId = typeof PLATFORMS[number]['id']

@@ -15,6 +15,7 @@ const PLATFORMS = [
   { id: 'pinterest', label: 'Pinterest', color: '#E60023' },
   { id: 'bluesky', label: 'Bluesky', color: '#0085ff' },
   { id: 'reddit', label: 'Reddit', color: '#FF4500' },
+  { id: 'youtube', label: 'YouTube', color: '#FF0000' },
 ]
 
 interface PlanData {
