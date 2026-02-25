@@ -513,7 +513,7 @@ function PhoneScreen({ step, progress, translations }: { step: number; progress:
     { Icon: TikTokIcon,  name: 'TikTok',    active: true,  color: '#010101' },
     { Icon: FbIcon,      name: 'Facebook',  active: true,  color: '#1877f2' },
     { Icon: YtIcon,      name: 'YouTube',   active: true,  color: '#ff0000' },
-    { Icon: XIcon,       name: 'X',         active: false, color: '#000'    },
+    { Icon: XIcon,       name: 'X',         active: true,  color: '#000'    },
   ]
   const barProgress = Math.max(0, Math.min(1, (sub - 0.6) * 2.5))
 
