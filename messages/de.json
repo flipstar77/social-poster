@@ -137,6 +137,9 @@
       "platforms": "Plattformen",
       "platformLimit": "Plan-Limit erreicht. Upgrade für mehr Plattformen.",
       "platformRequired": "Wähle mindestens eine Plattform.",
+      "whatsappNumber": "WhatsApp-Nummer",
+      "whatsappPlaceholder": "+49 151 12345678",
+      "whatsappCta": "WhatsApp-CTA in Captions",
       "exampleCaptions": "Example Captions",
       "exampleOptional": "(optional — paste captions you like so the AI matches the style)",
       "examplePlaceholder": "Paste 2-3 example captions you've written before or found inspiring...",
@@ -182,6 +185,28 @@
     },
     "subscription": {
       "manage": "Abo verwalten"
+    },
+    "whatsapp": {
+      "title": "WhatsApp Auto-Responder",
+      "description": "Automatische Antworten auf eingehende WhatsApp-Nachrichten.",
+      "testMode": "Test-Modus",
+      "autoReply": "Auto-Reply aktiv",
+      "greeting": "Begrüßungsnachricht",
+      "greetingPlaceholder": "Willkommen! Wie können wir Ihnen helfen?",
+      "openingHours": "Öffnungszeiten",
+      "openingHoursPlaceholder": "z.B. Mo-Fr 11-22 Uhr, Sa-So 10-23 Uhr",
+      "menuUrl": "Speisekarte (Link)",
+      "menuUrlPlaceholder": "https://euer-restaurant.de/speisekarte",
+      "keywords": "Eigene Keywords",
+      "addKeyword": "Keyword hinzufügen",
+      "keywordPlaceholder": "Keyword...",
+      "responsePlaceholder": "Antwort...",
+      "messageLog": "Nachrichten-Verlauf",
+      "noMessages": "Noch keine Nachrichten empfangen.",
+      "inbound": "Eingehend",
+      "outbound": "Ausgehend",
+      "saved": "Gespeichert",
+      "backToTool": "← Zurück zum Tool"
     },
     "footer": "FlowingPost — powered by KI"
   },

@@ -137,6 +137,9 @@
       "platforms": "Platforms",
       "platformLimit": "Plan limit reached. Upgrade for more platforms.",
       "platformRequired": "Select at least one platform.",
+      "whatsappNumber": "WhatsApp Number",
+      "whatsappPlaceholder": "+49 151 12345678",
+      "whatsappCta": "WhatsApp CTA in captions",
       "exampleCaptions": "Example Captions",
       "exampleOptional": "(optional — paste captions you like so the AI matches the style)",
       "examplePlaceholder": "Paste 2-3 example captions you've written before or found inspiring...",
@@ -182,6 +185,28 @@
     },
     "subscription": {
       "manage": "Manage subscription"
+    },
+    "whatsapp": {
+      "title": "WhatsApp Auto-Responder",
+      "description": "Automatic replies to incoming WhatsApp messages.",
+      "testMode": "Test Mode",
+      "autoReply": "Auto-Reply active",
+      "greeting": "Greeting message",
+      "greetingPlaceholder": "Welcome! How can we help you?",
+      "openingHours": "Opening hours",
+      "openingHoursPlaceholder": "e.g. Mon-Fri 11am-10pm, Sat-Sun 10am-11pm",
+      "menuUrl": "Menu (Link)",
+      "menuUrlPlaceholder": "https://your-restaurant.com/menu",
+      "keywords": "Custom Keywords",
+      "addKeyword": "Add keyword",
+      "keywordPlaceholder": "Keyword...",
+      "responsePlaceholder": "Response...",
+      "messageLog": "Message Log",
+      "noMessages": "No messages received yet.",
+      "inbound": "Inbound",
+      "outbound": "Outbound",
+      "saved": "Saved",
+      "backToTool": "← Back to tool"
     },
     "footer": "FlowingPost — powered by AI"
   },
