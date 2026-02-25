@@ -155,13 +155,14 @@ export async function processVideo(input: string): Promise<boolean> {
     const summary = await summarizeTranscript(transcript, title)
     console.log(`   Summary: ${summary.length} chars`)
 
-    await getSupabase().from('blog_sources').upsert({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (getSupabase().from('blog_sources') as any).upsert({
       source_id: 'youtube-transcripts',
       name: 'YouTube Transcripts (Premium)',
       language: 'en',
       blog_url: 'https://youtube.com',
       rating: 5,
-    } as Record<string, unknown>, { onConflict: 'source_id' })
+    }, { onConflict: 'source_id' })
 
     const { error } = await getSupabase()
       .from('scraped_articles')
