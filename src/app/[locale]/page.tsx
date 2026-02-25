@@ -400,9 +400,9 @@ interface PhoneScreenTranslations {
 function PhoneScreen({ step, translations }: { step: number; translations: PhoneScreenTranslations }) {
   if (step === 0) return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: 16, gap: 12 }}>
-      <div style={{ flex: 1, background: 'linear-gradient(135deg, #ede9fe, #fce7f3)', borderRadius: 16, border: '2px dashed #c4b5fd', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-        <span style={{ fontSize: 40 }}>📸</span>
-        <span style={{ fontSize: 12, color: '#7c3aed', fontWeight: 600 }}>{translations.selectImage}</span>
+      <div style={{ flex: 1, borderRadius: 16, overflow: 'hidden', position: 'relative', border: '2px solid #c4b5fd' }}>
+        <img src="/showcase/food.png" alt="Food photo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        <div style={{ position: 'absolute', bottom: 8, right: 8, background: '#22c55e', borderRadius: 999, padding: '3px 8px', fontSize: 10, fontWeight: 700, color: '#fff' }}>✓ {translations.selectImage}</div>
       </div>
       <div style={{ background: '#f8fafc', borderRadius: 10, padding: '10px 12px', border: '1px solid #e4e4e7' }}>
         <div style={{ fontSize: 10, color: '#a1a1aa', marginBottom: 4, fontWeight: 700, letterSpacing: '0.05em' }}>{translations.optionalNote}</div>
@@ -439,8 +439,8 @@ function PhoneScreen({ step, translations }: { step: number; translations: Phone
           <span style={{ fontSize: 13, color: p.active ? '#22c55e' : '#d4d4d8' }}>{p.active ? '✓' : '○'}</span>
         </div>
       ))}
-      <div style={{ marginTop: 4, background: 'linear-gradient(135deg, #6366f1, #a855f7)', borderRadius: 10, padding: '10px', textAlign: 'center', fontSize: 12, fontWeight: 700, color: '#fff' }}>
-        {translations.postNow}
+      <div style={{ marginTop: 4, background: '#22c55e', borderRadius: 10, padding: '10px', textAlign: 'center', fontSize: 12, fontWeight: 700, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+        ✓ {translations.postNow}
       </div>
     </div>
   )
