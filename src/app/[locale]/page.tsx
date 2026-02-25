@@ -411,13 +411,14 @@ function PhoneScreen({ step, translations }: { step: number; translations: Phone
     </div>
   )
   if (step === 1) return (
-    <div style={{ flex: 1, padding: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
+    <div style={{ flex: 1, padding: 14, display: 'flex', flexDirection: 'column', gap: 8, overflow: 'hidden' }}>
       <div style={{ fontSize: 10, fontWeight: 700, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>{translations.variants}</div>
       {translations.variantTexts.map((text, i) => {
         const sel = i === 0
         return (
-          <div key={i} style={{ background: sel ? '#eef2ff' : '#f8fafc', border: `1.5px solid ${sel ? '#6366f1' : '#e4e4e7'}`, borderRadius: 10, padding: '8px 10px' }}>
-            <div style={{ fontSize: 11, color: sel ? '#3730a3' : '#71717a', lineHeight: 1.5 }}>{text}</div>
+          <div key={i} style={{ background: sel ? '#eef2ff' : '#f8fafc', border: `1.5px solid ${sel ? '#6366f1' : '#e4e4e7'}`, borderRadius: 10, padding: '8px 10px', maxHeight: sel ? 120 : 52, overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
+            <div style={{ fontSize: 10, color: sel ? '#3730a3' : '#71717a', lineHeight: 1.5, whiteSpace: 'pre-line' }}>{text}</div>
+            {!sel && <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 20, background: 'linear-gradient(transparent, #f8fafc)' }} />}
           </div>
         )
       })}
