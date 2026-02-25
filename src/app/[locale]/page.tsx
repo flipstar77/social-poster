@@ -35,6 +35,10 @@ const GLOBAL_CSS = `
   .pricing-grid { grid-template-columns: 1fr !important; }
   .hero-split { grid-template-columns: 1fr !important; }
   .hero-image-wrap { display: none !important; }
+  .floating-posts { display: none !important; }
+}
+@media (max-width: 1400px) {
+  .floating-posts { display: none !important; }
 }
 @media (hover: hover) {
   .cta-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(99,102,241,0.5) !important; }
@@ -281,70 +285,60 @@ function BenefitsList({ benefits, cta, listRef, listStyle }: { benefits: Calenda
   )
 }
 
-// ── Mock social posts (slide-in on scroll) ───────────────────────────────────
-const MOCK_POSTS = [
-  { platform: 'Instagram', Icon: IgIcon, color: '#e1306c', user: 'trattoria_bella', img: '/showcase/food.png', caption: 'Frische Spaghetti Bolognese — wie bei Nonna. Jeden Tag mit Liebe gekocht. 🍝❤️', likes: '2.847', comments: '134', time: '3h' },
-  { platform: 'TikTok',    Icon: TikTokIcon, color: '#010101', user: 'trattoria_bella', img: '/showcase/food.png', caption: 'POV: Du bestellst unsere Bolognese 🤤 #foodtiktok #pasta #restaurant', likes: '12.4K', comments: '847', time: '5h' },
-  { platform: 'Facebook',  Icon: FbIcon, color: '#1877f2', user: 'Trattoria Bella Vista', img: '/showcase/food.png', caption: 'Unser Klassiker: Spaghetti Bolognese nach Hausrezept. Kommt vorbei und überzeugt euch selbst! 🇮🇹', likes: '489', comments: '67', time: '2h' },
-  { platform: 'X',         Icon: XIcon, color: '#000', user: '@trattoria_bella', img: '/showcase/food.png', caption: 'Fresh pasta, made daily. No shortcuts, no compromises. Just real Italian food. 🍝', likes: '1.203', comments: '89', time: '4h' },
+// ── Floating mock posts (slide in from edges on scroll) ──────────────────────
+const FLOATING_POSTS = [
+  { Icon: IgIcon,     color: '#e1306c', user: 'trattoria_bella',       likes: '2.847', comments: '134', side: 'left'  as const, topPct: 8  },
+  { Icon: TikTokIcon, color: '#010101', user: 'trattoria_bella',       likes: '12.4K', comments: '847', side: 'right' as const, topPct: 5  },
+  { Icon: FbIcon,     color: '#1877f2', user: 'Trattoria Bella Vista', likes: '489',   comments: '67',  side: 'left'  as const, topPct: 52 },
+  { Icon: XIcon,      color: '#000',    user: '@trattoria_bella',      likes: '1.203', comments: '89',  side: 'right' as const, topPct: 48 },
 ]
 
-function MockPostCard({ post, index }: { post: typeof MOCK_POSTS[0]; index: number }) {
-  const ref = useRef<HTMLDivElement>(null)
+function FloatingPosts() {
+  const wrapRef = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(false)
   useEffect(() => {
-    if (!ref.current) return
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect() } }, { threshold: 0.15 })
-    obs.observe(ref.current)
+    if (!wrapRef.current) return
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect() } }, { threshold: 0.05 })
+    obs.observe(wrapRef.current)
     return () => obs.disconnect()
   }, [])
-  const fromLeft = index % 2 === 0
-  return (
-    <div ref={ref} style={{
-      opacity: visible ? 1 : 0,
-      transform: visible ? 'translateX(0) rotate(0deg)' : `translateX(${fromLeft ? '-80' : '80'}px) rotate(${fromLeft ? '-3' : '3'}deg)`,
-      transition: `opacity 0.7s cubic-bezier(0.16,1,0.3,1) ${index * 120}ms, transform 0.7s cubic-bezier(0.16,1,0.3,1) ${index * 120}ms`,
-    }}>
-      <HoverCard style={{ overflow: 'hidden', width: '100%' }}>
-        {/* Post header */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '14px 16px 10px' }}>
-          <div style={{ width: 32, height: 32, borderRadius: '50%', background: `${post.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: post.color }}>
-            <post.Icon />
-          </div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#09090b' }}>{post.user}</div>
-            <div style={{ fontSize: 11, color: '#a1a1aa' }}>{post.platform} · {post.time}</div>
-          </div>
-          <div style={{ fontSize: 10, color: '#22c55e', fontWeight: 700, background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 999, padding: '2px 8px' }}>LIVE</div>
-        </div>
-        {/* Post image */}
-        <div style={{ aspectRatio: '4/3', overflow: 'hidden' }}>
-          <img src={post.img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        </div>
-        {/* Engagement */}
-        <div style={{ padding: '10px 16px 14px' }}>
-          <div style={{ display: 'flex', gap: 14, marginBottom: 6 }}>
-            <span style={{ fontSize: 13, color: '#09090b', fontWeight: 600 }}>❤️ {post.likes}</span>
-            <span style={{ fontSize: 13, color: '#09090b', fontWeight: 600 }}>💬 {post.comments}</span>
-          </div>
-          <p style={{ fontSize: 13, color: '#3f3f46', lineHeight: 1.5, margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{post.caption}</p>
-        </div>
-      </HoverCard>
-    </div>
-  )
-}
 
-function MockPostsSection() {
   return (
-    <section style={{ padding: '72px 24px', background: '#fff', borderTop: '1px solid #e4e4e7', overflow: 'hidden' }}>
-      <div style={{ maxWidth: 1080, margin: '0 auto' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 20 }}>
-          {MOCK_POSTS.map((post, i) => (
-            <MockPostCard key={post.platform} post={post} index={i} />
-          ))}
-        </div>
-      </div>
-    </section>
+    <div ref={wrapRef} className="floating-posts" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden', zIndex: 1 }}>
+      {FLOATING_POSTS.map((p, i) => {
+        const isLeft = p.side === 'left'
+        return (
+          <div key={i} style={{
+            position: 'absolute',
+            top: `${p.topPct}%`,
+            [p.side]: 0,
+            width: 200,
+            opacity: visible ? 0.85 : 0,
+            transform: visible
+              ? `translateX(${isLeft ? '-30%' : '30%'}) rotate(${isLeft ? '-4' : '4'}deg)`
+              : `translateX(${isLeft ? '-110%' : '110%'}) rotate(${isLeft ? '-8' : '8'}deg)`,
+            transition: `opacity 0.8s cubic-bezier(0.16,1,0.3,1) ${300 + i * 200}ms, transform 0.8s cubic-bezier(0.16,1,0.3,1) ${300 + i * 200}ms`,
+          }}>
+            <div style={{ background: '#fff', borderRadius: 16, border: '1px solid #e4e4e7', boxShadow: '0 8px 32px rgba(0,0,0,0.08)', overflow: 'hidden' }}>
+              {/* Header */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 10px 6px' }}>
+                <span style={{ color: p.color, display: 'flex' }}><p.Icon /></span>
+                <span style={{ fontSize: 10, fontWeight: 700, color: '#09090b', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.user}</span>
+              </div>
+              {/* Image */}
+              <div style={{ aspectRatio: '1', overflow: 'hidden' }}>
+                <img src="/showcase/food.png" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
+              {/* Engagement */}
+              <div style={{ padding: '6px 10px 8px', display: 'flex', gap: 10 }}>
+                <span style={{ fontSize: 10, fontWeight: 600 }}>❤️ {p.likes}</span>
+                <span style={{ fontSize: 10, color: '#71717a' }}>💬 {p.comments}</span>
+              </div>
+            </div>
+          </div>
+        )
+      })}
+    </div>
   )
 }
 
@@ -986,11 +980,11 @@ export default function LandingPage() {
           phoneTranslations={phoneTranslations}
         />
 
-        {/* ── AUTO-SCHEDULER ──────────────────────────────────────────────── */}
-        <CalendarSection translations={calendarTranslations} />
-
-        {/* ── MOCK SOCIAL POSTS ──────────────────────────────────────────── */}
-        <MockPostsSection />
+        {/* ── AUTO-SCHEDULER + FLOATING POSTS ──────────────────────────── */}
+        <div style={{ position: 'relative' }}>
+          <FloatingPosts />
+          <CalendarSection translations={calendarTranslations} />
+        </div>
 
         {/* ── COMPARISON ──────────────────────────────────────────────────── */}
         <section style={{ background: '#fff', borderTop: '1px solid #e4e4e7', borderBottom: '1px solid #e4e4e7' }}>
