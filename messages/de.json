@@ -240,12 +240,12 @@
       "In 30 Sekunden gepostet"
     ],
     "painpoint": {
-      "title": "Kommt dir das bekannt vor?",
-      "problems": [
-        { "icon": "😩", "text": "Du vergisst ständig zu posten — und wenn, dauert es ewig" },
-        { "icon": "📉", "text": "Deine Konkurrenz postet täglich — du nur wenn du dran denkst" },
-        { "icon": "⏰", "text": "2–4 Stunden pro Woche gehen für Social Media drauf" },
-        { "icon": "💸", "text": "Eine Agentur? Zu teuer. Selber machen? Keine Zeit." }
+      "title": "Die Realität für Gastronomen",
+      "stats": [
+        { "number": "4h", "text": "pro Woche gehen für Social Media drauf", "subtext": "Statt in der Küche zu stehen." },
+        { "number": "0", "text": "Posts letzte Woche? Deine Konkurrenz hatte 7.", "subtext": "Jeder Tag ohne Post = unsichtbar." },
+        { "number": "2.000€", "text": "kostet eine Social-Media-Agentur pro Monat", "subtext": "FlowingPost: ab 39€." },
+        { "number": "73%", "text": "der Gäste finden Restaurants über Social Media", "subtext": "Wer nicht postet, existiert nicht." }
       ],
       "agitate": "Jede Woche ohne Posts = verlorene Gäste an die Konkurrenz.",
       "solveTitle": "Es gibt einen einfacheren Weg.",

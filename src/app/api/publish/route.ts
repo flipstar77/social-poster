@@ -9,6 +9,7 @@ export async function POST(request: Request) {
   try {
     const formData = await request.formData()
     const photo = formData.get('photo') as File | null
+    const video = formData.get('video') as File | null
     const caption = formData.get('caption') as string
     const hashtags = formData.get('hashtags') as string // comma-separated
     const platform = formData.get('platform') as string // instagram | tiktok
@@ -17,9 +18,9 @@ export async function POST(request: Request) {
     const tz = formData.get('timezone') as string || 'Europe/Berlin'
     const usernameParam = formData.get('username') as string | null
 
-    if (!photo || !caption || !platform) {
+    if ((!photo && !video) || !caption || !platform) {
       return NextResponse.json(
-        { error: 'Missing required fields: photo, caption, platform' },
+        { error: 'Missing required fields: photo or video, caption, platform' },
         { status: 400 }
       )
     }
@@ -48,7 +49,11 @@ export async function POST(request: Request) {
 
     // Build the form data for upload-post.com
     const uploadForm = new FormData()
-    uploadForm.append('photos[]', photo, photo.name)
+    if (video) {
+      uploadForm.append('video', video, video.name)
+    } else if (photo) {
+      uploadForm.append('photos[]', photo, photo.name)
+    }
     uploadForm.append('user', username)
     uploadForm.append('platform[]', platform)
     uploadForm.append('title', title)

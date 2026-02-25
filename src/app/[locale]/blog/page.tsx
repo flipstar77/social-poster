@@ -11,6 +11,8 @@ type PostMeta = {
   date: string
   category: string
   readingTime: string
+  image?: string
+  imageMedium?: string
 }
 
 const CATEGORIES = ['Alle', 'Instagram', 'TikTok', 'Google Maps', 'SEO', 'Strategie']
@@ -136,7 +138,8 @@ export default function BlogPage() {
               <article style={{
                 background: 'rgba(255,255,255,0.03)',
                 border: '1px solid rgba(255,255,255,0.06)',
-                borderRadius: '16px', padding: '28px',
+                borderRadius: '16px',
+                overflow: 'hidden',
                 transition: 'all 0.25s',
                 cursor: 'pointer',
                 height: '100%',
@@ -153,6 +156,27 @@ export default function BlogPage() {
                   e.currentTarget.style.boxShadow = 'none'
                 }}
               >
+                {/* Thumbnail */}
+                {post.imageMedium && post.imageMedium.startsWith('http') ? (
+                  <div style={{
+                    width: '100%', aspectRatio: '16/9',
+                    background: 'rgba(255,255,255,0.04)',
+                    overflow: 'hidden',
+                  }}>
+                    <img
+                      src={post.imageMedium}
+                      alt={post.title}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      loading="lazy"
+                    />
+                  </div>
+                ) : (
+                  <div style={{
+                    width: '100%', aspectRatio: '16/9',
+                    background: 'linear-gradient(135deg, rgba(167,139,250,0.08), rgba(109,40,217,0.08))',
+                  }} />
+                )}
+                <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', flex: 1 }}>
                 <div style={{ display: 'flex', gap: '12px', marginBottom: '16px', alignItems: 'center' }}>
                   <span style={{
                     padding: '4px 12px', borderRadius: '99px',
@@ -184,6 +208,7 @@ export default function BlogPage() {
                   {new Date(post.date).toLocaleDateString('de-DE', {
                     day: 'numeric', month: 'long', year: 'numeric',
                   })}
+                </div>
                 </div>
               </article>
             </Link>

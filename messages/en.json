@@ -240,12 +240,12 @@
       "Posted in 30 seconds"
     ],
     "painpoint": {
-      "title": "Sound familiar?",
-      "problems": [
-        { "icon": "😩", "text": "You keep forgetting to post — and when you do, it takes forever" },
-        { "icon": "📉", "text": "Your competitors post daily — you only post when you remember" },
-        { "icon": "⏰", "text": "2–4 hours per week wasted on social media" },
-        { "icon": "💸", "text": "An agency? Too expensive. DIY? No time." }
+      "title": "The reality for restaurant owners",
+      "stats": [
+        { "number": "4h", "text": "per week wasted on social media", "subtext": "Instead of being in the kitchen." },
+        { "number": "0", "text": "posts last week? Your competitor had 7.", "subtext": "Every day without a post = invisible." },
+        { "number": "2,000€", "text": "per month for a social media agency", "subtext": "FlowingPost: from 39€." },
+        { "number": "73%", "text": "of guests find restaurants via social media", "subtext": "If you don't post, you don't exist." }
       ],
       "agitate": "Every week without posts = lost guests to the competition.",
       "solveTitle": "There's an easier way.",

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
-  const { description, businessType, tone, platform, exampleCaptions, language } = await request.json()
+  const { description, businessType, tone, platform, exampleCaptions, language, whatsappNumber } = await request.json()
 
   const apiKey = process.env.XAI_API_KEY
   if (!apiKey) {
@@ -34,7 +34,12 @@ Rules:
 - Keep it authentic, warm, and engaging
 - Platform-specific rules for ${platform}: ${platformRule}
 - Include emojis naturally (except for LinkedIn and Reddit — use sparingly there)
-- Match the requested tone${exampleBlock}
+- Match the requested tone${exampleBlock}${whatsappNumber ? `
+- IMPORTANT: Include a WhatsApp call-to-action naturally at the end of each caption (before hashtags).
+  ${['instagram', 'tiktok'].includes(platform?.toLowerCase())
+    ? `Use plain text with the phone number: e.g. "Schreib uns auf WhatsApp: ${whatsappNumber}" or "Fragen? WhatsApp: ${whatsappNumber}". Do NOT use a URL link.`
+    : `Use a clickable WhatsApp link: https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')} with a natural CTA like "Reserviere per WhatsApp" or "Fragen? Schreib uns auf WhatsApp".`
+  }` : ''}
 
 Return ONLY valid JSON (no markdown, no code blocks) in this exact format:
 {"variants": [{"caption": "caption 1", "hashtags": ["tag1", "tag2"]}, {"caption": "caption 2", "hashtags": ["tag1", "tag2"]}, {"caption": "caption 3", "hashtags": ["tag1", "tag2"]}]}

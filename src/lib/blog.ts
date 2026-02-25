@@ -12,6 +12,9 @@ export type BlogPost = {
   category: string
   readingTime: string
   image?: string
+  imageMedium?: string
+  imageCredit?: string
+  imageCreditUrl?: string
   content: string
 }
 
@@ -47,6 +50,9 @@ export function getAllPosts(locale: string = 'de'): BlogPostMeta[] {
         category: data.category || 'Allgemein',
         readingTime: estimateReadingTime(content),
         image: data.image,
+        imageMedium: data.imageMedium,
+        imageCredit: data.imageCredit,
+        imageCreditUrl: data.imageCreditUrl,
       } satisfies BlogPostMeta
     })
     .filter((p): p is NonNullable<typeof p> => p !== null)
@@ -70,6 +76,9 @@ export function getPostBySlug(slug: string): BlogPost | null {
     category: data.category || 'Allgemein',
     readingTime: estimateReadingTime(content),
     image: data.image,
+    imageMedium: data.imageMedium,
+    imageCredit: data.imageCredit,
+    imageCreditUrl: data.imageCreditUrl,
     content,
   }
 }

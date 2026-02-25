@@ -420,6 +420,8 @@ export default function Home() {
   const [dragOver, setDragOver] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(['instagram', 'tiktok'])
+  const [whatsappNumber, setWhatsappNumber] = useState('')
+  const [whatsappCtaEnabled, setWhatsappCtaEnabled] = useState(false)
 
   // Auth state
   const [userUsername, setUserUsername] = useState('') // upload-post.com UUID-based username
@@ -439,7 +441,7 @@ export default function Home() {
 
       const { data: profile } = await supabase
         .from('profiles')
-        .select('upload_post_username, selected_platforms, plan, is_active, stripe_customer_id')
+        .select('upload_post_username, selected_platforms, plan, is_active, stripe_customer_id, whatsapp_number, whatsapp_cta_enabled')
         .eq('id', user.id)
         .single()
 
@@ -450,9 +452,22 @@ export default function Home() {
         setPlanMaxPlatforms(limits[profile.plan ?? 'starter'] ?? 3)
         setIsActive(profile.is_active ?? false)
         if (profile.stripe_customer_id) setHasStripe(true)
+        if (profile.whatsapp_number) setWhatsappNumber(profile.whatsapp_number)
+        if (profile.whatsapp_cta_enabled) setWhatsappCtaEnabled(true)
       }
     }
     loadProfile()
+  }, [])
+
+  // Persist WhatsApp settings to profile
+  const saveWhatsappSettings = useCallback(async (number: string, enabled: boolean) => {
+    try {
+      await fetch('/api/profile/update', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ whatsapp_number: number || null, whatsapp_cta_enabled: enabled }),
+      })
+    } catch {}
   }, [])
 
   const togglePlatform = (id: string) => {
@@ -545,6 +560,7 @@ export default function Home() {
           platform,
           exampleCaptions,
           language,
+          ...(whatsappCtaEnabled && whatsappNumber ? { whatsappNumber } : {}),
         }),
       })
 
@@ -790,6 +806,19 @@ export default function Home() {
         <p className="text-xs text-red-400 text-center mb-4">{connectError}</p>
       )}
 
+      {/* Tab navigation: Photo Posts | Video Reels */}
+      <div className="flex gap-1 mb-8 bg-[var(--card)] rounded-xl p-1 border border-[var(--border)] w-fit">
+        <div className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-white">
+          {t('tabs.photoPosts') || 'Photo Posts'}
+        </div>
+        <Link
+          href="/tool/video"
+          className="px-4 py-2 rounded-lg text-sm font-medium text-[var(--text-muted)] hover:text-white transition-colors"
+        >
+          {t('tabs.videoReels') || 'Video Reels'}
+        </Link>
+      </div>
+
       <StepIndicator current={step} labels={stepLabels} />
 
       {/* Step 1: Upload */}
@@ -858,6 +887,39 @@ export default function Home() {
                 <option value="America/Los_Angeles">US Pacific (PST)</option>
                 <option value="America/Sao_Paulo">America/Sao Paulo (BRT)</option>
               </select>
+            </div>
+          </div>
+
+          {/* WhatsApp CTA */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-sm text-[var(--text-muted)] mb-1.5">{t('upload.whatsappNumber')}</label>
+              <input
+                type="tel"
+                value={whatsappNumber}
+                onChange={e => setWhatsappNumber(e.target.value)}
+                onBlur={() => saveWhatsappSettings(whatsappNumber, whatsappCtaEnabled)}
+                placeholder={t('upload.whatsappPlaceholder')}
+                className="w-full px-4 py-2.5 rounded-xl bg-[var(--card)] border border-[var(--border)] text-sm focus:border-[var(--accent)] focus:outline-none transition-colors"
+              />
+            </div>
+            <div className="flex items-end">
+              <label className="flex items-center gap-3 cursor-pointer py-2.5">
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={whatsappCtaEnabled}
+                  onClick={() => {
+                    const next = !whatsappCtaEnabled
+                    setWhatsappCtaEnabled(next)
+                    saveWhatsappSettings(whatsappNumber, next)
+                  }}
+                  className={`relative inline-flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${whatsappCtaEnabled ? 'bg-[#25D366]' : 'bg-[var(--border)]'}`}
+                >
+                  <span className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-sm transition duration-200 ease-in-out ${whatsappCtaEnabled ? 'translate-x-5' : 'translate-x-0'}`} />
+                </button>
+                <span className="text-sm text-[var(--text-muted)]">{t('upload.whatsappCta')}</span>
+              </label>
             </div>
           </div>
 

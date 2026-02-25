@@ -12,6 +12,9 @@ type PostData = {
   date: string
   category: string
   readingTime: string
+  image?: string
+  imageCredit?: string
+  imageCreditUrl?: string
   mdxSource: MDXRemoteSerializeResult
 }
 
@@ -115,12 +118,45 @@ export default function BlogPostPage() {
 
         <p style={{
           color: 'rgba(255,255,255,0.5)', fontSize: '1.1rem',
-          lineHeight: 1.6, marginBottom: '40px',
-          borderBottom: '1px solid rgba(255,255,255,0.06)',
-          paddingBottom: '32px',
+          lineHeight: 1.6, marginBottom: '32px',
         }}>
           {post.description}
         </p>
+
+        {/* Hero Image */}
+        {post.image && post.image.startsWith('http') && (
+          <figure style={{ margin: '0 0 40px', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '32px' }}>
+            <img
+              src={post.image}
+              alt={post.title}
+              style={{
+                width: '100%',
+                borderRadius: '12px',
+                aspectRatio: '16/9',
+                objectFit: 'cover',
+              }}
+            />
+            {post.imageCredit && (
+              <figcaption style={{
+                marginTop: '8px', fontSize: '0.75rem',
+                color: 'rgba(255,255,255,0.3)', textAlign: 'right',
+              }}>
+                Foto:{' '}
+                {post.imageCreditUrl ? (
+                  <a href={post.imageCreditUrl} target="_blank" rel="noopener noreferrer"
+                    style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'underline' }}>
+                    {post.imageCredit}
+                  </a>
+                ) : post.imageCredit}
+                {' / '}
+                <a href="https://www.pexels.com" target="_blank" rel="noopener noreferrer"
+                  style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'underline' }}>
+                  Pexels
+                </a>
+              </figcaption>
+            )}
+          </figure>
+        )}
 
         {/* MDX Content */}
         <div className="blog-content">

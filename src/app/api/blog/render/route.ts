@@ -22,6 +22,9 @@ export async function GET(request: NextRequest) {
       date: post.date,
       category: post.category,
       readingTime: post.readingTime,
+      image: post.image,
+      imageCredit: post.imageCredit,
+      imageCreditUrl: post.imageCreditUrl,
       mdxSource,
     },
   })

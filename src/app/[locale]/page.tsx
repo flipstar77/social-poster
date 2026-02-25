@@ -908,73 +908,55 @@ export default function LandingPage() {
         {/* ── TICKER ──────────────────────────────────────────────────────── */}
         <Ticker items={PILL_ITEMS} />
 
-        {/* ── PAIN POINT (Problem → Agitate → Solve) ─────────────────────── */}
+        {/* ── PAIN POINT (Numbers-driven) ────────────────────────────────── */}
         {(() => {
-          const problems = t.raw('painpoint.problems') as Array<{ icon: string; text: string }>
+          const stats = t.raw('painpoint.stats') as Array<{ number: string; text: string; subtext: string }>
           return (
-            <section style={{ background: '#f8fafc', borderBottom: '1px solid #e4e4e7', padding: '80px 24px 72px', overflow: 'hidden' }}>
-              <div style={{ maxWidth: 800, margin: '0 auto' }}>
-                {/* Problem heading */}
+            <section style={{ background: '#09090b', color: '#fff', padding: '80px 24px', overflow: 'hidden' }}>
+              <div style={{ maxWidth: 960, margin: '0 auto' }}>
+                {/* Section label */}
                 {(() => { const s = useScrollIn(0); return (
-                  <div ref={s.ref} style={{ ...s.style, textAlign: 'center', marginBottom: 48 }}>
-                    <div style={{ display: 'inline-block', padding: '5px 16px', borderRadius: 999, background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', fontSize: 13, fontWeight: 600, marginBottom: 20 }}>
-                      ⚠️ {t('painpoint.title')}
+                  <div ref={s.ref} style={{ ...s.style, textAlign: 'center', marginBottom: 56 }}>
+                    <div style={{ display: 'inline-block', padding: '5px 16px', borderRadius: 999, background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', color: '#a1a1aa', fontSize: 13, fontWeight: 600, marginBottom: 20 }}>
+                      {t('painpoint.title')}
                     </div>
                   </div>
                 ) })()}
 
-                {/* Pain cards — staggered scroll-in */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 48 }}>
-                  {problems.map((p, i) => {
-                    const s = useScrollIn(i * 100)
+                {/* Stats grid — big numbers */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 1, background: 'rgba(255,255,255,0.06)', borderRadius: 20, overflow: 'hidden', marginBottom: 56 }}>
+                  {stats.map((s, i) => {
+                    const si = useScrollIn(i * 80)
                     return (
-                      <div ref={s.ref} key={i} style={{ ...s.style }}>
-                        <div style={{
-                          display: 'flex', gap: 16, alignItems: 'center', padding: '20px 24px',
-                          background: '#fff', border: '1px solid #f0f0f0', borderRadius: 16,
-                          boxShadow: '0 2px 12px rgba(0,0,0,0.03)',
-                        }}>
-                          <div style={{ width: 44, height: 44, borderRadius: 12, background: '#fef2f2', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>
-                            {p.icon}
-                          </div>
-                          <span style={{ fontSize: 15, color: '#3f3f46', lineHeight: 1.6, fontWeight: 500 }}>{p.text}</span>
+                      <div ref={si.ref} key={i} style={{ ...si.style, background: '#09090b', padding: '36px 28px' }}>
+                        <div style={{ fontSize: 'clamp(36px, 5vw, 52px)', fontWeight: 900, color: '#fff', lineHeight: 1, letterSpacing: '-2px', marginBottom: 10 }}>
+                          {s.number}
+                        </div>
+                        <div style={{ fontSize: 15, color: '#d4d4d8', lineHeight: 1.5, marginBottom: 6, fontWeight: 500 }}>
+                          {s.text}
+                        </div>
+                        <div style={{ fontSize: 13, color: '#71717a', lineHeight: 1.4 }}>
+                          {s.subtext}
                         </div>
                       </div>
                     )
                   })}
                 </div>
 
-                {/* Agitate — red emphasis */}
+                {/* Agitate + Solve */}
                 {(() => { const s = useScrollIn(0); return (
-                  <div ref={s.ref} style={{ ...s.style, textAlign: 'center', marginBottom: 48 }}>
-                    <div style={{ display: 'inline-block', padding: '14px 28px', borderRadius: 16, background: 'linear-gradient(135deg, #fef2f2, #fff1f2)', border: '1px solid #fecaca' }}>
-                      <p style={{ fontSize: 17, fontWeight: 700, color: '#dc2626', margin: 0, lineHeight: 1.5 }}>
-                        {t('painpoint.agitate')}
-                      </p>
-                    </div>
-                  </div>
-                ) })()}
-
-                {/* Arrow divider */}
-                <div style={{ textAlign: 'center', marginBottom: 40 }}>
-                  <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-                    <div style={{ width: 2, height: 32, background: 'linear-gradient(to bottom, #fecaca, #6366f1)' }} />
-                    <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#6366f1', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 16, fontWeight: 800 }}>↓</div>
-                  </div>
-                </div>
-
-                {/* Solve */}
-                {(() => { const s = useScrollIn(0); return (
-                  <div ref={s.ref} style={{ ...s.style, textAlign: 'center', padding: '40px 32px', background: '#fff', borderRadius: 24, border: '1px solid #e4e4e7', boxShadow: '0 4px 24px rgba(99,102,241,0.06)' }}>
-                    <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'linear-gradient(135deg, #6366f1, #a855f7)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: 24 }}>✨</div>
-                    <h3 style={{ fontSize: 'clamp(22px, 3vw, 28px)', fontWeight: 800, color: '#09090b', marginBottom: 12 }}>
+                  <div ref={s.ref} style={{ ...s.style, textAlign: 'center' }}>
+                    <p style={{ fontSize: 16, color: '#ef4444', fontWeight: 600, marginBottom: 32 }}>
+                      {t('painpoint.agitate')}
+                    </p>
+                    <h3 style={{ fontSize: 'clamp(24px, 3.5vw, 36px)', fontWeight: 800, color: '#fff', marginBottom: 14 }}>
                       {t('painpoint.solveTitle')}
                     </h3>
-                    <p style={{ fontSize: 16, color: '#52525b', maxWidth: 460, margin: '0 auto 28px', lineHeight: 1.7 }}>
+                    <p style={{ fontSize: 16, color: '#a1a1aa', maxWidth: 480, margin: '0 auto 32px', lineHeight: 1.7 }}>
                       {t('painpoint.solveText')}
                     </p>
-                    <Link href="/login" className="cta-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'linear-gradient(135deg, #6366f1, #7c3aed)', color: '#fff', padding: '14px 36px', borderRadius: 14, fontSize: 16, fontWeight: 700, textDecoration: 'none', boxShadow: '0 6px 28px rgba(99,102,241,0.4)', transition: 'transform 0.2s ease, box-shadow 0.2s ease' }}>
-                      {t('painpoint.cta')} →
+                    <Link href="/login" className="cta-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#fff', color: '#09090b', padding: '14px 36px', borderRadius: 14, fontSize: 16, fontWeight: 700, textDecoration: 'none', boxShadow: '0 4px 20px rgba(255,255,255,0.15)', transition: 'transform 0.2s ease, box-shadow 0.2s ease' }}>
+                      {t('painpoint.cta')}
                     </Link>
                   </div>
                 ) })()}
