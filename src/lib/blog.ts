@@ -56,6 +56,8 @@ export function getAllPosts(locale: string = 'de'): BlogPostMeta[] {
       } satisfies BlogPostMeta
     })
     .filter((p): p is NonNullable<typeof p> => p !== null)
+    // Only show articles on or after their publish date
+    .filter(p => !p.date || p.date <= new Date().toISOString().split('T')[0])
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
   return posts
