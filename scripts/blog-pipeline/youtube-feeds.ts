@@ -99,7 +99,7 @@ async function getExistingUrls(): Promise<Set<string>> {
     return new Set()
   }
 
-  return new Set((data || []).map(row => row.url))
+  return new Set((data || []).map((row: { url: string }) => row.url))
 }
 
 async function main() {
