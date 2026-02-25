@@ -68,11 +68,18 @@ export function parseVtt(vtt: string): string {
  * Falls back to yt-dlp for local usage.
  */
 export async function fetchTranscript(videoId: string): Promise<{ text: string; lang: string }> {
-  // Method 1: youtube-transcript-api (works from CI/datacenter IPs)
+  // Method 1: youtube-transcript-api v1.x (works from CI/datacenter IPs)
   for (const lang of ['en', 'de']) {
     try {
+      const pyScript = `
+from youtube_transcript_api import YouTubeTranscriptApi
+import json
+api = YouTubeTranscriptApi()
+t = api.fetch('${videoId}', languages=['${lang}'])
+print(json.dumps([s.text for s in t]))
+`.trim()
       const result = execSync(
-        `python -c "from youtube_transcript_api import YouTubeTranscriptApi; import json; t = YouTubeTranscriptApi.get_transcript('${videoId}', languages=['${lang}']); print(json.dumps([s['text'] for s in t]))"`,
+        `python -c "${pyScript.replace(/\n/g, '; ')}"`,
         { timeout: 30000, stdio: 'pipe' }
       ).toString().trim()
 
@@ -101,7 +108,7 @@ export async function fetchTranscript(videoId: string): Promise<{ text: string; 
       if (fs.existsSync(vttPath)) fs.unlinkSync(vttPath)
 
       execSync(
-        `python -m yt_dlp --write-auto-sub --sub-lang ${lang} --skip-download --sub-format vtt -o "${outTemplate}" "https://www.youtube.com/watch?v=${videoId}"`,
+        `python -m yt_dlp --write-auto-sub --sub-lang ${lang} --skip-download --sub-format vtt --js-runtimes nodejs -o "${outTemplate}" "https://www.youtube.com/watch?v=${videoId}"`,
         { timeout: 30000, stdio: 'pipe' }
       )
 
