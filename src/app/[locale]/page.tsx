@@ -293,43 +293,56 @@ const FLOATING_POSTS = [
   { Icon: XIcon,      color: '#000',    user: '@trattoria_bella',      likes: '1.203', comments: '89',  side: 'right' as const, topPct: 48 },
 ]
 
-function FloatingPosts() {
+function FloatingPosts({ scrollY }: { scrollY: number }) {
   const wrapRef = useRef<HTMLDivElement>(null)
-  const [visible, setVisible] = useState(false)
+  const [sectionTop, setSectionTop] = useState(0)
+  const [sectionH, setSectionH] = useState(1)
   useEffect(() => {
-    if (!wrapRef.current) return
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect() } }, { threshold: 0.05 })
-    obs.observe(wrapRef.current)
-    return () => obs.disconnect()
+    const update = () => {
+      if (!wrapRef.current) return
+      setSectionTop(wrapRef.current.offsetTop)
+      setSectionH(wrapRef.current.offsetHeight || 1)
+    }
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
   }, [])
+
+  // How far into this section we've scrolled (0 = top enters viewport, 1 = bottom leaves)
+  const relScroll = Math.max(0, scrollY - sectionTop + 600) / (sectionH + 600)
+  const progress = Math.max(0, Math.min(1, relScroll))
 
   return (
     <div ref={wrapRef} className="floating-posts" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden', zIndex: 1 }}>
       {FLOATING_POSTS.map((p, i) => {
         const isLeft = p.side === 'left'
+        // Each card has its own speed/offset for variety
+        const speed = 0.6 + i * 0.15
+        const cardProgress = Math.max(0, Math.min(1, (progress - i * 0.08) * speed * 2.5))
+        // Slide in from edge + parallax vertical drift
+        const slideX = isLeft
+          ? -100 + cardProgress * 70   // -100% → -30%
+          : 100 - cardProgress * 70    // 100% → 30%
+        const driftY = (progress - 0.5) * (40 + i * 15) * (i % 2 === 0 ? -1 : 1)
+        const rot = (isLeft ? -6 : 6) + cardProgress * (isLeft ? 3 : -3)
         return (
           <div key={i} style={{
             position: 'absolute',
             top: `${p.topPct}%`,
             [p.side]: 0,
             width: 200,
-            opacity: visible ? 0.85 : 0,
-            transform: visible
-              ? `translateX(${isLeft ? '-30%' : '30%'}) rotate(${isLeft ? '-4' : '4'}deg)`
-              : `translateX(${isLeft ? '-110%' : '110%'}) rotate(${isLeft ? '-8' : '8'}deg)`,
-            transition: `opacity 0.8s cubic-bezier(0.16,1,0.3,1) ${300 + i * 200}ms, transform 0.8s cubic-bezier(0.16,1,0.3,1) ${300 + i * 200}ms`,
+            opacity: Math.min(cardProgress * 2, 0.85),
+            transform: `translateX(${slideX}%) translateY(${driftY}px) rotate(${rot}deg)`,
+            willChange: 'transform, opacity',
           }}>
             <div style={{ background: '#fff', borderRadius: 16, border: '1px solid #e4e4e7', boxShadow: '0 8px 32px rgba(0,0,0,0.08)', overflow: 'hidden' }}>
-              {/* Header */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 10px 6px' }}>
                 <span style={{ color: p.color, display: 'flex' }}><p.Icon /></span>
                 <span style={{ fontSize: 10, fontWeight: 700, color: '#09090b', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.user}</span>
               </div>
-              {/* Image */}
               <div style={{ aspectRatio: '1', overflow: 'hidden' }}>
                 <img src="/showcase/food.png" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
-              {/* Engagement */}
               <div style={{ padding: '6px 10px 8px', display: 'flex', gap: 10 }}>
                 <span style={{ fontSize: 10, fontWeight: 600 }}>❤️ {p.likes}</span>
                 <span style={{ fontSize: 10, color: '#71717a' }}>💬 {p.comments}</span>
@@ -982,7 +995,7 @@ export default function LandingPage() {
 
         {/* ── AUTO-SCHEDULER + FLOATING POSTS ──────────────────────────── */}
         <div style={{ position: 'relative' }}>
-          <FloatingPosts />
+          <FloatingPosts scrollY={scrollY} />
           <CalendarSection translations={calendarTranslations} />
         </div>
 
