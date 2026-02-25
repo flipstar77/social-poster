@@ -231,37 +231,43 @@
           "name": "Marco R.",
           "role": "Inhaber, Trattoria Bella",
           "text": "Ich hab früher 3 Stunden pro Woche für Instagram gebraucht. Jetzt mache ich ein Foto vom Tagesgericht und FlowingPost macht den Rest. Game changer.",
-          "stars": 5
+          "stars": 5,
+          "image": "/testimonials/marco.jpg"
         },
         {
           "name": "Lisa K.",
           "role": "Café-Besitzerin",
           "text": "Endlich bin ich regelmäßig auf Social Media präsent, ohne dass es Arbeit ist. Meine Gäste sagen mir mittlerweile: 'Ich hab euch auf Instagram gefunden!'",
-          "stars": 5
+          "stars": 5,
+          "image": "/testimonials/lisa.jpg"
         },
         {
           "name": "Yusuf A.",
           "role": "Cocktailbar-Betreiber",
           "text": "Für mich als Barkeeper ist es perfekt — abends schnell ein Foto vom Drink, und morgens ist es auf 5 Plattformen. Brutal effizient.",
-          "stars": 5
+          "stars": 5,
+          "image": "/testimonials/yusuf.jpg"
         },
         {
           "name": "Sandra M.",
           "role": "Inhaberin, Pizzeria Napoli",
           "text": "Mein Social Media war vorher komplett tot. Seit FlowingPost poste ich 5x pro Woche — und die Reservierungen über Instagram haben sich verdoppelt.",
-          "stars": 5
+          "stars": 5,
+          "image": "/testimonials/sandra.jpg"
         },
         {
           "name": "Thomas W.",
           "role": "Gastro-Kette, 3 Standorte",
           "text": "Wir managen 3 Restaurants mit einem Upload. Die KI schreibt für jedes Lokal passende Captions. Spart uns locker 8 Stunden pro Woche.",
-          "stars": 5
+          "stars": 5,
+          "image": "/testimonials/thomas.jpg"
         },
         {
           "name": "Elena D.",
           "role": "Brunch-Café Betreiberin",
           "text": "Ich bin keine Social Media Expertin — aber mit FlowingPost sieht mein Feed aus wie von einer Agentur. Und das für einen Bruchteil der Kosten.",
-          "stars": 5
+          "stars": 5,
+          "image": "/testimonials/elena.jpg"
         }
       ]
     },

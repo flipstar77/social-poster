@@ -750,7 +750,7 @@ export default function LandingPage() {
           {/* Scrolling testimonial ticker */}
           <div style={{ overflow: 'hidden', padding: '4px 0' }}>
             <div className="testimonial-track" style={{ display: 'flex', gap: 20, width: 'max-content' }}>
-              {[...(t.raw('social.testimonials') as Array<{ name: string; role: string; text: string; stars: number }>), ...(t.raw('social.testimonials') as Array<{ name: string; role: string; text: string; stars: number }>)].map((item, i) => (
+              {[...(t.raw('social.testimonials') as Array<{ name: string; role: string; text: string; stars: number; image?: string }>), ...(t.raw('social.testimonials') as Array<{ name: string; role: string; text: string; stars: number; image?: string }>)].map((item, i) => (
                 <div key={i} style={{ width: 340, flexShrink: 0, background: '#fff', border: '1px solid #e4e4e7', borderRadius: 20, padding: 28, boxShadow: '0 2px 20px rgba(0,0,0,0.04)', transition: 'box-shadow 0.3s ease, border-color 0.3s ease' }}>
                   <div style={{ display: 'flex', gap: 4, marginBottom: 14 }}>
                     {Array.from({ length: item.stars }).map((_, si) => (
@@ -761,9 +761,13 @@ export default function LandingPage() {
                     &ldquo;{item.text}&rdquo;
                   </p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#6366f1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, color: '#fff' }}>
-                      {item.name.charAt(0)}
-                    </div>
+                    {item.image ? (
+                      <img src={item.image} alt={item.name} style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover' }} />
+                    ) : (
+                      <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#6366f1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, color: '#fff' }}>
+                        {item.name.charAt(0)}
+                      </div>
+                    )}
                     <div>
                       <div style={{ fontSize: 14, fontWeight: 600, color: '#09090b' }}>{item.name}</div>
                       <div style={{ fontSize: 12, color: '#a1a1aa' }}>{item.role}</div>

@@ -231,37 +231,43 @@
           "name": "Marco R.",
           "role": "Owner, Trattoria Bella",
           "text": "I used to spend 3 hours a week on Instagram. Now I take a photo of the daily special and FlowingPost does the rest. Game changer.",
-          "stars": 5
+          "stars": 5,
+          "image": "/testimonials/marco.jpg"
         },
         {
           "name": "Lisa K.",
           "role": "Café owner",
           "text": "Finally I'm consistently on social media without it feeling like work. My guests now tell me: 'I found you on Instagram!'",
-          "stars": 5
+          "stars": 5,
+          "image": "/testimonials/lisa.jpg"
         },
         {
           "name": "Yusuf A.",
           "role": "Cocktail bar operator",
           "text": "Perfect for me as a bartender — quick photo of a drink in the evening, and by morning it's on 5 platforms. Brutally efficient.",
-          "stars": 5
+          "stars": 5,
+          "image": "/testimonials/yusuf.jpg"
         },
         {
           "name": "Sandra M.",
           "role": "Owner, Pizzeria Napoli",
           "text": "My social media was completely dead before. Since FlowingPost I post 5x per week — and Instagram reservations have doubled.",
-          "stars": 5
+          "stars": 5,
+          "image": "/testimonials/sandra.jpg"
         },
         {
           "name": "Thomas W.",
           "role": "Restaurant chain, 3 locations",
           "text": "We manage 3 restaurants with one upload. The AI writes fitting captions for each location. Saves us easily 8 hours per week.",
-          "stars": 5
+          "stars": 5,
+          "image": "/testimonials/thomas.jpg"
         },
         {
           "name": "Elena D.",
           "role": "Brunch café owner",
           "text": "I'm no social media expert — but with FlowingPost my feed looks like it's from an agency. And at a fraction of the cost.",
-          "stars": 5
+          "stars": 5,
+          "image": "/testimonials/elena.jpg"
         }
       ]
     },
