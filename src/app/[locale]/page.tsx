@@ -502,7 +502,7 @@ function StatsStrip({ stats }: { stats: StatItem[] }) {
     return () => obs.disconnect()
   }, [])
   return (
-    <div ref={ref} style={{ background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #a855f7 100%)', padding: '116px 24px 56px', clipPath: 'polygon(0 60px, 100% 0, 100% 100%, 0 100%)', marginTop: -60, position: 'relative', zIndex: 2 }}>
+    <div ref={ref} style={{ background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #a855f7 100%)', padding: '56px 24px' }}>
       <div style={{ maxWidth: 900, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 40 }}>
         {stats.map((s, i) => <StatCount key={i} stat={s} visible={visible} delay={i * 120} />)}
       </div>
@@ -908,11 +908,14 @@ export default function LandingPage() {
         {/* ── TICKER ──────────────────────────────────────────────────────── */}
         <Ticker items={PILL_ITEMS} />
 
+        {/* Gradient bridge: white → dark */}
+        <div style={{ height: 160, background: 'linear-gradient(to bottom, #ffffff 0%, #3f3f46 50%, #09090b 100%)' }} />
+
         {/* ── PAIN POINT (Numbers-driven) ────────────────────────────────── */}
         {(() => {
           const stats = t.raw('painpoint.stats') as Array<{ number: string; text: string; subtext: string }>
           return (
-            <section style={{ background: '#09090b', color: '#fff', padding: '140px 24px 80px', clipPath: 'polygon(0 60px, 100% 0, 100% 100%, 0 100%)', marginTop: -60, position: 'relative', zIndex: 1 }}>
+            <section style={{ background: '#09090b', color: '#fff', padding: '80px 24px', overflow: 'hidden' }}>
               <div style={{ maxWidth: 960, margin: '0 auto' }}>
                 {/* Section label */}
                 {(() => { const s = useScrollIn(0); return (
