@@ -351,6 +351,13 @@ async function main() {
   console.log(`\n🎉 Pipeline complete! ${generated}/${keywords.length} articles generated.`)
   console.log(`   📁 Files: content/blog/`)
 
+  // Step 4: Add internal links across all articles
+  if (generated > 0) {
+    console.log('\n🔗 Adding internal links...')
+    const { processAllArticles } = await import('./add-internal-links')
+    await processAllArticles()
+  }
+
   // Stats
   const { count: totalArticles } = await supabase
     .from('generated_articles')
