@@ -164,8 +164,8 @@ export async function processVideo(input: string): Promise<boolean> {
       rating: 5,
     }, { onConflict: 'source_id' })
 
-    const { error } = await getSupabase()
-      .from('scraped_articles')
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await (getSupabase().from('scraped_articles') as any)
       .upsert({
         source_id: 'youtube-transcripts',
         url,
