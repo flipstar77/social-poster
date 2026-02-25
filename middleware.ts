@@ -25,7 +25,6 @@ function extractLocale(pathname: string): string {
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
-
   // 1) Run next-intl middleware first (locale detection, rewrites, redirects)
   const intlResponse = intlMiddleware(request)
 
