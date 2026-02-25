@@ -243,6 +243,44 @@ interface CalendarTranslations {
   calendarAutoPosted: string
 }
 
+function BenefitsList({ benefits, cta, listRef, listStyle }: { benefits: CalendarBenefit[]; cta: string; listRef: React.RefObject<HTMLDivElement | null>; listStyle: React.CSSProperties }) {
+  const benefitsRef = useRef<HTMLDivElement>(null)
+  const [benefitsVisible, setBenefitsVisible] = useState(false)
+  useEffect(() => {
+    if (!benefitsRef.current) return
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setBenefitsVisible(true); obs.disconnect() } }, { threshold: 0.3 })
+    obs.observe(benefitsRef.current)
+    return () => obs.disconnect()
+  }, [])
+
+  return (
+    <div ref={listRef} style={{ ...listStyle, display: 'flex', flexDirection: 'column', gap: 28 }}>
+      <div ref={benefitsRef}>
+        {benefits.map((b, i) => (
+          <div key={b.title} style={{ display: 'flex', gap: 16, alignItems: 'flex-start', marginBottom: 28 }}>
+            <div style={{
+              width: 44, height: 44, borderRadius: 14, flexShrink: 0,
+              background: benefitsVisible ? '#22c55e' : '#e4e4e7',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 18, color: '#fff', fontWeight: 800,
+              opacity: benefitsVisible ? 1 : 0,
+              transform: benefitsVisible ? 'scale(1)' : 'scale(0.5)',
+              transition: `background 0.4s ease ${200 + i * 200}ms, opacity 0.4s ease ${200 + i * 200}ms, transform 0.5s cubic-bezier(0.34,1.56,0.64,1) ${200 + i * 200}ms`,
+            }}>✓</div>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: 16, color: '#09090b', marginBottom: 4 }}>{b.title}</div>
+              <div style={{ fontSize: 14, color: '#71717a', lineHeight: 1.65 }}>{b.desc}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#6366f1', color: '#fff', padding: '13px 28px', borderRadius: 12, fontSize: 15, fontWeight: 700, textDecoration: 'none', alignSelf: 'flex-start', boxShadow: '0 4px 20px rgba(99,102,241,0.35)' }}>
+        {cta}
+      </Link>
+    </div>
+  )
+}
+
 function CalendarSection({ translations }: { translations: CalendarTranslations }) {
   const { ref: headRef, style: headStyle } = useScrollIn(0)
   const { ref: calRef,  style: calStyle  } = useScrollIn(150)
@@ -332,20 +370,7 @@ function CalendarSection({ translations }: { translations: CalendarTranslations 
           </div>
 
           {/* Benefits */}
-          <div ref={listRef} style={{ ...listStyle, display: 'flex', flexDirection: 'column', gap: 28 }}>
-            {translations.benefits.map(b => (
-              <div key={b.title} style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
-                <div style={{ width: 44, height: 44, borderRadius: 14, background: 'linear-gradient(135deg,#ede9fe,#fce7f3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>{b.icon}</div>
-                <div>
-                  <div style={{ fontWeight: 700, fontSize: 16, color: '#09090b', marginBottom: 4 }}>{b.title}</div>
-                  <div style={{ fontSize: 14, color: '#71717a', lineHeight: 1.65 }}>{b.desc}</div>
-                </div>
-              </div>
-            ))}
-            <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#6366f1', color: '#fff', padding: '13px 28px', borderRadius: 12, fontSize: 15, fontWeight: 700, textDecoration: 'none', alignSelf: 'flex-start', boxShadow: '0 4px 20px rgba(99,102,241,0.35)' }}>
-              {translations.cta}
-            </Link>
-          </div>
+          <BenefitsList benefits={translations.benefits} cta={translations.cta} listRef={listRef} listStyle={listStyle} />
         </div>
       </div>
     </section>
@@ -460,8 +485,8 @@ function PhoneScreen({ step, progress, translations }: { step: number; progress:
   if (step === 1) {
     // Captions slide in one by one
     return (
-      <div style={{ flex: 1, padding: 14, display: 'flex', flexDirection: 'column', gap: 8, overflow: 'hidden' }}>
-        <div style={{ fontSize: 10, fontWeight: 700, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2, opacity: Math.min(1, sub * 4) }}>{translations.variants}</div>
+      <div style={{ flex: 1, padding: 14, display: 'flex', flexDirection: 'column', gap: 6, overflowY: 'auto' }}>
+        <div style={{ fontSize: 10, fontWeight: 700, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2, flexShrink: 0, opacity: Math.min(1, sub * 4) }}>{translations.variants}</div>
         {translations.variantTexts.map((text, i) => {
           const sel = i === 0
           const cardProgress = Math.max(0, Math.min(1, (sub - i * 0.25) * 4))
@@ -470,12 +495,11 @@ function PhoneScreen({ step, progress, translations }: { step: number; progress:
               background: sel ? '#eef2ff' : '#f8fafc',
               border: `1.5px solid ${sel ? '#6366f1' : '#e4e4e7'}`,
               borderRadius: 10, padding: '8px 10px',
-              maxHeight: sel ? 120 : 52, overflow: 'hidden', flexShrink: 0, position: 'relative',
+              flexShrink: 0,
               opacity: cardProgress,
               transform: `translateX(${(1 - cardProgress) * 30}px)`,
             }}>
               <div style={{ fontSize: 10, color: sel ? '#3730a3' : '#71717a', lineHeight: 1.5, whiteSpace: 'pre-line' }}>{text}</div>
-              {!sel && <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 20, background: 'linear-gradient(transparent, #f8fafc)' }} />}
             </div>
           )
         })}
@@ -497,7 +521,7 @@ function PhoneScreen({ step, progress, translations }: { step: number; progress:
     <div style={{ flex: 1, padding: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
       <div style={{ fontSize: 10, fontWeight: 700, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>{translations.platforms}</div>
       {platforms.map((p, i) => {
-        const itemProgress = Math.max(0, Math.min(1, (sub - i * 0.08) * 5))
+        const itemProgress = Math.max(0, Math.min(1, (sub - i * 0.05) * 6))
         return (
           <div key={p.name} style={{
             display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px',
