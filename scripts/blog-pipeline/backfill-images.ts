@@ -5,7 +5,8 @@
  * searches Pexels based on article category/title, and updates frontmatter.
  *
  * Usage:
- *   npx tsx scripts/blog-pipeline/backfill-images.ts           # Update all
+ *   npx tsx scripts/blog-pipeline/backfill-images.ts           # Update missing
+ *   npx tsx scripts/blog-pipeline/backfill-images.ts --force    # Re-fetch all
  *   npx tsx scripts/blog-pipeline/backfill-images.ts --dry-run  # Preview only
  */
 
@@ -21,9 +22,10 @@ const BLOG_DIR = path.join(process.cwd(), 'content', 'blog')
 
 async function main() {
   const dryRun = process.argv.includes('--dry-run')
+  const force = process.argv.includes('--force')
 
   const files = fs.readdirSync(BLOG_DIR).filter(f => f.endsWith('.mdx'))
-  console.log(`Found ${files.length} articles\n`)
+  console.log(`Found ${files.length} articles${force ? ' (force re-fetch)' : ''}\n`)
 
   let updated = 0
 
@@ -32,8 +34,8 @@ async function main() {
     const raw = fs.readFileSync(filePath, 'utf-8')
     const { data, content } = matter(raw)
 
-    // Skip if already has a Pexels URL
-    if (data.image && data.image.startsWith('http')) {
+    // Skip if already has a Pexels URL (unless --force)
+    if (!force && data.image && data.image.startsWith('http')) {
       console.log(`  ✓ ${filename} — already has Pexels image`)
       continue
     }

@@ -49,12 +49,13 @@ export interface BlogImage {
 /**
  * Search Pexels for photos matching a query.
  */
-async function searchPhotos(query: string, options: { perPage?: number; orientation?: 'landscape' | 'portrait' | 'square' } = {}): Promise<PexelsPhoto[]> {
-  const { perPage = 5, orientation = 'landscape' } = options
+async function searchPhotos(query: string, options: { perPage?: number; orientation?: 'landscape' | 'portrait' | 'square'; page?: number } = {}): Promise<PexelsPhoto[]> {
+  const { perPage = 5, orientation = 'landscape', page = 1 } = options
   const params = new URLSearchParams({
     query,
     per_page: String(perPage),
     orientation,
+    page: String(page),
   })
 
   const res = await fetch(`https://api.pexels.com/v1/search?${params}`, {
@@ -71,71 +72,85 @@ async function searchPhotos(query: string, options: { perPage?: number; orientat
 
 /**
  * Build search queries from article keyword + category.
- * Tries specific query first, then falls back to broader terms.
+ * Each article gets unique queries based on its specific keyword,
+ * with category-based fallbacks.
  */
 function buildSearchQueries(keyword: string, category: string): string[] {
   const queries: string[] = []
 
-  // Category-specific food/restaurant queries
-  const categoryMap: Record<string, string[]> = {
-    'Instagram': ['restaurant food photography', 'chef cooking kitchen', 'restaurant social media'],
-    'TikTok': ['restaurant kitchen cooking', 'food preparation chef', 'cafe interior modern'],
-    'Google Maps': ['restaurant exterior storefront', 'restaurant interior dining', 'local restaurant street'],
-    'SEO': ['restaurant website laptop', 'local business marketing', 'restaurant digital marketing'],
-    'Strategie': ['restaurant owner planning', 'cafe business meeting', 'restaurant team working'],
+  // Primary: extract meaningful words from the keyword itself
+  const stopWords = new Set(['für', 'der', 'die', 'das', 'ein', 'eine', 'und', 'oder', 'mit', 'von', 'zu', 'im', 'in', 'am', 'an', 'auf', 'so', 'wie', 'ohne', 'pro', 'woche', 'dein', 'restaurant', 'restaurants'])
+  const kwWords = keyword.toLowerCase()
+    .replace(/[^a-zäöüß\s]/g, '')
+    .split(/\s+/)
+    .filter(w => w.length > 2 && !stopWords.has(w))
+
+  // Build a keyword-specific restaurant query
+  if (kwWords.length > 0) {
+    queries.push(`restaurant ${kwWords.slice(0, 3).join(' ')}`)
   }
 
-  // Primary: keyword-inspired (gastro-focused)
-  const kwLower = keyword.toLowerCase()
-  if (kwLower.includes('instagram') || kwLower.includes('social media')) {
-    queries.push('restaurant food social media photography')
-  } else if (kwLower.includes('google') || kwLower.includes('maps') || kwLower.includes('bewertung')) {
-    queries.push('restaurant storefront sign')
-  } else if (kwLower.includes('seo') || kwLower.includes('website')) {
-    queries.push('restaurant website tablet')
-  } else if (kwLower.includes('tiktok') || kwLower.includes('video')) {
-    queries.push('chef cooking restaurant kitchen')
-  } else {
-    queries.push('restaurant food dining')
+  // Category-specific queries (diverse per category)
+  const categoryQueries: Record<string, string[]> = {
+    'Instagram': ['restaurant phone food photography', 'social media cafe table', 'food photo smartphone'],
+    'TikTok': ['chef cooking kitchen video', 'restaurant kitchen action', 'food preparation behind scenes'],
+    'Google Maps': ['restaurant entrance exterior sign', 'google maps phone local business', 'restaurant storefront street'],
+    'SEO': ['restaurant laptop digital marketing', 'local business website search', 'cafe owner working computer'],
+    'Strategie': ['restaurant owner planning table', 'cafe business strategy meeting', 'food business team working'],
   }
 
-  // Secondary: category-based fallbacks
-  const catQueries = categoryMap[category] || categoryMap['Strategie']
+  const catQueries = categoryQueries[category] || categoryQueries['Strategie']
   queries.push(...catQueries)
+
+  // Generic fallback
+  queries.push('restaurant dining food')
 
   return queries
 }
 
+// Track used photo IDs across a single run to avoid duplicates
+const usedPhotoIds = new Set<number>()
+
 /**
  * Fetch a hero image for a blog article.
- * Tries multiple search queries until a good result is found.
+ * Tries multiple search queries and avoids previously used photos.
  */
-export async function fetchHeroImage(keyword: string, category: string): Promise<BlogImage | null> {
+export async function fetchHeroImage(keyword: string, category: string, excludeIds: number[] = []): Promise<BlogImage | null> {
   if (!PEXELS_API_KEY) {
     console.log('   [pexels] No API key — skipping image fetch')
     return null
   }
 
+  // Merge exclusions: both explicit + session-tracked
+  const allExcluded = new Set([...usedPhotoIds, ...excludeIds])
   const queries = buildSearchQueries(keyword, category)
 
   for (const query of queries) {
-    try {
-      const photos = await searchPhotos(query, { perPage: 3, orientation: 'landscape' })
-      if (photos.length === 0) continue
+    // Try multiple pages to find unique images
+    for (const page of [1, 2]) {
+      try {
+        const photos = await searchPhotos(query, { perPage: 5, orientation: 'landscape', page })
+        if (photos.length === 0) continue
 
-      // Pick the first landscape-ish photo (width > height)
-      const photo = photos.find(p => p.width > p.height) || photos[0]
+        // Pick the first landscape photo not already used
+        const photo = photos.find(p => p.width > p.height && !allExcluded.has(p.id))
+          || photos.find(p => !allExcluded.has(p.id))
 
-      return {
-        url: photo.src.large2x,
-        urlMedium: photo.src.medium,
-        urlLandscape: photo.src.landscape,
-        photographer: photo.photographer,
-        photographerUrl: photo.photographer_url,
-        pexelsUrl: photo.url,
+        if (!photo) continue
+
+        usedPhotoIds.add(photo.id)
+
+        return {
+          url: photo.src.large2x,
+          urlMedium: photo.src.medium,
+          urlLandscape: photo.src.landscape,
+          photographer: photo.photographer,
+          photographerUrl: photo.photographer_url,
+          pexelsUrl: photo.url,
+        }
+      } catch (err) {
+        console.log(`   [pexels] Search "${query}" p${page} failed: ${(err as Error).message}`)
       }
-    } catch (err) {
-      console.log(`   [pexels] Search "${query}" failed: ${(err as Error).message}`)
     }
   }
 
