@@ -22,10 +22,19 @@ const GLOBAL_CSS = `
 .hero-fadeup { animation: fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) both; }
 .hero-fadeup-2 { animation: fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) 0.15s both; }
 .hero-fadeup-3 { animation: fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) 0.3s both; }
+@keyframes heroImageCrossfade {
+  0%, 42% { opacity: 1; }
+  50%, 92% { opacity: 0; }
+  100% { opacity: 1; }
+}
+.hero-img-1 { animation: heroImageCrossfade 10s ease-in-out infinite; }
+.hero-img-2 { animation: heroImageCrossfade 10s ease-in-out infinite; animation-delay: -5s; }
 @media (max-width: 768px) {
   .showcase-grid { grid-template-columns: 1fr !important; }
   .showcase-phone { display: none !important; }
   .pricing-grid { grid-template-columns: 1fr !important; }
+  .hero-split { grid-template-columns: 1fr !important; }
+  .hero-image-wrap { display: none !important; }
 }
 @media (hover: hover) {
   .cta-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(99,102,241,0.5) !important; }
@@ -653,6 +662,7 @@ export default function LandingPage() {
             </div>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
               <LanguageSwitcher />
+              <Link href="/blog" style={{ fontSize: 14, color: '#71717a', textDecoration: 'none', padding: '8px 14px' }}>Blog</Link>
               <Link href="/login" style={{ fontSize: 14, color: '#71717a', textDecoration: 'none', padding: '8px 14px' }}>{t('nav.login')}</Link>
               <Link href="/login" style={{ background: '#6366f1', color: 'white', padding: '9px 20px', borderRadius: 10, fontSize: 14, fontWeight: 600, textDecoration: 'none' }}>
                 {t('nav.cta')}
@@ -674,27 +684,35 @@ export default function LandingPage() {
           }}>
             <ParallaxBlobs y={scrollY} />
           </div>
-          {/* Hero content — floats upward on scroll */}
-          <div style={{ maxWidth: 1080, margin: '0 auto', padding: 'clamp(72px, 12vw, 112px) 24px clamp(64px, 10vw, 96px)', textAlign: 'center', position: 'relative', transform: `translateY(${heroTextY}px)`, willChange: 'transform' }}>
-            <div className="hero-fadeup" style={{ display: 'inline-block', padding: '6px 18px', borderRadius: 999, background: 'linear-gradient(135deg, #eef2ff, #fdf4ff)', border: '1px solid #c7d2fe', color: '#6366f1', fontSize: 13, fontWeight: 700, marginBottom: 28, letterSpacing: '0.02em' }}>
-              {t('hero.badge')}
-            </div>
-            <h1 className="hero-fadeup-2" style={{ fontSize: 'clamp(36px, 7vw, 72px)', fontWeight: 800, lineHeight: 1.08, marginBottom: 24, letterSpacing: '-2px', color: '#09090b' }}>
-              {t('hero.title1')}<br />
-              <span style={{ color: '#6366f1' }}>
-                {t('hero.title2')}
-              </span>
-            </h1>
-            <p className="hero-fadeup-3" style={{ fontSize: 'clamp(16px, 2vw, 19px)', color: '#52525b', maxWidth: 560, margin: '0 auto 32px', lineHeight: 1.75 }}>
-              {t('hero.subtitle')}
-            </p>
-            <div className="hero-fadeup-3" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
-              <Link href="/login" className="cta-primary" style={{ background: 'linear-gradient(135deg, #6366f1, #7c3aed)', color: 'white', padding: '16px 40px', borderRadius: 14, fontSize: 17, fontWeight: 700, textDecoration: 'none', boxShadow: '0 6px 28px rgba(99,102,241,0.45)', transition: 'transform 0.2s ease, box-shadow 0.2s ease' }}>
-                {t('hero.ctaPrimary')}
-              </Link>
-              <p style={{ fontSize: 14, color: '#71717a', margin: 0 }}>
-                ⭐⭐⭐⭐⭐ {t('hero.miniProof')}
+          {/* Hero content — split layout */}
+          <div className="hero-split" style={{ maxWidth: 1080, margin: '0 auto', padding: 'clamp(56px, 10vw, 96px) 24px', position: 'relative', transform: `translateY(${heroTextY}px)`, willChange: 'transform', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'center' }}>
+            {/* Left: text */}
+            <div>
+              <div className="hero-fadeup" style={{ display: 'inline-block', padding: '6px 18px', borderRadius: 999, background: 'linear-gradient(135deg, #eef2ff, #fdf4ff)', border: '1px solid #c7d2fe', color: '#6366f1', fontSize: 13, fontWeight: 700, marginBottom: 28, letterSpacing: '0.02em' }}>
+                {t('hero.badge')}
+              </div>
+              <h1 className="hero-fadeup-2" style={{ fontSize: 'clamp(32px, 5vw, 60px)', fontWeight: 800, lineHeight: 1.08, marginBottom: 24, letterSpacing: '-1.5px', color: '#09090b' }}>
+                {t('hero.title1')}<br />
+                <span style={{ color: '#6366f1' }}>
+                  {t('hero.title2')}
+                </span>
+              </h1>
+              <p className="hero-fadeup-3" style={{ fontSize: 'clamp(15px, 1.8vw, 18px)', color: '#52525b', maxWidth: 480, margin: '0 0 32px', lineHeight: 1.75 }}>
+                {t('hero.subtitle')}
               </p>
+              <div className="hero-fadeup-3" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 16 }}>
+                <Link href="/login" className="cta-primary" style={{ background: 'linear-gradient(135deg, #6366f1, #7c3aed)', color: 'white', padding: '16px 40px', borderRadius: 14, fontSize: 17, fontWeight: 700, textDecoration: 'none', boxShadow: '0 6px 28px rgba(99,102,241,0.45)', transition: 'transform 0.2s ease, box-shadow 0.2s ease' }}>
+                  {t('hero.ctaPrimary')}
+                </Link>
+                <p style={{ fontSize: 14, color: '#71717a', margin: 0 }}>
+                  ⭐⭐⭐⭐⭐ {t('hero.miniProof')}
+                </p>
+              </div>
+            </div>
+            {/* Right: crossfading hero images */}
+            <div className="hero-image-wrap hero-fadeup-3" style={{ position: 'relative', aspectRatio: '4/3', borderRadius: 24, overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.12)' }}>
+              <img className="hero-img-1" src="/hero/gastronom.png" alt="Gastronom am Handy" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+              <img className="hero-img-2" src="/hero/wine.png" alt="Gastronomin mit Tablet" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
           </div>
         </section>
