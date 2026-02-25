@@ -190,11 +190,9 @@
       "badge": "For Restaurants · Cafés · Bars",
       "title1": "Social media on autopilot.",
       "title2": "While you cook.",
-      "subtitle": "Upload a photo, done. FlowingPost writes the caption and posts automatically —",
-      "subtitleBold": "to up to 9 platforms at once.",
-      "upload": "1 Upload",
+      "subtitle": "Never spend hours writing captions again. Upload a photo — AI writes, schedules and posts automatically to up to 9 platforms.",
       "ctaPrimary": "Try it free →",
-      "ctaSecondary": "From €39/month"
+      "miniProof": "Already used by 50+ restaurant owners"
     },
     "ticker": [
       "2–3 hours / week saved",
@@ -212,6 +210,43 @@
       "Available worldwide",
       "Posted in 30 seconds"
     ],
+    "painpoint": {
+      "title": "Sound familiar?",
+      "problems": [
+        { "icon": "😩", "text": "You keep forgetting to post — and when you do, it takes forever" },
+        { "icon": "📉", "text": "Your competitors post daily — you only post when you remember" },
+        { "icon": "⏰", "text": "2–4 hours per week wasted on social media" },
+        { "icon": "💸", "text": "An agency? Too expensive. DIY? No time." }
+      ],
+      "agitate": "Every week without posts = lost guests to the competition.",
+      "solveTitle": "There's an easier way.",
+      "solveText": "Upload a photo, done. FlowingPost writes the caption, schedules the post and publishes automatically to all your platforms.",
+      "cta": "Try it free →"
+    },
+    "social": {
+      "title": "Trusted by restaurant owners",
+      "subtitle": "What our beta testers say",
+      "testimonials": [
+        {
+          "name": "Marco R.",
+          "role": "Owner, Trattoria Bella",
+          "text": "I used to spend 3 hours a week on Instagram. Now I take a photo of the daily special and FlowingPost does the rest. Game changer.",
+          "stars": 5
+        },
+        {
+          "name": "Lisa K.",
+          "role": "Café owner",
+          "text": "Finally I'm consistently on social media without it feeling like work. My guests now tell me: 'I found you on Instagram!'",
+          "stars": 5
+        },
+        {
+          "name": "Yusuf A.",
+          "role": "Cocktail bar operator",
+          "text": "Perfect for me as a bartender — quick photo of a drink in the evening, and by morning it's on 5 platforms. Brutally efficient.",
+          "stars": 5
+        }
+      ]
+    },
     "stats": [
       { "suffix": "h", "label": "saved per week" },
       { "suffix": "", "label": "platforms at once" },
@@ -520,5 +555,15 @@
       "compare": "Compare"
     },
     "footerLink": "Compare"
+  },
+  "voiceFaq": {
+    "tooltip": "Ask a question by voice",
+    "listening": "Listening...",
+    "thinking": "Thinking...",
+    "speaking": "Playing answer...",
+    "error": "Could not understand. Please try again.",
+    "unsupported": "Voice input is not supported in this browser.",
+    "close": "Close",
+    "tapToAsk": "Tap the mic to ask about FlowingPost"
   }
 }

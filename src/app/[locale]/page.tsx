@@ -245,7 +245,7 @@ function CalendarSection({ translations }: { translations: CalendarTranslations 
           </div>
           <h2 style={{ fontSize: 'clamp(28px,4vw,42px)', fontWeight: 800, color: '#09090b', lineHeight: 1.15, marginBottom: 14 }}>
             {translations.title1}<br />
-            <span style={{ background: 'linear-gradient(135deg,#6366f1,#a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+            <span style={{ color: '#6366f1' }}>
               {translations.title2}
             </span>
           </h2>
@@ -458,7 +458,7 @@ function StickyShowcase({ scrollY, vh, steps, label, title1, title2, phoneTransl
             <div style={{ fontSize: 12, fontWeight: 700, color: '#a1a1aa', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>{label}</div>
             <h2 style={{ fontSize: 'clamp(28px, 4vw, 52px)', fontWeight: 800, color: '#09090b', lineHeight: 1.1, marginBottom: 40 }}>
               {title1}<br />
-              <span style={{ background: `linear-gradient(135deg, ${stepColor}, #a855f7)`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', transition: 'all 0.5s ease' }}>
+              <span style={{ color: stepColor, transition: 'color 0.5s ease' }}>
                 {title2}
               </span>
             </h2>
@@ -679,40 +679,20 @@ export default function LandingPage() {
             </div>
             <h1 className="hero-fadeup-2" style={{ fontSize: 'clamp(36px, 7vw, 72px)', fontWeight: 800, lineHeight: 1.08, marginBottom: 24, letterSpacing: '-2px', color: '#09090b' }}>
               {t('hero.title1')}<br />
-              <span style={{ background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+              <span style={{ color: '#6366f1' }}>
                 {t('hero.title2')}
               </span>
             </h1>
-            <p className="hero-fadeup-3" style={{ fontSize: 'clamp(16px, 2vw, 19px)', color: '#52525b', maxWidth: 560, margin: '0 auto 20px', lineHeight: 1.75 }}>
+            <p className="hero-fadeup-3" style={{ fontSize: 'clamp(16px, 2vw, 19px)', color: '#52525b', maxWidth: 560, margin: '0 auto 32px', lineHeight: 1.75 }}>
               {t('hero.subtitle')}
-              <strong style={{ color: '#09090b' }}> {t('hero.subtitleBold')}</strong>
             </p>
-            {/* Platform logos strip */}
-            <div className="hero-fadeup-3" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 36, flexWrap: 'wrap' }}>
-              {[
-                { Icon: IgIcon, label: 'Instagram', color: '#e1306c' },
-                { Icon: TikTokIcon, label: 'TikTok', color: '#010101' },
-                { Icon: FbIcon, label: 'Facebook', color: '#1877f2' },
-                { Icon: YtIcon, label: 'YouTube', color: '#ff0000' },
-                { Icon: XIcon, label: 'X', color: '#000' },
-              ].map(({ Icon, label, color }, i) => (
-                <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#f8fafc', border: '1px solid #e4e4e7', borderRadius: 999, padding: '6px 14px', fontSize: 13, fontWeight: 500, color: '#18181b' }}>
-                  <span style={{ color, display: 'flex' }}><Icon /></span>
-                  {label}
-                  {i < 4 && <span style={{ color: '#d4d4d8', marginLeft: 4 }}>·</span>}
-                </div>
-              ))}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'linear-gradient(135deg, #6366f1, #a855f7)', borderRadius: 999, padding: '6px 14px', fontSize: 13, fontWeight: 700, color: '#fff' }}>
-                {t('hero.upload')}
-              </div>
-            </div>
-            <div className="hero-fadeup-3" style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', alignItems: 'center' }}>
+            <div className="hero-fadeup-3" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
               <Link href="/login" className="cta-primary" style={{ background: 'linear-gradient(135deg, #6366f1, #7c3aed)', color: 'white', padding: '16px 40px', borderRadius: 14, fontSize: 17, fontWeight: 700, textDecoration: 'none', boxShadow: '0 6px 28px rgba(99,102,241,0.45)', transition: 'transform 0.2s ease, box-shadow 0.2s ease' }}>
                 {t('hero.ctaPrimary')}
               </Link>
-              <a href="#kaufen" className="cta-secondary" style={{ border: '2px solid #e4e4e7', color: '#3f3f46', background: '#fff', padding: '15px 32px', borderRadius: 14, fontSize: 16, fontWeight: 600, textDecoration: 'none', transition: 'border-color 0.2s ease, color 0.2s ease' }}>
-                {t('hero.ctaSecondary')}
-              </a>
+              <p style={{ fontSize: 14, color: '#71717a', margin: 0 }}>
+                ⭐⭐⭐⭐⭐ {t('hero.miniProof')}
+              </p>
             </div>
           </div>
         </section>
@@ -720,8 +700,75 @@ export default function LandingPage() {
         {/* ── TICKER ──────────────────────────────────────────────────────── */}
         <Ticker items={PILL_ITEMS} />
 
+        {/* ── PAIN POINT (Problem → Agitate → Solve) ─────────────────────── */}
+        <section style={{ background: '#fff', borderBottom: '1px solid #e4e4e7', padding: '72px 24px' }}>
+          <div style={{ maxWidth: 1080, margin: '0 auto' }}>
+            <h2 style={{ fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 800, textAlign: 'center', marginBottom: 40, color: '#09090b' }}>
+              {t('painpoint.title')}
+            </h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginBottom: 40 }}>
+              {(t.raw('painpoint.problems') as Array<{ icon: string; text: string }>).map((p, i) => (
+                <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '18px 20px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 14 }}>
+                  <span style={{ fontSize: 22, flexShrink: 0, lineHeight: 1 }}>{p.icon}</span>
+                  <span style={{ fontSize: 15, color: '#991b1b', lineHeight: 1.6 }}>{p.text}</span>
+                </div>
+              ))}
+            </div>
+            <div style={{ textAlign: 'center', marginBottom: 32 }}>
+              <p style={{ fontSize: 18, fontWeight: 700, color: '#dc2626', marginBottom: 28 }}>
+                {t('painpoint.agitate')}
+              </p>
+              <div style={{ display: 'inline-block', width: 48, height: 2, background: '#e4e4e7', marginBottom: 28 }} />
+              <h3 style={{ fontSize: 24, fontWeight: 800, color: '#09090b', marginBottom: 10 }}>
+                {t('painpoint.solveTitle')}
+              </h3>
+              <p style={{ fontSize: 16, color: '#52525b', maxWidth: 520, margin: '0 auto 24px', lineHeight: 1.7 }}>
+                {t('painpoint.solveText')}
+              </p>
+              <Link href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#6366f1', color: '#fff', padding: '14px 32px', borderRadius: 12, fontSize: 16, fontWeight: 700, textDecoration: 'none', boxShadow: '0 4px 20px rgba(99,102,241,0.35)' }}>
+                {t('painpoint.cta')}
+              </Link>
+            </div>
+          </div>
+        </section>
+
         {/* ── STATS ───────────────────────────────────────────────────────── */}
         <StatsStrip stats={STATS} />
+
+        {/* ── SOCIAL PROOF ─────────────────────────────────────────────────── */}
+        <section style={{ background: '#f8fafc', borderBottom: '1px solid #e4e4e7', padding: '72px 24px' }}>
+          <div style={{ maxWidth: 1080, margin: '0 auto' }}>
+            <h2 style={{ fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 800, textAlign: 'center', marginBottom: 8, color: '#09090b' }}>
+              {t('social.title')}
+            </h2>
+            <p style={{ color: '#71717a', textAlign: 'center', marginBottom: 40, fontSize: 16 }}>
+              {t('social.subtitle')}
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
+              {(t.raw('social.testimonials') as Array<{ name: string; role: string; text: string; stars: number }>).map((item, i) => (
+                <HoverCard key={i} style={{ padding: 28 }}>
+                  <div style={{ display: 'flex', gap: 4, marginBottom: 14 }}>
+                    {Array.from({ length: item.stars }).map((_, si) => (
+                      <span key={si} style={{ color: '#f59e0b', fontSize: 16 }}>★</span>
+                    ))}
+                  </div>
+                  <p style={{ fontSize: 15, color: '#3f3f46', lineHeight: 1.7, margin: '0 0 18px', fontStyle: 'italic' }}>
+                    &ldquo;{item.text}&rdquo;
+                  </p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'linear-gradient(135deg, #6366f1, #a855f7)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, color: '#fff' }}>
+                      {item.name.charAt(0)}
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: '#09090b' }}>{item.name}</div>
+                      <div style={{ fontSize: 12, color: '#a1a1aa' }}>{item.role}</div>
+                    </div>
+                  </div>
+                </HoverCard>
+              ))}
+            </div>
+          </div>
+        </section>
 
         {/* ── STICKY SHOWCASE ─────────────────────────────────────────────── */}
         <StickyShowcase

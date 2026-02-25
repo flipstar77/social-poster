@@ -190,11 +190,9 @@
       "badge": "Für Restaurants · Cafés · Bars",
       "title1": "Social Media auf Autopilot.",
       "title2": "Während du kochst.",
-      "subtitle": "Bild hochladen, fertig. FlowingPost schreibt die Caption und postet automatisch —",
-      "subtitleBold": "auf bis zu 9 Plattformen gleichzeitig.",
-      "upload": "1 Upload",
+      "subtitle": "Nie wieder stundenlang Captions schreiben. Foto hochladen — KI schreibt, plant und postet automatisch auf bis zu 9 Plattformen.",
       "ctaPrimary": "Kostenlos testen →",
-      "ctaSecondary": "Ab 39 €/Monat"
+      "miniProof": "Bereits von 50+ Gastronomen genutzt"
     },
     "ticker": [
       "2–3 Stunden / Woche gespart",
@@ -212,6 +210,43 @@
       "Weltweit nutzbar",
       "In 30 Sekunden gepostet"
     ],
+    "painpoint": {
+      "title": "Kommt dir das bekannt vor?",
+      "problems": [
+        { "icon": "😩", "text": "Du vergisst ständig zu posten — und wenn, dauert es ewig" },
+        { "icon": "📉", "text": "Deine Konkurrenz postet täglich — du nur wenn du dran denkst" },
+        { "icon": "⏰", "text": "2–4 Stunden pro Woche gehen für Social Media drauf" },
+        { "icon": "💸", "text": "Eine Agentur? Zu teuer. Selber machen? Keine Zeit." }
+      ],
+      "agitate": "Jede Woche ohne Posts = verlorene Gäste an die Konkurrenz.",
+      "solveTitle": "Es gibt einen einfacheren Weg.",
+      "solveText": "Foto hochladen, fertig. FlowingPost schreibt die Caption, plant den Post und veröffentlicht automatisch auf allen Plattformen.",
+      "cta": "Jetzt kostenlos testen →"
+    },
+    "social": {
+      "title": "Vertraut von Gastronomen",
+      "subtitle": "Was unsere Beta-Tester sagen",
+      "testimonials": [
+        {
+          "name": "Marco R.",
+          "role": "Inhaber, Trattoria Bella",
+          "text": "Ich hab früher 3 Stunden pro Woche für Instagram gebraucht. Jetzt mache ich ein Foto vom Tagesgericht und FlowingPost macht den Rest. Game changer.",
+          "stars": 5
+        },
+        {
+          "name": "Lisa K.",
+          "role": "Café-Besitzerin",
+          "text": "Endlich bin ich regelmäßig auf Social Media präsent, ohne dass es Arbeit ist. Meine Gäste sagen mir mittlerweile: 'Ich hab euch auf Instagram gefunden!'",
+          "stars": 5
+        },
+        {
+          "name": "Yusuf A.",
+          "role": "Cocktailbar-Betreiber",
+          "text": "Für mich als Barkeeper ist es perfekt — abends schnell ein Foto vom Drink, und morgens ist es auf 5 Plattformen. Brutal effizient.",
+          "stars": 5
+        }
+      ]
+    },
     "stats": [
       { "suffix": "h", "label": "pro Woche gespart" },
       { "suffix": "", "label": "Plattformen gleichzeitig" },
@@ -520,5 +555,15 @@
       "compare": "Vergleich"
     },
     "footerLink": "Vergleich"
+  },
+  "voiceFaq": {
+    "tooltip": "Stelle eine Frage per Sprache",
+    "listening": "Ich höre zu...",
+    "thinking": "Denke nach...",
+    "speaking": "Antwort wird abgespielt...",
+    "error": "Nicht verstanden. Bitte versuche es erneut.",
+    "unsupported": "Spracheingabe wird in diesem Browser nicht unterstützt.",
+    "close": "Schließen",
+    "tapToAsk": "Tippe auf das Mikrofon um etwas über FlowingPost zu fragen"
   }
 }
