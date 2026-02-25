@@ -186,7 +186,7 @@ function XIcon() {
 function Ticker({ items }: { items: { icon: React.ReactNode; text: string }[] }) {
   const doubled = [...items, ...items] // duplicate for infinite loop
   return (
-    <div style={{ overflow: 'hidden', padding: '20px 0', borderTop: '1px solid #e4e4e7', borderBottom: '1px solid #e4e4e7', background: '#fff' }}>
+    <div style={{ overflow: 'hidden', padding: '20px 0', borderTop: '1px solid #e4e4e7', background: '#fff' }}>
       <div className="ticker-track" style={{ display: 'flex', gap: 12, width: 'max-content' }}>
         {doubled.map((p, i) => (
           <div key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#f8fafc', border: '1px solid #e4e4e7', borderRadius: 999, padding: '9px 20px', fontSize: 14, color: '#18181b', fontWeight: 500, whiteSpace: 'nowrap' }}>
@@ -909,7 +909,7 @@ export default function LandingPage() {
         <Ticker items={PILL_ITEMS} />
 
         {/* Gradient bridge: white → dark */}
-        <div style={{ height: 80, background: 'linear-gradient(to bottom, #ffffff, #09090b)' }} />
+        <div style={{ height: 160, background: 'linear-gradient(to bottom, #ffffff 0%, #3f3f46 50%, #09090b 100%)' }} />
 
         {/* ── PAIN POINT (Numbers-driven) ────────────────────────────────── */}
         {(() => {
