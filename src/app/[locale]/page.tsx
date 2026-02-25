@@ -908,6 +908,9 @@ export default function LandingPage() {
         {/* ── TICKER ──────────────────────────────────────────────────────── */}
         <Ticker items={PILL_ITEMS} />
 
+        {/* Gradient bridge: white → dark */}
+        <div style={{ height: 80, background: 'linear-gradient(to bottom, #ffffff, #09090b)' }} />
+
         {/* ── PAIN POINT (Numbers-driven) ────────────────────────────────── */}
         {(() => {
           const stats = t.raw('painpoint.stats') as Array<{ number: string; text: string; subtext: string }>
