@@ -161,7 +161,7 @@ export async function processVideo(input: string): Promise<boolean> {
       language: 'en',
       blog_url: 'https://youtube.com',
       rating: 5,
-    }, { onConflict: 'source_id' })
+    } as Record<string, unknown>, { onConflict: 'source_id' })
 
     const { error } = await getSupabase()
       .from('scraped_articles')
