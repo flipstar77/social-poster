@@ -63,12 +63,38 @@ export function parseVtt(vtt: string): string {
     .trim()
 }
 
+/**
+ * Try youtube-transcript-api (Python) first — works from server/CI IPs.
+ * Falls back to yt-dlp for local usage.
+ */
 export async function fetchTranscript(videoId: string): Promise<{ text: string; lang: string }> {
+  // Method 1: youtube-transcript-api (works from CI/datacenter IPs)
+  for (const lang of ['en', 'de']) {
+    try {
+      const result = execSync(
+        `python -c "from youtube_transcript_api import YouTubeTranscriptApi; import json; t = YouTubeTranscriptApi.get_transcript('${videoId}', languages=['${lang}']); print(json.dumps([s['text'] for s in t]))"`,
+        { timeout: 30000, stdio: 'pipe' }
+      ).toString().trim()
+
+      const segments: string[] = JSON.parse(result)
+      const text = segments
+        .join(' ')
+        .replace(/\[Music\]/gi, '')
+        .replace(/\[Applause\]/gi, '')
+        .replace(/\s{2,}/g, ' ')
+        .trim()
+
+      if (text.length > 100) return { text, lang }
+    } catch {
+      // Try next language or fall back to yt-dlp
+    }
+  }
+
+  // Method 2: yt-dlp (works locally, blocked on datacenter IPs)
   const tmpDir = os.tmpdir()
   const outTemplate = path.join(tmpDir, `yt-transcript-${videoId}`)
-  const langPriority = ['en', 'de']
 
-  for (const lang of langPriority) {
+  for (const lang of ['en', 'de']) {
     try {
       const vttPath = `${outTemplate}.${lang}.vtt`
       if (fs.existsSync(vttPath)) fs.unlinkSync(vttPath)
