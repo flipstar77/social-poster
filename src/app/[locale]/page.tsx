@@ -281,6 +281,73 @@ function BenefitsList({ benefits, cta, listRef, listStyle }: { benefits: Calenda
   )
 }
 
+// ── Mock social posts (slide-in on scroll) ───────────────────────────────────
+const MOCK_POSTS = [
+  { platform: 'Instagram', Icon: IgIcon, color: '#e1306c', user: 'trattoria_bella', img: '/showcase/food.png', caption: 'Frische Spaghetti Bolognese — wie bei Nonna. Jeden Tag mit Liebe gekocht. 🍝❤️', likes: '2.847', comments: '134', time: '3h' },
+  { platform: 'TikTok',    Icon: TikTokIcon, color: '#010101', user: 'trattoria_bella', img: '/showcase/food.png', caption: 'POV: Du bestellst unsere Bolognese 🤤 #foodtiktok #pasta #restaurant', likes: '12.4K', comments: '847', time: '5h' },
+  { platform: 'Facebook',  Icon: FbIcon, color: '#1877f2', user: 'Trattoria Bella Vista', img: '/showcase/food.png', caption: 'Unser Klassiker: Spaghetti Bolognese nach Hausrezept. Kommt vorbei und überzeugt euch selbst! 🇮🇹', likes: '489', comments: '67', time: '2h' },
+  { platform: 'X',         Icon: XIcon, color: '#000', user: '@trattoria_bella', img: '/showcase/food.png', caption: 'Fresh pasta, made daily. No shortcuts, no compromises. Just real Italian food. 🍝', likes: '1.203', comments: '89', time: '4h' },
+]
+
+function MockPostCard({ post, index }: { post: typeof MOCK_POSTS[0]; index: number }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [visible, setVisible] = useState(false)
+  useEffect(() => {
+    if (!ref.current) return
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect() } }, { threshold: 0.15 })
+    obs.observe(ref.current)
+    return () => obs.disconnect()
+  }, [])
+  const fromLeft = index % 2 === 0
+  return (
+    <div ref={ref} style={{
+      opacity: visible ? 1 : 0,
+      transform: visible ? 'translateX(0) rotate(0deg)' : `translateX(${fromLeft ? '-80' : '80'}px) rotate(${fromLeft ? '-3' : '3'}deg)`,
+      transition: `opacity 0.7s cubic-bezier(0.16,1,0.3,1) ${index * 120}ms, transform 0.7s cubic-bezier(0.16,1,0.3,1) ${index * 120}ms`,
+    }}>
+      <HoverCard style={{ overflow: 'hidden', width: '100%' }}>
+        {/* Post header */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '14px 16px 10px' }}>
+          <div style={{ width: 32, height: 32, borderRadius: '50%', background: `${post.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: post.color }}>
+            <post.Icon />
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#09090b' }}>{post.user}</div>
+            <div style={{ fontSize: 11, color: '#a1a1aa' }}>{post.platform} · {post.time}</div>
+          </div>
+          <div style={{ fontSize: 10, color: '#22c55e', fontWeight: 700, background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 999, padding: '2px 8px' }}>LIVE</div>
+        </div>
+        {/* Post image */}
+        <div style={{ aspectRatio: '4/3', overflow: 'hidden' }}>
+          <img src={post.img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        </div>
+        {/* Engagement */}
+        <div style={{ padding: '10px 16px 14px' }}>
+          <div style={{ display: 'flex', gap: 14, marginBottom: 6 }}>
+            <span style={{ fontSize: 13, color: '#09090b', fontWeight: 600 }}>❤️ {post.likes}</span>
+            <span style={{ fontSize: 13, color: '#09090b', fontWeight: 600 }}>💬 {post.comments}</span>
+          </div>
+          <p style={{ fontSize: 13, color: '#3f3f46', lineHeight: 1.5, margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{post.caption}</p>
+        </div>
+      </HoverCard>
+    </div>
+  )
+}
+
+function MockPostsSection() {
+  return (
+    <section style={{ padding: '72px 24px', background: '#fff', borderTop: '1px solid #e4e4e7', overflow: 'hidden' }}>
+      <div style={{ maxWidth: 1080, margin: '0 auto' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 20 }}>
+          {MOCK_POSTS.map((post, i) => (
+            <MockPostCard key={post.platform} post={post} index={i} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 function CalendarSection({ translations }: { translations: CalendarTranslations }) {
   const { ref: headRef, style: headStyle } = useScrollIn(0)
   const { ref: calRef,  style: calStyle  } = useScrollIn(150)
@@ -921,6 +988,9 @@ export default function LandingPage() {
 
         {/* ── AUTO-SCHEDULER ──────────────────────────────────────────────── */}
         <CalendarSection translations={calendarTranslations} />
+
+        {/* ── MOCK SOCIAL POSTS ──────────────────────────────────────────── */}
+        <MockPostsSection />
 
         {/* ── COMPARISON ──────────────────────────────────────────────────── */}
         <section style={{ background: '#fff', borderTop: '1px solid #e4e4e7', borderBottom: '1px solid #e4e4e7' }}>
