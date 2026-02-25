@@ -247,6 +247,17 @@ function CalendarSection({ translations }: { translations: CalendarTranslations 
   const { ref: headRef, style: headStyle } = useScrollIn(0)
   const { ref: calRef,  style: calStyle  } = useScrollIn(150)
   const { ref: listRef, style: listStyle } = useScrollIn(250)
+  const calVisRef = useRef<HTMLDivElement>(null)
+  const [calVisible, setCalVisible] = useState(false)
+  useEffect(() => {
+    if (!calVisRef.current) return
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setCalVisible(true); obs.disconnect() } }, { threshold: 0.3 })
+    obs.observe(calVisRef.current)
+    return () => obs.disconnect()
+  }, [])
+
+  // Build flat index for staggered checkmark animation
+  let cellIndex = 0
   return (
     <section style={{ background: '#f8fafc', borderTop: '1px solid #e4e4e7', padding: '88px 24px' }}>
       <div style={{ maxWidth: 1080, margin: '0 auto' }}>
@@ -268,6 +279,7 @@ function CalendarSection({ translations }: { translations: CalendarTranslations 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 40, alignItems: 'center' }}>
           {/* Calendar mockup */}
           <div ref={calRef} style={calStyle}>
+            <div ref={calVisRef}>
             <HoverCard style={{ padding: 24 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                 <span style={{ fontWeight: 700, fontSize: 15, color: '#09090b' }}>{translations.calendarMonth}</span>
@@ -286,20 +298,37 @@ function CalendarSection({ translations }: { translations: CalendarTranslations 
               </div>
               {CAL_SCHEDULE.map((week, wi) => (
                 <div key={wi} style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 4, marginBottom: 4 }}>
-                  {week.map((day, di) => (
-                    <div key={di} style={{ minHeight: 46, background: day.length ? '#faf5ff' : '#f8fafc', borderRadius: 8, border: `1px solid ${day.length ? '#e9d5ff' : '#f0f0f0'}`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, padding: '4px 2px' }}>
-                      <span style={{ fontSize: 10, color: '#a1a1aa', fontWeight: 500 }}>{wi * 7 + di + 1}</span>
-                      <div style={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
-                        {day.map(p => <div key={p} style={{ width: 7, height: 7, borderRadius: '50%', background: PLAT_COLOR[p] ?? '#888' }} />)}
+                  {week.map((day, di) => {
+                    const hasPosts = day.length > 0
+                    const idx = hasPosts ? cellIndex++ : 0
+                    return (
+                      <div key={di} style={{ minHeight: 46, background: day.length ? '#faf5ff' : '#f8fafc', borderRadius: 8, border: `1px solid ${day.length ? '#e9d5ff' : '#f0f0f0'}`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, padding: '4px 2px', position: 'relative' }}>
+                        <span style={{ fontSize: 10, color: '#a1a1aa', fontWeight: 500 }}>{wi * 7 + di + 1}</span>
+                        <div style={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
+                          {day.map(p => <div key={p} style={{ width: 7, height: 7, borderRadius: '50%', background: PLAT_COLOR[p] ?? '#888' }} />)}
+                        </div>
+                        {hasPosts && (
+                          <div style={{
+                            position: 'absolute', top: 3, right: 3,
+                            width: 14, height: 14, borderRadius: '50%',
+                            background: '#22c55e', color: '#fff',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: 8, fontWeight: 800,
+                            opacity: calVisible ? 1 : 0,
+                            transform: calVisible ? 'scale(1)' : 'scale(0)',
+                            transition: `opacity 0.3s ease ${300 + idx * 120}ms, transform 0.4s cubic-bezier(0.34,1.56,0.64,1) ${300 + idx * 120}ms`,
+                          }}>✓</div>
+                        )}
                       </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               ))}
               <div style={{ marginTop: 14, fontSize: 12, color: '#71717a', textAlign: 'center' }}>
                 <span style={{ color: '#6366f1', fontWeight: 600 }}>{translations.calendarPlanned}</span> · <span style={{ color: '#22c55e', fontWeight: 600 }}>{translations.calendarAutoPosted}</span>
               </div>
             </HoverCard>
+            </div>
           </div>
 
           {/* Benefits */}
