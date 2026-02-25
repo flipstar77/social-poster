@@ -309,24 +309,25 @@ function FloatingPosts({ scrollY }: { scrollY: number }) {
     return () => window.removeEventListener('resize', update)
   }, [])
 
-  // progress: 0 when section top enters viewport, 1 when bottom leaves
-  const relScroll = Math.max(0, scrollY - sectionTop + 700) / (sectionH + 700)
+  // progress: 0 when section enters viewport, 1 when it leaves
+  const viewportH = typeof window !== 'undefined' ? window.innerHeight : 800
+  const relScroll = (scrollY - sectionTop + viewportH) / (sectionH + viewportH)
   const progress = Math.max(0, Math.min(1, relScroll))
 
   return (
     <div ref={wrapRef} className="floating-posts" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden', zIndex: 1 }}>
       {FLOATING_POSTS.map((p, i) => {
         const isLeft = p.side === 'left'
-        // Each card peaks at its own moment, then fades back out
-        const peakCenter = 0.15 + i * 0.14 // staggered peak points
+        // Each card peaks at its own scroll point, wider bell curve so they stay visible longer
+        const peakCenter = 0.2 + i * 0.12
         const dist = Math.abs(progress - peakCenter)
-        const cardVis = Math.max(0, Math.min(1, 1 - dist * 3.5)) // bell curve visibility
-        // Slide: further in when visible, back out when fading
+        const cardVis = Math.max(0, Math.min(1, 1 - dist * 2)) // wider bell curve
+        // Slide: off-screen → peek in → back out
         const slideX = isLeft
-          ? -100 + cardVis * 115  // -100% → +15%
-          : 100 - cardVis * 115   // 100% → -15%
-        const driftY = (progress - peakCenter) * (60 + i * 20) * (i % 2 === 0 ? -1 : 1)
-        const rot = (isLeft ? -5 : 5) * (1 - cardVis)
+          ? -100 + cardVis * 120  // -100% → +20%
+          : 100 - cardVis * 120   // 100% → -20%
+        const driftY = (progress - peakCenter) * (50 + i * 15) * (i % 2 === 0 ? -1 : 1)
+        const rot = (isLeft ? -4 : 4) * (1 - cardVis)
         return (
           <div key={i} style={{
             position: 'absolute',
