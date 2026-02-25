@@ -22,6 +22,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: t('meta.title'),
     description: t('meta.description'),
+    verification: {
+      google: 'donLQdbrdcqjoKz8QqeBvMjwLY_9VAYMzhjO4pFSj8I',
+    },
   }
 }
 
