@@ -287,10 +287,11 @@ function BenefitsList({ benefits, cta, listRef, listStyle }: { benefits: Calenda
 
 // ── Floating mock posts (slide in from edges on scroll) ──────────────────────
 const FLOATING_POSTS = [
-  { Icon: IgIcon,     color: '#e1306c', user: 'trattoria_bella',       likes: '2.847', comments: '134', side: 'left'  as const, topPct: 8  },
-  { Icon: TikTokIcon, color: '#010101', user: 'trattoria_bella',       likes: '12.4K', comments: '847', side: 'right' as const, topPct: 5  },
-  { Icon: FbIcon,     color: '#1877f2', user: 'Trattoria Bella Vista', likes: '489',   comments: '67',  side: 'left'  as const, topPct: 52 },
-  { Icon: XIcon,      color: '#000',    user: '@trattoria_bella',      likes: '1.203', comments: '89',  side: 'right' as const, topPct: 48 },
+  { Icon: IgIcon,     color: '#e1306c', user: 'trattoria_bella',       likes: '2.847', comments: '134', side: 'left'  as const, topPct: 4,  w: 180, speed: 0.7, img: '/showcase/food.png' },
+  { Icon: TikTokIcon, color: '#010101', user: 'trattoria_bella',       likes: '12.4K', comments: '847', side: 'right' as const, topPct: 2,  w: 160, speed: 0.9, img: '/hero/wine.png' },
+  { Icon: FbIcon,     color: '#1877f2', user: 'Trattoria Bella Vista', likes: '489',   comments: '67',  side: 'left'  as const, topPct: 48, w: 155, speed: 0.55, img: '/hero/gastronom.png' },
+  { Icon: XIcon,      color: '#000',    user: '@trattoria_bella',      likes: '1.203', comments: '89',  side: 'right' as const, topPct: 55, w: 170, speed: 0.8, img: '/showcase/food.png' },
+  { Icon: YtIcon,     color: '#ff0000', user: 'Trattoria Bella Vista', likes: '3.1K',  comments: '201', side: 'left'  as const, topPct: 78, w: 145, speed: 1.0, img: '/hero/wine.png' },
 ]
 
 function FloatingPosts({ scrollY }: { scrollY: number }) {
@@ -308,40 +309,41 @@ function FloatingPosts({ scrollY }: { scrollY: number }) {
     return () => window.removeEventListener('resize', update)
   }, [])
 
-  // How far into this section we've scrolled (0 = top enters viewport, 1 = bottom leaves)
-  const relScroll = Math.max(0, scrollY - sectionTop + 600) / (sectionH + 600)
+  // progress: 0 when section top enters viewport, 1 when bottom leaves
+  const relScroll = Math.max(0, scrollY - sectionTop + 700) / (sectionH + 700)
   const progress = Math.max(0, Math.min(1, relScroll))
 
   return (
     <div ref={wrapRef} className="floating-posts" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden', zIndex: 1 }}>
       {FLOATING_POSTS.map((p, i) => {
         const isLeft = p.side === 'left'
-        // Each card has its own speed/offset for variety
-        const speed = 0.6 + i * 0.15
-        const cardProgress = Math.max(0, Math.min(1, (progress - i * 0.08) * speed * 2.5))
-        // Slide in from edge + parallax vertical drift
+        // Each card peaks at its own moment, then fades back out
+        const peakCenter = 0.15 + i * 0.14 // staggered peak points
+        const dist = Math.abs(progress - peakCenter)
+        const cardVis = Math.max(0, Math.min(1, 1 - dist * 3.5)) // bell curve visibility
+        // Slide: further in when visible, back out when fading
         const slideX = isLeft
-          ? -100 + cardProgress * 70   // -100% → -30%
-          : 100 - cardProgress * 70    // 100% → 30%
-        const driftY = (progress - 0.5) * (40 + i * 15) * (i % 2 === 0 ? -1 : 1)
-        const rot = (isLeft ? -6 : 6) + cardProgress * (isLeft ? 3 : -3)
+          ? -100 + cardVis * 115  // -100% → +15%
+          : 100 - cardVis * 115   // 100% → -15%
+        const driftY = (progress - peakCenter) * (60 + i * 20) * (i % 2 === 0 ? -1 : 1)
+        const rot = (isLeft ? -5 : 5) * (1 - cardVis)
         return (
           <div key={i} style={{
             position: 'absolute',
             top: `${p.topPct}%`,
             [p.side]: 0,
-            width: 200,
-            opacity: Math.min(cardProgress * 2, 0.85),
+            width: p.w,
+            opacity: cardVis * 0.5,
             transform: `translateX(${slideX}%) translateY(${driftY}px) rotate(${rot}deg)`,
             willChange: 'transform, opacity',
           }}>
-            <div style={{ background: '#fff', borderRadius: 16, border: '1px solid #e4e4e7', boxShadow: '0 8px 32px rgba(0,0,0,0.08)', overflow: 'hidden' }}>
+            <div style={{ background: '#fff', borderRadius: 16, border: '1px solid #e4e4e7', boxShadow: '0 8px 32px rgba(0,0,0,0.06)', overflow: 'hidden' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 10px 6px' }}>
                 <span style={{ color: p.color, display: 'flex' }}><p.Icon /></span>
                 <span style={{ fontSize: 10, fontWeight: 700, color: '#09090b', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.user}</span>
               </div>
               <div style={{ aspectRatio: '1', overflow: 'hidden' }}>
-                <img src="/showcase/food.png" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <img src={p.img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
               <div style={{ padding: '6px 10px 8px', display: 'flex', gap: 10 }}>
                 <span style={{ fontSize: 10, fontWeight: 600 }}>❤️ {p.likes}</span>
