@@ -85,8 +85,9 @@ export async function fetchTranscript(videoId: string): Promise<{ text: string; 
         .trim()
 
       if (text.length > 100) return { text, lang }
-    } catch {
-      // Try next language or fall back to yt-dlp
+    } catch (err) {
+      const msg = (err as { stderr?: Buffer })?.stderr?.toString()?.slice(0, 200) || (err as Error).message?.slice(0, 200)
+      console.log(`      [transcript-api/${lang}] ${msg}`)
     }
   }
 
@@ -110,8 +111,9 @@ export async function fetchTranscript(videoId: string): Promise<{ text: string; 
         const text = parseVtt(vtt)
         if (text.length > 100) return { text, lang }
       }
-    } catch {
-      // Try next language
+    } catch (err) {
+      const msg = (err as { stderr?: Buffer })?.stderr?.toString()?.slice(0, 200) || (err as Error).message?.slice(0, 200)
+      console.log(`      [yt-dlp/${lang}] ${msg}`)
     }
   }
 
