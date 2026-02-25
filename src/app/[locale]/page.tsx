@@ -397,51 +397,94 @@ interface PhoneScreenTranslations {
   postNow: string
 }
 
-function PhoneScreen({ step, translations }: { step: number; translations: PhoneScreenTranslations }) {
-  if (step === 0) return (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: 16, gap: 12 }}>
-      <div style={{ flex: 1, borderRadius: 16, overflow: 'hidden', position: 'relative', border: '2px solid #c4b5fd' }}>
-        <img src="/showcase/food.png" alt="Food photo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        <div style={{ position: 'absolute', bottom: 8, right: 8, background: '#22c55e', borderRadius: 999, padding: '3px 8px', fontSize: 10, fontWeight: 700, color: '#fff' }}>✓ {translations.selectImage}</div>
-      </div>
-      <div style={{ background: '#f8fafc', borderRadius: 10, padding: '10px 12px', border: '1px solid #e4e4e7' }}>
-        <div style={{ fontSize: 10, color: '#a1a1aa', marginBottom: 4, fontWeight: 700, letterSpacing: '0.05em' }}>{translations.optionalNote}</div>
-        <div style={{ fontSize: 12, color: '#52525b' }}>{translations.noteExample}</div>
-      </div>
-    </div>
-  )
-  if (step === 1) return (
-    <div style={{ flex: 1, padding: 14, display: 'flex', flexDirection: 'column', gap: 8, overflow: 'hidden' }}>
-      <div style={{ fontSize: 10, fontWeight: 700, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>{translations.variants}</div>
-      {translations.variantTexts.map((text, i) => {
-        const sel = i === 0
-        return (
-          <div key={i} style={{ background: sel ? '#eef2ff' : '#f8fafc', border: `1.5px solid ${sel ? '#6366f1' : '#e4e4e7'}`, borderRadius: 10, padding: '8px 10px', maxHeight: sel ? 120 : 52, overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
-            <div style={{ fontSize: 10, color: sel ? '#3730a3' : '#71717a', lineHeight: 1.5, whiteSpace: 'pre-line' }}>{text}</div>
-            {!sel && <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 20, background: 'linear-gradient(transparent, #f8fafc)' }} />}
+function PhoneScreen({ step, progress, translations }: { step: number; progress: number; translations: PhoneScreenTranslations }) {
+  // Sub-progress within each step (0→1)
+  const stepProgress = step === 0 ? progress * 3.2 : step === 1 ? (progress * 3.2) - 1 : (progress * 3.2) - 2
+  const sub = Math.max(0, Math.min(1, stepProgress))
+
+  if (step === 0) {
+    // Image drops in, then badge appears
+    const imgY = Math.min(1, sub * 3) // 0→1 in first third
+    const badgeOpacity = Math.max(0, Math.min(1, (sub - 0.4) * 3))
+    const noteOpacity = Math.max(0, Math.min(1, (sub - 0.6) * 3))
+    return (
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: 16, gap: 12 }}>
+        <div style={{ flex: 1, borderRadius: 16, overflow: 'hidden', position: 'relative', border: '2px solid #c4b5fd' }}>
+          <img src="/showcase/food.png" alt="Food photo" style={{
+            width: '100%', height: '100%', objectFit: 'cover',
+            transform: `translateY(${(1 - imgY) * -40}px) scale(${0.9 + imgY * 0.1})`,
+            opacity: imgY,
+            transition: 'none',
+          }} />
+          <div style={{ position: 'absolute', bottom: 8, right: 8, background: '#22c55e', borderRadius: 999, padding: '3px 8px', fontSize: 10, fontWeight: 700, color: '#fff', opacity: badgeOpacity, transform: `scale(${0.6 + badgeOpacity * 0.4})` }}>
+            ✓ {translations.selectImage}
           </div>
-        )
-      })}
-    </div>
-  )
+        </div>
+        <div style={{ background: '#f8fafc', borderRadius: 10, padding: '10px 12px', border: '1px solid #e4e4e7', opacity: noteOpacity, transform: `translateY(${(1 - noteOpacity) * 10}px)` }}>
+          <div style={{ fontSize: 10, color: '#a1a1aa', marginBottom: 4, fontWeight: 700, letterSpacing: '0.05em' }}>{translations.optionalNote}</div>
+          <div style={{ fontSize: 12, color: '#52525b' }}>{translations.noteExample}</div>
+        </div>
+      </div>
+    )
+  }
+
+  if (step === 1) {
+    // Captions slide in one by one
+    return (
+      <div style={{ flex: 1, padding: 14, display: 'flex', flexDirection: 'column', gap: 8, overflow: 'hidden' }}>
+        <div style={{ fontSize: 10, fontWeight: 700, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2, opacity: Math.min(1, sub * 4) }}>{translations.variants}</div>
+        {translations.variantTexts.map((text, i) => {
+          const sel = i === 0
+          const cardProgress = Math.max(0, Math.min(1, (sub - i * 0.25) * 4))
+          return (
+            <div key={i} style={{
+              background: sel ? '#eef2ff' : '#f8fafc',
+              border: `1.5px solid ${sel ? '#6366f1' : '#e4e4e7'}`,
+              borderRadius: 10, padding: '8px 10px',
+              maxHeight: sel ? 120 : 52, overflow: 'hidden', flexShrink: 0, position: 'relative',
+              opacity: cardProgress,
+              transform: `translateX(${(1 - cardProgress) * 30}px)`,
+            }}>
+              <div style={{ fontSize: 10, color: sel ? '#3730a3' : '#71717a', lineHeight: 1.5, whiteSpace: 'pre-line' }}>{text}</div>
+              {!sel && <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 20, background: 'linear-gradient(transparent, #f8fafc)' }} />}
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
+
+  // Step 2: platforms appear one by one, then progress bar fills
+  const platforms = [
+    { Icon: IgIcon,      name: 'Instagram', active: true,  color: '#e1306c' },
+    { Icon: TikTokIcon,  name: 'TikTok',    active: true,  color: '#010101' },
+    { Icon: FbIcon,      name: 'Facebook',  active: true,  color: '#1877f2' },
+    { Icon: YtIcon,      name: 'YouTube',   active: true,  color: '#ff0000' },
+    { Icon: XIcon,       name: 'X',         active: false, color: '#000'    },
+  ]
+  const barProgress = Math.max(0, Math.min(1, (sub - 0.6) * 2.5))
+
   return (
     <div style={{ flex: 1, padding: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
       <div style={{ fontSize: 10, fontWeight: 700, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>{translations.platforms}</div>
-      {[
-        { Icon: IgIcon,      name: 'Instagram', active: true,  color: '#e1306c' },
-        { Icon: TikTokIcon,  name: 'TikTok',    active: true,  color: '#010101' },
-        { Icon: FbIcon,      name: 'Facebook',  active: true,  color: '#1877f2' },
-        { Icon: YtIcon,      name: 'YouTube',   active: true,  color: '#ff0000' },
-        { Icon: XIcon,       name: 'X',         active: false, color: '#000'    },
-      ].map(p => (
-        <div key={p.name} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px', background: p.active ? '#f0fdf4' : '#f8fafc', borderRadius: 8, border: `1px solid ${p.active ? '#bbf7d0' : '#e4e4e7'}` }}>
-          <span style={{ color: p.color, display: 'flex' }}><p.Icon /></span>
-          <span style={{ flex: 1, fontSize: 11, fontWeight: 500, color: '#18181b' }}>{p.name}</span>
-          <span style={{ fontSize: 13, color: p.active ? '#22c55e' : '#d4d4d8' }}>{p.active ? '✓' : '○'}</span>
-        </div>
-      ))}
-      <div style={{ marginTop: 4, background: '#22c55e', borderRadius: 10, padding: '10px', textAlign: 'center', fontSize: 12, fontWeight: 700, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-        ✓ {translations.postNow}
+      {platforms.map((p, i) => {
+        const itemProgress = Math.max(0, Math.min(1, (sub - i * 0.08) * 5))
+        return (
+          <div key={p.name} style={{
+            display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px',
+            background: p.active ? '#f0fdf4' : '#f8fafc', borderRadius: 8,
+            border: `1px solid ${p.active ? '#bbf7d0' : '#e4e4e7'}`,
+            opacity: itemProgress, transform: `translateY(${(1 - itemProgress) * 12}px)`,
+          }}>
+            <span style={{ color: p.color, display: 'flex' }}><p.Icon /></span>
+            <span style={{ flex: 1, fontSize: 11, fontWeight: 500, color: '#18181b' }}>{p.name}</span>
+            <span style={{ fontSize: 13, color: p.active ? '#22c55e' : '#d4d4d8' }}>{p.active ? '✓' : '○'}</span>
+          </div>
+        )
+      })}
+      <div style={{ marginTop: 4, borderRadius: 10, padding: '10px', textAlign: 'center', fontSize: 12, fontWeight: 700, color: '#fff', position: 'relative', overflow: 'hidden', background: '#e4e4e7' }}>
+        <div style={{ position: 'absolute', inset: 0, background: '#22c55e', width: `${barProgress * 100}%`, borderRadius: 10, transition: 'none' }} />
+        <span style={{ position: 'relative', zIndex: 1 }}>{barProgress >= 1 ? '✓ ' : ''}{translations.postNow}</span>
       </div>
     </div>
   )
@@ -510,7 +553,7 @@ function StickyShowcase({ scrollY, vh, steps, label, title1, title2, phoneTransl
                     ))}
                   </div>
                 </div>
-                <PhoneScreen step={step} translations={phoneTranslations} />
+                <PhoneScreen step={step} progress={progress} translations={phoneTranslations} />
               </div>
             </div>
           </div>
