@@ -1,0 +1,84 @@
+name: Daily Blog Pipeline
+
+on:
+  schedule:
+    # Every day at 07:00 UTC (08:00 Berlin / 14:00 Bangkok)
+    - cron: '0 7 * * *'
+  workflow_dispatch:
+    inputs:
+      count:
+        description: 'Number of articles to generate'
+        default: '2'
+        required: false
+      research:
+        description: 'Run keyword research first (true/false)'
+        default: 'false'
+        required: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate articles
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+        run: |
+          COUNT=${{ github.event.inputs.count || '2' }}
+          RESEARCH=${{ github.event.inputs.research || 'false' }}
+          if [ "$RESEARCH" = "true" ]; then
+            npx tsx scripts/blog-pipeline/run-pipeline.ts --count $COUNT --research
+          else
+            npx tsx scripts/blog-pipeline/run-pipeline.ts --count $COUNT
+          fi
+
+      - name: Check for new articles
+        id: check
+        run: |
+          git diff --name-only HEAD | grep "^content/blog/" || true
+          NEW=$(git status --porcelain content/blog/ | wc -l | tr -d ' ')
+          echo "new_articles=$NEW" >> $GITHUB_OUTPUT
+          echo "Found $NEW new/changed files in content/blog/"
+
+      - name: Commit and push new articles
+        if: steps.check.outputs.new_articles != '0'
+        run: |
+          git config user.name "FlowingPost Bot"
+          git config user.email "bot@flowingpost.com"
+          git add content/blog/
+          DATE=$(date +'%Y-%m-%d')
+          COUNT=$(git diff --cached --name-only | grep "^content/blog/" | wc -l | tr -d ' ')
+          git commit -m "Add $COUNT blog article(s) — $DATE [skip ci]"
+          git push
+
+      - name: Summary
+        run: |
+          NEW=${{ steps.check.outputs.new_articles }}
+          if [ "$NEW" = "0" ]; then
+            echo "### No new articles generated" >> $GITHUB_STEP_SUMMARY
+            echo "No unwritten keywords found. Run with keyword research enabled." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### $NEW new article(s) published" >> $GITHUB_STEP_SUMMARY
+            git diff HEAD~1 --name-only 2>/dev/null | grep "content/blog/" | sed 's/content\/blog\///; s/\.mdx//' | while read slug; do
+              echo "- $slug" >> $GITHUB_STEP_SUMMARY
+            done
+          fi

@@ -21,6 +21,8 @@ import path from 'path'
 import dotenv from 'dotenv'
 dotenv.config({ path: '.env.local' })
 
+import { fetchHeroImage } from './pexels-utils'
+
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -246,13 +248,27 @@ Schreibe jetzt einen ausführlichen Artikel mit mindestens 1800 Wörtern.`
   }
 
   const date = new Date().toISOString().split('T')[0]
+
+  // Fetch hero image from Pexels
+  const heroImage = await fetchHeroImage(keyword, category)
+  const imageFrontmatter = heroImage
+    ? `image: "${heroImage.url}"
+imageMedium: "${heroImage.urlMedium}"
+imageCredit: "${heroImage.photographer}"
+imageCreditUrl: "${heroImage.photographerUrl}"`
+    : `image: "/blog/${slug}.jpg"`
+
+  if (heroImage) {
+    console.log(`   🖼️  Image: ${heroImage.photographer} (Pexels)`)
+  }
+
   const mdx = `---
 title: "${title.replace(/"/g, '\\"')}"
 description: "${description.replace(/"/g, '\\"')}"
 date: "${date}"
 category: "${category}"
 locale: "de"
-image: "/blog/${slug}.jpg"
+${imageFrontmatter}
 ---
 
 ${body}
