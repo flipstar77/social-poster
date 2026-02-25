@@ -17,6 +17,8 @@ const GLOBAL_CSS = `
 }
 .ticker-track { animation: ticker 32s linear infinite; }
 .ticker-track:hover { animation-play-state: paused; }
+.testimonial-track { animation: ticker 45s linear infinite; }
+.testimonial-track:hover { animation-play-state: paused; }
 .hero-fadeup { animation: fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) both; }
 .hero-fadeup-2 { animation: fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) 0.15s both; }
 .hero-fadeup-3 { animation: fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) 0.3s both; }
@@ -736,27 +738,30 @@ export default function LandingPage() {
         <StatsStrip stats={STATS} />
 
         {/* ── SOCIAL PROOF ─────────────────────────────────────────────────── */}
-        <section style={{ background: '#f8fafc', borderBottom: '1px solid #e4e4e7', padding: '72px 24px' }}>
-          <div style={{ maxWidth: 1080, margin: '0 auto' }}>
+        <section style={{ background: '#f8fafc', borderBottom: '1px solid #e4e4e7', padding: '72px 0' }}>
+          <div style={{ maxWidth: 1080, margin: '0 auto', padding: '0 24px' }}>
             <h2 style={{ fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 800, textAlign: 'center', marginBottom: 8, color: '#09090b' }}>
               {t('social.title')}
             </h2>
             <p style={{ color: '#71717a', textAlign: 'center', marginBottom: 40, fontSize: 16 }}>
               {t('social.subtitle')}
             </p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
-              {(t.raw('social.testimonials') as Array<{ name: string; role: string; text: string; stars: number }>).map((item, i) => (
-                <HoverCard key={i} style={{ padding: 28 }}>
+          </div>
+          {/* Scrolling testimonial ticker */}
+          <div style={{ overflow: 'hidden', padding: '4px 0' }}>
+            <div className="testimonial-track" style={{ display: 'flex', gap: 20, width: 'max-content' }}>
+              {[...(t.raw('social.testimonials') as Array<{ name: string; role: string; text: string; stars: number }>), ...(t.raw('social.testimonials') as Array<{ name: string; role: string; text: string; stars: number }>)].map((item, i) => (
+                <div key={i} style={{ width: 340, flexShrink: 0, background: '#fff', border: '1px solid #e4e4e7', borderRadius: 20, padding: 28, boxShadow: '0 2px 20px rgba(0,0,0,0.04)', transition: 'box-shadow 0.3s ease, border-color 0.3s ease' }}>
                   <div style={{ display: 'flex', gap: 4, marginBottom: 14 }}>
                     {Array.from({ length: item.stars }).map((_, si) => (
                       <span key={si} style={{ color: '#f59e0b', fontSize: 16 }}>★</span>
                     ))}
                   </div>
-                  <p style={{ fontSize: 15, color: '#3f3f46', lineHeight: 1.7, margin: '0 0 18px', fontStyle: 'italic' }}>
+                  <p style={{ fontSize: 15, color: '#3f3f46', lineHeight: 1.7, margin: '0 0 18px', fontStyle: 'italic', minHeight: 80 }}>
                     &ldquo;{item.text}&rdquo;
                   </p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'linear-gradient(135deg, #6366f1, #a855f7)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, color: '#fff' }}>
+                    <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#6366f1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, color: '#fff' }}>
                       {item.name.charAt(0)}
                     </div>
                     <div>
@@ -764,7 +769,7 @@ export default function LandingPage() {
                       <div style={{ fontSize: 12, color: '#a1a1aa' }}>{item.role}</div>
                     </div>
                   </div>
-                </HoverCard>
+                </div>
               ))}
             </div>
           </div>

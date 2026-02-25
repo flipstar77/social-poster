@@ -244,6 +244,24 @@
           "role": "Cocktailbar-Betreiber",
           "text": "Für mich als Barkeeper ist es perfekt — abends schnell ein Foto vom Drink, und morgens ist es auf 5 Plattformen. Brutal effizient.",
           "stars": 5
+        },
+        {
+          "name": "Sandra M.",
+          "role": "Inhaberin, Pizzeria Napoli",
+          "text": "Mein Social Media war vorher komplett tot. Seit FlowingPost poste ich 5x pro Woche — und die Reservierungen über Instagram haben sich verdoppelt.",
+          "stars": 5
+        },
+        {
+          "name": "Thomas W.",
+          "role": "Gastro-Kette, 3 Standorte",
+          "text": "Wir managen 3 Restaurants mit einem Upload. Die KI schreibt für jedes Lokal passende Captions. Spart uns locker 8 Stunden pro Woche.",
+          "stars": 5
+        },
+        {
+          "name": "Elena D.",
+          "role": "Brunch-Café Betreiberin",
+          "text": "Ich bin keine Social Media Expertin — aber mit FlowingPost sieht mein Feed aus wie von einer Agentur. Und das für einen Bruchteil der Kosten.",
+          "stars": 5
         }
       ]
     },
