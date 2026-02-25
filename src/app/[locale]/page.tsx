@@ -507,38 +507,52 @@ function PhoneScreen({ step, progress, translations }: { step: number; progress:
     )
   }
 
-  // Step 2: platforms appear one by one, then progress bar fills
-  const platforms = [
-    { Icon: IgIcon,      name: 'Instagram', active: true,  color: '#e1306c' },
-    { Icon: TikTokIcon,  name: 'TikTok',    active: true,  color: '#010101' },
-    { Icon: FbIcon,      name: 'Facebook',  active: true,  color: '#1877f2' },
-    { Icon: YtIcon,      name: 'YouTube',   active: true,  color: '#ff0000' },
-    { Icon: XIcon,       name: 'X',         active: true,  color: '#000'    },
+  // Step 2: published posts slide in from right with engagement
+  const posts = [
+    { Icon: IgIcon,      name: 'Instagram', color: '#e1306c', likes: 127, comments: 23 },
+    { Icon: TikTokIcon,  name: 'TikTok',    color: '#010101', likes: 342, comments: 41 },
+    { Icon: FbIcon,      name: 'Facebook',  color: '#1877f2', likes: 89,  comments: 12 },
+    { Icon: YtIcon,      name: 'YouTube',   color: '#ff0000', likes: 56,  comments: 8  },
+    { Icon: XIcon,       name: 'X',         color: '#000',    likes: 73,  comments: 15 },
   ]
-  const barProgress = Math.max(0, Math.min(1, (sub - 0.6) * 2.5))
 
   return (
-    <div style={{ flex: 1, padding: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
-      <div style={{ fontSize: 10, fontWeight: 700, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>{translations.platforms}</div>
-      {platforms.map((p, i) => {
-        const itemProgress = Math.max(0, Math.min(1, (sub - i * 0.05) * 6))
+    <div style={{ flex: 1, padding: 10, display: 'flex', flexDirection: 'column', gap: 6, overflow: 'hidden' }}>
+      <div style={{ fontSize: 9, fontWeight: 700, color: '#22c55e', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 4, opacity: Math.min(1, sub * 4) }}>
+        <span>✓</span> {translations.postNow}
+      </div>
+      {posts.map((p, i) => {
+        const cardProgress = Math.max(0, Math.min(1, (sub - i * 0.12) * 5))
+        const engagementProgress = Math.max(0, Math.min(1, (sub - 0.3 - i * 0.12) * 4))
         return (
           <div key={p.name} style={{
-            display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px',
-            background: p.active ? '#f0fdf4' : '#f8fafc', borderRadius: 8,
-            border: `1px solid ${p.active ? '#bbf7d0' : '#e4e4e7'}`,
-            opacity: itemProgress, transform: `translateY(${(1 - itemProgress) * 12}px)`,
+            display: 'flex', gap: 8, padding: '6px 8px',
+            background: '#fff', borderRadius: 10,
+            border: '1px solid #e4e4e7',
+            boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+            opacity: cardProgress,
+            transform: `translateX(${(1 - cardProgress) * 60}px)`,
           }}>
-            <span style={{ color: p.color, display: 'flex' }}><p.Icon /></span>
-            <span style={{ flex: 1, fontSize: 11, fontWeight: 500, color: '#18181b' }}>{p.name}</span>
-            <span style={{ fontSize: 13, color: p.active ? '#22c55e' : '#d4d4d8' }}>{p.active ? '✓' : '○'}</span>
+            {/* Mini food photo */}
+            <div style={{ width: 38, height: 38, borderRadius: 8, overflow: 'hidden', flexShrink: 0 }}>
+              <img src="/showcase/food.png" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              {/* Platform header */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 2 }}>
+                <span style={{ color: p.color, display: 'flex', transform: 'scale(0.7)', transformOrigin: 'left center' }}><p.Icon /></span>
+                <span style={{ fontSize: 9, fontWeight: 700, color: '#18181b' }}>{p.name}</span>
+                <span style={{ fontSize: 8, color: '#22c55e', fontWeight: 700, marginLeft: 'auto' }}>LIVE</span>
+              </div>
+              {/* Engagement metrics */}
+              <div style={{ display: 'flex', gap: 8, opacity: engagementProgress }}>
+                <span style={{ fontSize: 9, color: '#ef4444', display: 'flex', alignItems: 'center', gap: 2 }}>❤️ {Math.round(p.likes * engagementProgress)}</span>
+                <span style={{ fontSize: 9, color: '#71717a', display: 'flex', alignItems: 'center', gap: 2 }}>💬 {Math.round(p.comments * engagementProgress)}</span>
+              </div>
+            </div>
           </div>
         )
       })}
-      <div style={{ marginTop: 4, borderRadius: 10, padding: '10px', textAlign: 'center', fontSize: 12, fontWeight: 700, color: '#fff', position: 'relative', overflow: 'hidden', background: '#e4e4e7' }}>
-        <div style={{ position: 'absolute', inset: 0, background: '#22c55e', width: `${barProgress * 100}%`, borderRadius: 10, transition: 'none' }} />
-        <span style={{ position: 'relative', zIndex: 1 }}>{barProgress >= 1 ? '✓ ' : ''}{translations.postNow}</span>
-      </div>
     </div>
   )
 }
