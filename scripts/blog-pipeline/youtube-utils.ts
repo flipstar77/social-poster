@@ -93,7 +93,7 @@ print(json.dumps([s.text for s in t]))
 
       if (text.length > 100) return { text, lang }
     } catch (err) {
-      const msg = (err as { stderr?: Buffer })?.stderr?.toString()?.slice(0, 200) || (err as Error).message?.slice(0, 200)
+      const msg = (err as { stderr?: Buffer })?.stderr?.toString()?.slice(0, 500) || (err as Error).message?.slice(0, 500)
       console.log(`      [transcript-api/${lang}] ${msg}`)
     }
   }
@@ -108,7 +108,7 @@ print(json.dumps([s.text for s in t]))
       if (fs.existsSync(vttPath)) fs.unlinkSync(vttPath)
 
       execSync(
-        `python -m yt_dlp --write-auto-sub --sub-lang ${lang} --skip-download --sub-format vtt --js-runtimes nodejs -o "${outTemplate}" "https://www.youtube.com/watch?v=${videoId}"`,
+        `python -m yt_dlp --write-auto-sub --sub-lang ${lang} --skip-download --sub-format vtt --js-runtimes node -o "${outTemplate}" "https://www.youtube.com/watch?v=${videoId}"`,
         { timeout: 30000, stdio: 'pipe' }
       )
 
@@ -119,7 +119,7 @@ print(json.dumps([s.text for s in t]))
         if (text.length > 100) return { text, lang }
       }
     } catch (err) {
-      const msg = (err as { stderr?: Buffer })?.stderr?.toString()?.slice(0, 200) || (err as Error).message?.slice(0, 200)
+      const msg = (err as { stderr?: Buffer })?.stderr?.toString()?.slice(0, 500) || (err as Error).message?.slice(0, 500)
       console.log(`      [yt-dlp/${lang}] ${msg}`)
     }
   }
