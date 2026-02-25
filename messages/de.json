@@ -272,6 +272,62 @@
           "text": "Ich bin keine Social Media Expertin — aber mit FlowingPost sieht mein Feed aus wie von einer Agentur. Und das für einen Bruchteil der Kosten.",
           "stars": 5,
           "image": "/testimonials/elena.png"
+        },
+        {
+          "name": "Anna B.",
+          "role": "Bäckerei-Inhaberin",
+          "text": "Jeden Morgen ein Foto von den frischen Brötchen — und abends haben wir 3 neue Posts auf Instagram, Facebook und TikTok. Läuft einfach.",
+          "stars": 5,
+          "image": "/testimonials/anna.png"
+        },
+        {
+          "name": "Daniel F.",
+          "role": "Burger-Restaurant Inhaber",
+          "text": "Meine Burger-Fotos bekommen jetzt endlich die Reichweite, die sie verdienen. Vorher hatte ich keine Zeit für Social Media — jetzt macht es die KI.",
+          "stars": 5,
+          "image": "/testimonials/daniel.png"
+        },
+        {
+          "name": "Mike S.",
+          "role": "Food Truck Betreiber",
+          "text": "Als Food Trucker bin ich ständig unterwegs. Foto machen, hochladen, fertig. FlowingPost weiß sogar, welche Hashtags gerade trenden.",
+          "stars": 5,
+          "image": "/testimonials/mike.png"
+        },
+        {
+          "name": "Jan H.",
+          "role": "Craft Beer Bar Inhaber",
+          "text": "Unsere Tap-Wechsel poste ich jetzt in 30 Sekunden auf 4 Plattformen gleichzeitig. Die Stammgäste lieben es, dass sie immer up to date sind.",
+          "stars": 5,
+          "image": "/testimonials/jan.png"
+        },
+        {
+          "name": "Kenji T.",
+          "role": "Ramen-Restaurant Inhaber",
+          "text": "Die KI schreibt Captions, die wirklich nach uns klingen. Kein generischer Marketing-Sprech — authentisch und auf den Punkt.",
+          "stars": 5,
+          "image": "/testimonials/kenji.png"
+        },
+        {
+          "name": "Nisa P.",
+          "role": "Thai-Restaurant Inhaberin",
+          "text": "Seit wir FlowingPost nutzen, kommen neue Gäste und sagen: 'Ich hab euch auf TikTok gesehen!' Das war vorher undenkbar.",
+          "stars": 5,
+          "image": "/testimonials/nisa.png"
+        },
+        {
+          "name": "Julia V.",
+          "role": "Veganes Bistro Inhaberin",
+          "text": "Perfekt für unser kleines Team. Kein Social Media Manager nötig — die KI versteht unsere Marke und unsere vegane Community.",
+          "stars": 5,
+          "image": "/testimonials/julia.png"
+        },
+        {
+          "name": "Sophie L.",
+          "role": "Weinbar-Inhaberin",
+          "text": "Jeden Abend ein Foto vom Wein des Tages — morgens ist es auf allen Kanälen mit einer perfekten Caption. Meine Follower sind begeistert.",
+          "stars": 5,
+          "image": "/testimonials/sophie.png"
         }
       ]
     },

@@ -272,6 +272,62 @@
           "text": "I'm no social media expert — but with FlowingPost my feed looks like it's from an agency. And at a fraction of the cost.",
           "stars": 5,
           "image": "/testimonials/elena.png"
+        },
+        {
+          "name": "Anna B.",
+          "role": "Bakery owner",
+          "text": "Every morning a photo of the fresh rolls — and by evening we have 3 new posts on Instagram, Facebook and TikTok. Just works.",
+          "stars": 5,
+          "image": "/testimonials/anna.png"
+        },
+        {
+          "name": "Daniel F.",
+          "role": "Burger restaurant owner",
+          "text": "My burger photos finally get the reach they deserve. I never had time for social media before — now the AI handles it.",
+          "stars": 5,
+          "image": "/testimonials/daniel.png"
+        },
+        {
+          "name": "Mike S.",
+          "role": "Food truck operator",
+          "text": "As a food trucker I'm always on the move. Take a photo, upload, done. FlowingPost even knows which hashtags are trending.",
+          "stars": 5,
+          "image": "/testimonials/mike.png"
+        },
+        {
+          "name": "Jan H.",
+          "role": "Craft beer bar owner",
+          "text": "I now post our tap changes to 4 platforms in 30 seconds. Our regulars love staying up to date.",
+          "stars": 5,
+          "image": "/testimonials/jan.png"
+        },
+        {
+          "name": "Kenji T.",
+          "role": "Ramen restaurant owner",
+          "text": "The AI writes captions that actually sound like us. No generic marketing speak — authentic and on point.",
+          "stars": 5,
+          "image": "/testimonials/kenji.png"
+        },
+        {
+          "name": "Nisa P.",
+          "role": "Thai restaurant owner",
+          "text": "Since using FlowingPost, new guests come in saying: 'I saw you on TikTok!' That was unthinkable before.",
+          "stars": 5,
+          "image": "/testimonials/nisa.png"
+        },
+        {
+          "name": "Julia V.",
+          "role": "Vegan bistro owner",
+          "text": "Perfect for our small team. No social media manager needed — the AI understands our brand and our vegan community.",
+          "stars": 5,
+          "image": "/testimonials/julia.png"
+        },
+        {
+          "name": "Sophie L.",
+          "role": "Wine bar owner",
+          "text": "Every evening a photo of the wine of the day — by morning it's on all channels with a perfect caption. My followers love it.",
+          "stars": 5,
+          "image": "/testimonials/sophie.png"
         }
       ]
     },
