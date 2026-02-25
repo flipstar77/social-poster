@@ -206,7 +206,18 @@
       "inbound": "Eingehend",
       "outbound": "Ausgehend",
       "saved": "Gespeichert",
-      "backToTool": "← Zurück zum Tool"
+      "backToTool": "← Zurück zum Tool",
+      "connectTitle": "WhatsApp verbinden",
+      "connectDescription": "Verbinde dein WhatsApp Business Konto, um den Auto-Responder zu aktivieren.",
+      "connectManual": "Manuell verbinden",
+      "phoneNumberIdLabel": "Phone Number ID",
+      "accessTokenLabel": "Access Token",
+      "connect": "Verbinden",
+      "disconnect": "Trennen",
+      "connected": "Verbunden",
+      "notConnected": "Nicht verbunden",
+      "connectComingSoon": "Automatische Verbindung bald verfügbar",
+      "disconnectConfirm": "Wirklich trennen?"
     },
     "footer": "FlowingPost — powered by KI"
   },

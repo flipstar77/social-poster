@@ -206,7 +206,18 @@
       "inbound": "Inbound",
       "outbound": "Outbound",
       "saved": "Saved",
-      "backToTool": "← Back to tool"
+      "backToTool": "← Back to tool",
+      "connectTitle": "Connect WhatsApp",
+      "connectDescription": "Connect your WhatsApp Business account to activate the auto-responder.",
+      "connectManual": "Connect manually",
+      "phoneNumberIdLabel": "Phone Number ID",
+      "accessTokenLabel": "Access Token",
+      "connect": "Connect",
+      "disconnect": "Disconnect",
+      "connected": "Connected",
+      "notConnected": "Not connected",
+      "connectComingSoon": "Automatic connection coming soon",
+      "disconnectConfirm": "Really disconnect?"
     },
     "footer": "FlowingPost — powered by AI"
   },

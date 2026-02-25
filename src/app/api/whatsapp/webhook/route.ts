@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { createHmac } from 'crypto'
-import { sendText, markAsRead } from '@/lib/whatsapp/client'
+import { sendText, markAsRead, type WaCredentials } from '@/lib/whatsapp/client'
 import { routeMessage, type RouterConfig } from '@/lib/whatsapp/router'
 
 export const runtime = 'nodejs'
@@ -75,22 +75,26 @@ export async function POST(request: NextRequest) {
 
     console.log(`[WhatsApp Webhook] Message from ${senderPhone}: "${messageText}"`)
 
-    // Mark as read (non-blocking)
-    markAsRead(messageId).catch(() => {})
-
-    const admin = getAdmin()
-
-    // For test mode: find the profile that owns this phone number ID
-    // In production this would look up whatsapp_accounts table
-    const profileId = await findProfileForPhone(phoneNumberId)
-    if (!profileId) {
-      console.error(`[WhatsApp Webhook] No profile found for phone_number_id: ${phoneNumberId}`)
+    // Look up WhatsApp account from DB, with env fallback for test mode
+    const account = await findAccountForPhone(phoneNumberId)
+    if (!account) {
+      console.error(`[WhatsApp Webhook] No account found for phone_number_id: ${phoneNumberId}`)
       return NextResponse.json({ received: true })
     }
 
+    const creds: WaCredentials = {
+      accessToken: account.accessToken,
+      phoneNumberId: account.phoneNumberId,
+    }
+
+    // Mark as read (non-blocking)
+    markAsRead(messageId, creds).catch(() => {})
+
+    const admin = getAdmin()
+
     // Log inbound message
     await admin.from('whatsapp_messages').insert({
-      profile_id: profileId,
+      profile_id: account.profileId,
       wa_message_id: messageId,
       direction: 'inbound',
       from_number: senderPhone,
@@ -103,7 +107,7 @@ export async function POST(request: NextRequest) {
     const { data: profile } = await admin
       .from('profiles')
       .select('wa_greeting, wa_opening_hours, wa_menu_url, wa_keywords, wa_auto_reply_enabled')
-      .eq('id', profileId)
+      .eq('id', account.profileId)
       .single()
 
     if (!profile?.wa_auto_reply_enabled) {
@@ -119,12 +123,12 @@ export async function POST(request: NextRequest) {
 
     const reply = routeMessage(messageText, config)
 
-    // Send reply
-    await sendText(senderPhone, reply)
+    // Send reply using per-account credentials
+    await sendText(senderPhone, reply, creds)
 
     // Log outbound message
     await admin.from('whatsapp_messages').insert({
-      profile_id: profileId,
+      profile_id: account.profileId,
       direction: 'outbound',
       from_number: phoneNumberId,
       to_number: senderPhone,
@@ -140,20 +144,53 @@ export async function POST(request: NextRequest) {
   return NextResponse.json({ received: true })
 }
 
-// Test mode: match phone_number_id from env to find the owner profile
-// In production this would query a whatsapp_accounts table
-async function findProfileForPhone(phoneNumberId: string): Promise<string | null> {
-  // In test mode, the phone number ID is stored in env
-  // Find the first profile with whatsapp features enabled
+interface AccountInfo {
+  profileId: string
+  accessToken: string
+  phoneNumberId: string
+}
+
+// Look up WhatsApp account by phone_number_id
+// First checks whatsapp_accounts table, then falls back to env (test mode)
+async function findAccountForPhone(phoneNumberId: string): Promise<AccountInfo | null> {
+  const admin = getAdmin()
+
+  // 1) Check whatsapp_accounts table
+  const { data: account } = await admin
+    .from('whatsapp_accounts')
+    .select('profile_id, access_token, phone_number_id')
+    .eq('phone_number_id', phoneNumberId)
+    .eq('status', 'active')
+    .maybeSingle()
+
+  if (account) {
+    return {
+      profileId: (account as { profile_id: string }).profile_id,
+      accessToken: (account as { access_token: string }).access_token,
+      phoneNumberId: (account as { phone_number_id: string }).phone_number_id,
+    }
+  }
+
+  // 2) Fallback: env-based test mode
   if (phoneNumberId === process.env.WHATSAPP_PHONE_NUMBER_ID) {
-    const admin = getAdmin()
-    const { data } = await admin
+    const accessToken = process.env.WHATSAPP_ACCESS_TOKEN
+    if (!accessToken) return null
+
+    const { data: profile } = await admin
       .from('profiles')
       .select('id')
       .eq('wa_auto_reply_enabled', true)
       .limit(1)
       .single()
-    return (data as { id: string } | null)?.id || null
+
+    if (profile) {
+      return {
+        profileId: (profile as { id: string }).id,
+        accessToken,
+        phoneNumberId,
+      }
+    }
   }
+
   return null
 }

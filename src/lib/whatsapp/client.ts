@@ -1,6 +1,12 @@
 const API_VERSION = 'v21.0'
 
-function getConfig() {
+export interface WaCredentials {
+  accessToken: string
+  phoneNumberId: string
+}
+
+/** Fallback: read credentials from env (test mode) */
+function getEnvConfig(): WaCredentials {
   const accessToken = process.env.WHATSAPP_ACCESS_TOKEN
   const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID
   if (!accessToken || !phoneNumberId) {
@@ -13,8 +19,8 @@ function getBaseUrl(phoneNumberId: string) {
   return `https://graph.facebook.com/${API_VERSION}/${phoneNumberId}/messages`
 }
 
-export async function sendText(to: string, text: string): Promise<void> {
-  const { accessToken, phoneNumberId } = getConfig()
+export async function sendText(to: string, text: string, creds?: WaCredentials): Promise<void> {
+  const { accessToken, phoneNumberId } = creds ?? getEnvConfig()
 
   const res = await fetch(getBaseUrl(phoneNumberId), {
     method: 'POST',
@@ -37,8 +43,8 @@ export async function sendText(to: string, text: string): Promise<void> {
   }
 }
 
-export async function markAsRead(messageId: string): Promise<void> {
-  const { accessToken, phoneNumberId } = getConfig()
+export async function markAsRead(messageId: string, creds?: WaCredentials): Promise<void> {
+  const { accessToken, phoneNumberId } = creds ?? getEnvConfig()
 
   const res = await fetch(getBaseUrl(phoneNumberId), {
     method: 'POST',
@@ -54,7 +60,6 @@ export async function markAsRead(messageId: string): Promise<void> {
   })
 
   if (!res.ok) {
-    // Non-critical — don't throw
     console.error('[WhatsApp Client] markAsRead failed:', await res.text())
   }
 }
