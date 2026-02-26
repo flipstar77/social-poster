@@ -104,6 +104,12 @@ const MANUAL_LINKS: Array<{ phrases: string[]; slug: string }> = [
   { phrases: ['online sichtbarkeit', 'online präsenz', 'online gefunden werden'], slug: 'restaurant-online-sichtbarkeit' },
   { phrases: ['marketing jahresplan', 'jahresplanung', 'marketing jahreskalender'], slug: 'gastronomie-marketing-jahresplan' },
   { phrases: ['content marketing'], slug: 'restaurant-content-marketing' },
+  // Bio canonical — ensures "instagram bio" links to main article, not variants
+  { phrases: ['instagram bio', 'profil bio', 'bio optimieren', 'bio erstellen'], slug: 'bio-instagram-fuer-restaurant-so-machst-du-dein-profil-zum-gast-magneten' },
+  // Pillar pages — high-priority, should be linked from all cluster articles
+  { phrases: ['instagram marketing', 'instagram für restaurants'], slug: 'instagram-marketing-restaurant' },
+  { phrases: ['bei google gefunden', 'google marketing restaurant', 'lokal bei google'], slug: 'restaurant-google-marketing' },
+  { phrases: ['social media system', 'social media für gastronomen', 'restaurant marketing system'], slug: 'social-media-strategie-gastronomen' },
 ]
 
 /**
