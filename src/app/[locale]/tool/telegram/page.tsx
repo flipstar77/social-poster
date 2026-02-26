@@ -143,16 +143,36 @@ export default function TelegramDashboard() {
                 </button>
               ) : (
                 <div>
-                  {/* One-click deep link — opens Telegram with /start CODE pre-filled */}
-                  <a
-                    href={`https://t.me/positivealerts_bot?start=${linkCode}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg transition-colors mb-3"
-                  >
-                    <span>✈️</span>
-                    <span>In Telegram öffnen & verknüpfen</span>
-                  </a>
+                  {/* Two options: deep link (desktop) + QR code (mobile) */}
+                  <div className="flex gap-3 mb-3">
+                    {/* Deep link button */}
+                    <a
+                      href={`https://t.me/positivealerts_bot?start=${linkCode}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 flex items-center justify-center gap-2 py-3 px-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg transition-colors"
+                    >
+                      <span>✈️</span>
+                      <span>In Telegram öffnen</span>
+                    </a>
+
+                    {/* QR code for mobile */}
+                    <details className="relative">
+                      <summary className="flex items-center justify-center gap-1.5 px-4 py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg cursor-pointer transition-colors text-sm font-medium text-gray-700 dark:text-gray-300 list-none select-none">
+                        📱 QR-Code
+                      </summary>
+                      <div className="absolute right-0 top-full mt-2 z-10 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl p-3 shadow-lg text-center">
+                        <img
+                          src={`https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(`https://t.me/positivealerts_bot?start=${linkCode}`)}&size=160x160&margin=10`}
+                          alt="QR Code"
+                          width={160}
+                          height={160}
+                          className="rounded-lg"
+                        />
+                        <div className="text-xs text-gray-400 mt-2">Mit Handy scannen</div>
+                      </div>
+                    </details>
+                  </div>
 
                   <div className="text-xs text-gray-400 dark:text-gray-500 text-center mb-3">
                     Läuft ab in {Math.floor(secondsLeft / 60)}:{String(secondsLeft % 60).padStart(2, '0')}
