@@ -184,7 +184,8 @@ async function renderVideo(
   const composition = await selectComposition({
     serveUrl: bundleLocation,
     id: 'Blog-Video',
-    inputProps: props,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    inputProps: props as unknown as Record<string, unknown>,
   })
 
   console.log(`   🖥️  Rendering ${totalFrames} frames...`)
@@ -193,7 +194,8 @@ async function renderVideo(
     serveUrl: bundleLocation,
     codec: 'h264',
     outputLocation: outputPath,
-    inputProps: props,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    inputProps: props as unknown as Record<string, unknown>,
   })
 }
 
