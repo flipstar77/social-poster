@@ -110,6 +110,7 @@ Regeln:
     },
     body: JSON.stringify({
       model: 'grok-3-mini-fast',
+      reasoning_effort: 'none',
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: `Foto-Beschreibung: ${description}` },
