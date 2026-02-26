@@ -10,3 +10,8 @@ scripts/accounts.json
 scripts/bot-stats.json
 scripts/followups.json
 scripts/logs/
+
+# Generated video/audio files (too large for git, rendered locally)
+public/videos/
+public/audio/
+output/

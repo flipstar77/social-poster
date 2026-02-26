@@ -19,7 +19,9 @@
     "blog:pipeline": "tsx scripts/blog-pipeline/run-pipeline.ts",
     "blog:youtube": "tsx scripts/blog-pipeline/scrape-youtube.ts",
     "blog:feeds": "tsx scripts/blog-pipeline/youtube-feeds.ts",
-    "blog:feeds:dry": "tsx scripts/blog-pipeline/youtube-feeds.ts --dry-run"
+    "blog:feeds:dry": "tsx scripts/blog-pipeline/youtube-feeds.ts --dry-run",
+    "blog:video": "tsx scripts/blog-pipeline/article-to-video.ts",
+    "blog:video:dry": "tsx scripts/blog-pipeline/article-to-video.ts --dry-run"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",
