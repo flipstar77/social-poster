@@ -109,8 +109,7 @@ Regeln:
       'Authorization': `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: 'grok-3-mini-fast',
-      reasoning_effort: 'none',
+      model: 'grok-4-1-fast-non-reasoning',
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: `Foto-Beschreibung: ${description}` },

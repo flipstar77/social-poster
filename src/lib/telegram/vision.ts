@@ -9,7 +9,7 @@ export async function describePhoto(base64: string): Promise<string> {
       'Authorization': `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: 'grok-2-vision-1212',
+      model: 'grok-4-1-fast-non-reasoning',
       messages: [
         {
           role: 'user',
