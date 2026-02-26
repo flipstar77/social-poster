@@ -89,6 +89,49 @@ export function truncate(text: string, maxChars: number = 3000): string {
   return text.length <= maxChars ? text : text.slice(0, maxChars) + '...'
 }
 
+// --- Tavily web search ---
+
+export interface WebSearchResult {
+  title: string
+  url: string
+  content: string
+  score: number
+}
+
+export async function searchWeb(query: string, maxResults: number = 5): Promise<WebSearchResult[]> {
+  const apiKey = process.env.TAVILY_API_KEY
+  if (!apiKey) {
+    console.log('   ⚠️  TAVILY_API_KEY not set — skipping web search')
+    return []
+  }
+
+  try {
+    const res = await fetch('https://api.tavily.com/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        api_key: apiKey,
+        query,
+        search_depth: 'advanced',
+        max_results: maxResults,
+        include_answer: false,
+        include_raw_content: false,
+      }),
+    })
+
+    if (!res.ok) {
+      console.log(`   ⚠️  Tavily error: ${res.status}`)
+      return []
+    }
+
+    const data = await res.json() as { results: WebSearchResult[] }
+    return data.results || []
+  } catch (err) {
+    console.log(`   ⚠️  Tavily failed: ${(err as Error).message?.slice(0, 100)}`)
+    return []
+  }
+}
+
 // --- Find relevant source articles ---
 
 export interface SourceArticle {
@@ -145,6 +188,25 @@ INHALTLICHE QUALITÄT:
 - Der Artikel MUSS mindestens 1800 Wörter haben. Schreibe ausführlich mit vielen praktischen Details.
 - Am Ende: ein Fazit-Abschnitt + kurzer, natürlicher CTA zu FlowingPost (1-2 Sätze, nicht aufdringlich).
 
+SVG-DIAGRAMME:
+- Baue 1-2 einfache SVG-Diagramme direkt in den Artikel ein, wo es inhaltlich passt (Balkendiagramm, Vergleich, Statistik).
+- SVG direkt als HTML/JSX im Markdown — kein Code-Block, direkt im Text.
+- Halte SVGs einfach: max. 400px breit, dunkles Theme (#1a1a2e Hintergrund, #a78bfa Akzentfarbe, weiße Beschriftung).
+- Beispiel für ein einfaches Balkendiagramm:
+<svg viewBox="0 0 400 200" style={{width:'100%',maxWidth:'400px',display:'block',margin:'24px auto'}}>
+  <rect width="400" height="200" fill="#1a1a2e" rx="8"/>
+  <text x="200" y="24" textAnchor="middle" fill="white" fontSize="13" fontWeight="bold">Titel</text>
+  <rect x="40" y="40" width="120" height="80" fill="#a78bfa" rx="4"/>
+  <text x="100" y="138" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="11">Label A</text>
+  <text x="100" y="80" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">42%</text>
+</svg>
+- Passe Werte, Labels und Farben dem Artikel-Inhalt an. Nutze echte Zahlen aus den Quellen.
+
+QUELLENANGABEN:
+- Wenn du konkrete Zahlen oder Fakten aus den Web-Quellen verwendest, füge am Ende des Artikels einen Abschnitt "## Quellen" ein.
+- Format: einfache Markdown-Liste mit Titel und URL der Quelle.
+- Nur für Fakten mit Zahlen, nicht für allgemeine Aussagen.
+
 SEO-REGELN:
 - H2 (##) für Hauptabschnitte, H3 (###) für Unterabschnitte.
 - Haupt-Keyword natürlich im Titel, in der Einleitung (erste 100 Wörter), und in mindestens 3 H2-Überschriften einbauen.
@@ -162,18 +224,28 @@ Der Artikeltext beginnt direkt mit dem Einleitungsabsatz (kein H1, kein Frontmat
 export function buildUserPrompt(
   keyword: string,
   category: string,
-  sources: Array<{ title: string; content: string; source_id: string }>
+  sources: Array<{ title: string; content: string; source_id: string }>,
+  webResults: WebSearchResult[] = []
 ): string {
   const contextBlock = sources.map((a, i) =>
     `### Quelle ${i + 1}: "${a.title}" (${a.source_id})\n${truncate(a.content)}`
   ).join('\n\n')
+
+  const webBlock = webResults.length > 0
+    ? `\n\n### Aktuelle Web-Quellen (Tavily, ${new Date().getFullYear()}):\n` +
+      webResults.map(r =>
+        `**${r.title}** (${r.url})\n${truncate(r.content, 800)}`
+      ).join('\n\n')
+    : ''
 
   return `Schreibe einen umfassenden, detaillierten Blog-Artikel zum Keyword: "${keyword}"
 Kategorie: ${category}
 
 WICHTIG: Nutze die folgenden Quellen aktiv als Wissensbasis. Übernimm konkrete Zahlen, Strategien und Beispiele daraus (in eigenen Worten, nicht kopieren). Der Artikel soll die besten Erkenntnisse aus allen Quellen kombinieren und für DACH-Restaurantbesitzer aufbereiten.
 
-${sources.length > 0 ? contextBlock : 'Keine Quellen verfügbar — schreibe basierend auf allgemeinem Fachwissen.'}
+${sources.length > 0 ? contextBlock : 'Keine Datenbank-Quellen verfügbar.'}${webBlock}
+
+${sources.length === 0 && webResults.length === 0 ? 'Keine Quellen verfügbar — schreibe basierend auf allgemeinem Fachwissen.' : ''}
 
 Schreibe jetzt einen ausführlichen Artikel mit mindestens 1800 Wörtern.`
 }
@@ -183,13 +255,14 @@ Schreibe jetzt einen ausführlichen Artikel mit mindestens 1800 Wörtern.`
 export async function generateArticleContent(
   keyword: string,
   category: string,
-  sources: Array<{ title: string; content: string; source_id: string }>
+  sources: Array<{ title: string; content: string; source_id: string }>,
+  webResults: WebSearchResult[] = []
 ): Promise<string> {
   const response = await getXai().chat.completions.create({
     model: 'grok-4-1-fast-non-reasoning',
     messages: [
       { role: 'system', content: buildSystemPrompt() },
-      { role: 'user', content: buildUserPrompt(keyword, category, sources) },
+      { role: 'user', content: buildUserPrompt(keyword, category, sources, webResults) },
     ],
     temperature: 0.7,
     max_tokens: 8000,
@@ -235,11 +308,18 @@ export async function buildAndSaveArticle(
 ): Promise<SaveArticleResult> {
   const fail = { slug: '', wordCount: 0, success: false }
 
+  // Web search via Tavily
+  console.log(`   🌐 Searching web for: "${keyword}"`)
+  const webResults = await searchWeb(`${keyword} Restaurant DACH Deutschland Statistiken`)
+  if (webResults.length > 0) {
+    console.log(`   🌐 ${webResults.length} web results found`)
+  }
+
   // Generate
   console.log(`   📚 ${sources.length} source articles found`)
   let raw: string
   try {
-    raw = await generateArticleContent(keyword, category, sources)
+    raw = await generateArticleContent(keyword, category, sources, webResults)
     console.log(`   🤖 Grok response: ${raw.length} chars`)
   } catch (e) {
     console.log(`   ❌ API error: ${(e as Error).message?.slice(0, 200)}`)
