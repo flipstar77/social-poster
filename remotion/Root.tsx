@@ -69,7 +69,8 @@ export const RemotionRoot: React.FC = () => (
     {/* Blog article video — multi-slide narrated format */}
     <Composition
       id="Blog-Video"
-      component={BlogVideoSlides}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      component={BlogVideoSlides as any}
       durationInFrames={2700}
       fps={FPS}
       width={WIDTH}
