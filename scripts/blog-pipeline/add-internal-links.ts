@@ -61,6 +61,52 @@ interface LinkEntry {
 }
 
 /**
+ * Manual phrase → slug mappings.
+ * These override/supplement the auto-extracted title phrases.
+ * Phrases are case-insensitive, matched in article body text.
+ */
+const MANUAL_LINKS: Array<{ phrases: string[]; slug: string }> = [
+  { phrases: ['google business profil', 'google business', 'google-my-business'], slug: 'google-business-profil-restaurant' },
+  { phrases: ['google maps optimieren', 'google maps', 'google karte'], slug: 'google-maps-restaurant-optimieren' },
+  { phrases: ['google bewertungen', 'google rezensionen', 'bewertungen auf google'], slug: 'google-bewertungen-restaurant-mehr-bekommen' },
+  { phrases: ['google ranking', 'google platzierung', 'suchmaschinen-ranking'], slug: 'restaurant-google-ranking-verbessern' },
+  { phrases: ['google ads', 'google werbung', 'suchmaschinenwerbung'], slug: 'google-ads-restaurant' },
+  { phrases: ['instagram reels', 'reels erstellen', 'reels für restaurants'], slug: 'instagram-reels-restaurant-mehr-gaeste' },
+  { phrases: ['instagram hashtags', 'hashtags für instagram'], slug: 'instagram-hashtags-restaurant-guide' },
+  { phrases: ['instagram feed', 'feed gestalten', 'feed planen'], slug: 'instagram-feed-restaurant-gestalten' },
+  { phrases: ['instagram stories', 'stories posten', 'story aufnehmen'], slug: 'restaurant-instagram-stories-tipps' },
+  { phrases: ['instagram captions', 'bildunterschriften', 'caption schreiben'], slug: 'restaurant-instagram-captions' },
+  { phrases: ['instagram reichweite', 'reichweite erhöhen', 'mehr reichweite'], slug: 'instagram-reichweite-gastronomie' },
+  { phrases: ['instagram tipps', 'instagram post ideen'], slug: 'restaurant-post-ideen-instagram' },
+  { phrases: ['tiktok marketing', 'tiktok für restaurants'], slug: 'tiktok-marketing-restaurant-anleitung' },
+  { phrases: ['tiktok hashtags'], slug: 'tiktok-hashtags-restaurant' },
+  { phrases: ['tiktok video ideen', 'tiktok ideen', 'tiktok videos erstellen'], slug: 'tiktok-video-ideen-restaurant' },
+  { phrases: ['tiktok trends', 'tiktok algorithmus'], slug: 'tiktok-trends-gastronomie' },
+  { phrases: ['social media plan', 'content plan', 'redaktionsplan', 'posting plan'], slug: 'social-media-plan-restaurant' },
+  { phrases: ['social media strategie', 'social-media-strategie'], slug: 'social-media-strategie-restaurant' },
+  { phrases: ['restaurant seo', 'lokale seo', 'seo für restaurants'], slug: 'restaurant-seo-google-gefunden-werden' },
+  { phrases: ['restaurant website', 'webseite optimieren', 'website verbessern'], slug: 'restaurant-website-optimieren' },
+  { phrases: ['foodfotografie', 'food fotografie', 'speisen fotografieren', 'fotos mit dem smartphone'], slug: 'foodfotografie-restaurant-tipps' },
+  { phrases: ['restaurant branding', 'markenidentität', 'marke aufbauen'], slug: 'restaurant-branding-identitaet' },
+  { phrases: ['stammgäste', 'stammkunden gewinnen', 'kundenbindung'], slug: 'stammgaeste-aufbauen-gastronomie' },
+  { phrases: ['negative bewertungen', 'schlechte bewertungen', 'bewertungen beantworten'], slug: 'negative-bewertungen-restaurant' },
+  { phrases: ['newsletter', 'e-mail marketing', 'email marketing'], slug: 'email-newsletter-restaurant' },
+  { phrases: ['facebook marketing', 'facebook für restaurants'], slug: 'facebook-marketing-restaurant' },
+  { phrases: ['influencer', 'food blogger', 'creator kooperation'], slug: 'food-blogger-influencer-restaurant' },
+  { phrases: ['events vermarkten', 'restaurant events', 'veranstaltungen bewerben'], slug: 'restaurant-events-vermarkten' },
+  { phrases: ['lieferservice', 'delivery marketing', 'lieferdienst marketing'], slug: 'restaurant-lieferservice-marketing' },
+  { phrases: ['digitale speisekarte', 'online menü', 'qr-code menü', 'qr code menü'], slug: 'digitale-speisekarte-restaurant' },
+  { phrases: ['content ideen', 'post ideen', 'beitragsideen', 'content kalender'], slug: 'restaurant-content-ideen-wochenplan' },
+  { phrases: ['marketing strategie', 'marketingplan', 'marketing plan erstellen'], slug: 'restaurant-marketing-strategie-2025' },
+  { phrases: ['saisonales marketing', 'saisonale angebote', 'saisonale posts'], slug: 'saisonales-marketing-restaurant' },
+  { phrases: ['mehr gäste gewinnen', 'neue gäste', 'gäste gewinnen'], slug: 'mehr-gaeste-restaurant-strategien' },
+  { phrases: ['neueröffnung', 'restaurant eröffnung', 'neu eröffnen'], slug: 'restaurant-neueroffnung-marketing' },
+  { phrases: ['online sichtbarkeit', 'online präsenz', 'online gefunden werden'], slug: 'restaurant-online-sichtbarkeit' },
+  { phrases: ['marketing jahresplan', 'jahresplanung', 'marketing jahreskalender'], slug: 'gastronomie-marketing-jahresplan' },
+  { phrases: ['content marketing'], slug: 'restaurant-content-marketing' },
+]
+
+/**
  * Extract the best 2-word phrases from an article title for use as link anchors.
  * Focuses on the part before the colon (the "headline"), ignores subtitle.
  */
@@ -107,13 +153,16 @@ function extractPhrases(title: string): string[] {
 
 /**
  * Build the full link index from all MDX articles.
+ * Combines title-extracted phrases with manual link mappings.
  */
 function buildLinkIndex(): LinkEntry[] {
   const files = fs.readdirSync(BLOG_DIR).filter(f => f.endsWith('.mdx'))
   const entries: LinkEntry[] = []
+  const existingSlugs = new Set<string>()
 
   for (const filename of files) {
     const slug = filename.replace('.mdx', '')
+    existingSlugs.add(slug)
     const raw = fs.readFileSync(path.join(BLOG_DIR, filename), 'utf-8')
     const { data } = matter(raw)
 
@@ -122,6 +171,19 @@ function buildLinkIndex(): LinkEntry[] {
     const phrases = extractPhrases(String(data.title))
     if (phrases.length > 0) {
       entries.push({ slug, title: String(data.title), phrases })
+    }
+  }
+
+  // Merge manual links — add or extend existing entries
+  for (const manual of MANUAL_LINKS) {
+    if (!existingSlugs.has(manual.slug)) continue // skip if article doesn't exist
+    const existing = entries.find(e => e.slug === manual.slug)
+    const lowerPhrases = manual.phrases.map(p => p.toLowerCase())
+    if (existing) {
+      // Prepend manual phrases (they take priority over auto-extracted)
+      existing.phrases = [...lowerPhrases, ...existing.phrases]
+    } else {
+      entries.push({ slug: manual.slug, title: manual.slug, phrases: lowerPhrases })
     }
   }
 
