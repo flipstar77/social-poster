@@ -143,26 +143,40 @@ export default function TelegramDashboard() {
                 </button>
               ) : (
                 <div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                    {t('codeInstructions')} <strong>{t('botName')}</strong>
+                  {/* One-click deep link — opens Telegram with /start CODE pre-filled */}
+                  <a
+                    href={`https://t.me/positivealerts_bot?start=${linkCode}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg transition-colors mb-3"
+                  >
+                    <span>✈️</span>
+                    <span>In Telegram öffnen & verknüpfen</span>
+                  </a>
+
+                  <div className="text-xs text-gray-400 dark:text-gray-500 text-center mb-3">
+                    Läuft ab in {Math.floor(secondsLeft / 60)}:{String(secondsLeft % 60).padStart(2, '0')}
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1 font-mono text-2xl font-bold tracking-widest text-center py-3 px-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white select-all">
-                      {linkCode}
+                  <details className="text-sm">
+                    <summary className="text-gray-400 cursor-pointer hover:text-gray-600 dark:hover:text-gray-300">
+                      Manuell verknüpfen
+                    </summary>
+                    <div className="mt-2 flex items-center gap-2">
+                      <div className="flex-1 font-mono text-lg font-bold tracking-widest text-center py-2 px-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white select-all">
+                        {linkCode}
+                      </div>
+                      <button
+                        onClick={copyCode}
+                        className="px-3 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded-lg transition-colors text-sm font-medium"
+                      >
+                        {copied ? '✓' : 'Kopieren'}
+                      </button>
                     </div>
-                    <button
-                      onClick={copyCode}
-                      className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm font-medium whitespace-nowrap"
-                    >
-                      {copied ? t('codeCopied') : 'Kopieren + /start'}
-                    </button>
-                  </div>
-
-                  <div className="text-xs text-gray-400 dark:text-gray-500 mt-2 text-center">
-                    Läuft ab in {Math.floor(secondsLeft / 60)}:{String(secondsLeft % 60).padStart(2, '0')} · Sende{' '}
-                    <code className="font-mono">/start {linkCode}</code> im Bot
-                  </div>
+                    <div className="text-xs text-gray-400 mt-1">
+                      Sende <code className="font-mono">/start {linkCode}</code> im Bot
+                    </div>
+                  </details>
 
                   <button
                     onClick={generateCode}
