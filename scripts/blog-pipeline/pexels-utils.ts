@@ -111,6 +111,13 @@ function buildSearchQueries(keyword: string, category: string): string[] {
 // Track used photo IDs across a single run to avoid duplicates
 const usedPhotoIds = new Set<number>()
 
+// Permanently blacklisted photo IDs — wrong content for restaurant blog
+// (gym photos, abstract/chemistry, non-food content)
+const BLACKLISTED_IDS = new Set<number>([
+  744780,   // Victor Freitas — gym/fitness
+  36130567, // Optical Chemist — abstract chemistry
+])
+
 /**
  * Fetch a hero image for a blog article.
  * Tries multiple search queries and avoids previously used photos.
@@ -121,8 +128,8 @@ export async function fetchHeroImage(keyword: string, category: string, excludeI
     return null
   }
 
-  // Merge exclusions: both explicit + session-tracked
-  const allExcluded = new Set([...usedPhotoIds, ...excludeIds])
+  // Merge exclusions: blacklist + session-tracked + explicit
+  const allExcluded = new Set([...BLACKLISTED_IDS, ...usedPhotoIds, ...excludeIds])
   const queries = buildSearchQueries(keyword, category)
 
   for (const query of queries) {
