@@ -10,6 +10,7 @@ type PostMeta = {
   description: string
   date: string
   category: string
+  type?: 'pillar' | 'article'
   readingTime: string
   image?: string
   imageMedium?: string
@@ -34,9 +35,11 @@ export default function BlogPage() {
       .catch(() => setLoading(false))
   }, [locale])
 
+  const pillars = posts.filter(p => p.type === 'pillar')
+  const articles = posts.filter(p => p.type !== 'pillar')
   const filtered = activeCategory === 'Alle'
-    ? posts
-    : posts.filter(p => p.category === activeCategory)
+    ? articles
+    : articles.filter(p => p.category === activeCategory)
 
   return (
     <div style={{ minHeight: '100vh', background: '#0a0a0a', color: '#fff' }}>
@@ -88,6 +91,122 @@ export default function BlogPage() {
           Praxisnahe Tipps für Instagram, TikTok, Google Maps und mehr — speziell für Restaurants, Cafés und Bars.
         </p>
       </header>
+
+      {/* Pillar Guides */}
+      {pillars.length > 0 && (
+        <section style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 24px 64px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+            <div style={{
+              width: '28px', height: '28px', borderRadius: '8px',
+              background: 'linear-gradient(135deg, #a78bfa, #6d28d9)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '14px',
+            }}>📖</div>
+            <h2 style={{ fontSize: '1rem', fontWeight: 700, color: 'rgba(255,255,255,0.9)', margin: 0 }}>
+              Komplette Leitfäden
+            </h2>
+            <span style={{
+              fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)',
+              background: 'rgba(255,255,255,0.06)', padding: '2px 10px', borderRadius: '99px',
+            }}>
+              Pillar Guides
+            </span>
+          </div>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+            gap: '20px',
+          }}>
+            {pillars.map(post => (
+              <Link
+                key={post.slug}
+                href={`/blog/${post.slug}`}
+                style={{ textDecoration: 'none', color: 'inherit' }}
+              >
+                <article style={{
+                  background: 'linear-gradient(135deg, rgba(167,139,250,0.08), rgba(109,40,217,0.04))',
+                  border: '1px solid rgba(167,139,250,0.2)',
+                  borderRadius: '16px',
+                  overflow: 'hidden',
+                  transition: 'all 0.25s',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.borderColor = 'rgba(167,139,250,0.5)'
+                    e.currentTarget.style.transform = 'translateY(-4px)'
+                    e.currentTarget.style.boxShadow = '0 12px 40px rgba(167,139,250,0.12)'
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.borderColor = 'rgba(167,139,250,0.2)'
+                    e.currentTarget.style.transform = 'translateY(0)'
+                    e.currentTarget.style.boxShadow = 'none'
+                  }}
+                >
+                  {post.imageMedium && post.imageMedium.startsWith('http') && (
+                    <div style={{ width: '100%', aspectRatio: '16/9', overflow: 'hidden' }}>
+                      <img
+                        src={post.imageMedium}
+                        alt={post.title}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        loading="lazy"
+                      />
+                    </div>
+                  )}
+                  <div style={{ padding: '24px' }}>
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', alignItems: 'center' }}>
+                      <span style={{
+                        padding: '3px 10px', borderRadius: '99px',
+                        background: 'rgba(167,139,250,0.2)', color: '#a78bfa',
+                        fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.04em',
+                        textTransform: 'uppercase',
+                      }}>
+                        Leitfaden
+                      </span>
+                      <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.8rem' }}>
+                        {post.readingTime}
+                      </span>
+                    </div>
+                    <h3 style={{
+                      fontSize: '1.1rem', fontWeight: 700, lineHeight: 1.3,
+                      marginBottom: '10px', color: '#fff',
+                    }}>
+                      {post.title}
+                    </h3>
+                    <p style={{
+                      color: 'rgba(255,255,255,0.5)', fontSize: '0.88rem',
+                      lineHeight: 1.5, marginBottom: '16px',
+                    }}>
+                      {post.description}
+                    </p>
+                    <span style={{
+                      display: 'inline-flex', alignItems: 'center', gap: '6px',
+                      color: '#a78bfa', fontSize: '0.85rem', fontWeight: 600,
+                    }}>
+                      Vollständigen Guide lesen →
+                    </span>
+                  </div>
+                </article>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Divider */}
+      {pillars.length > 0 && (
+        <div style={{
+          maxWidth: '1100px', margin: '0 auto 48px', padding: '0 24px',
+          display: 'flex', alignItems: 'center', gap: '16px',
+        }}>
+          <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.06)' }} />
+          <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.85rem', fontWeight: 600 }}>
+            Alle Artikel
+          </span>
+          <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.06)' }} />
+        </div>
+      )}
 
       {/* Category Filter */}
       <div style={{

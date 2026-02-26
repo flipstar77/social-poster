@@ -10,6 +10,7 @@ export type BlogPost = {
   description: string
   date: string
   category: string
+  type?: 'pillar' | 'article'
   readingTime: string
   image?: string
   imageMedium?: string
@@ -48,6 +49,7 @@ export function getAllPosts(locale: string = 'de'): BlogPostMeta[] {
         description: data.description || '',
         date: data.date || '',
         category: data.category || 'Allgemein',
+        type: data.type === 'pillar' ? 'pillar' : 'article',
         readingTime: estimateReadingTime(content),
         image: data.image,
         imageMedium: data.imageMedium,
@@ -76,6 +78,7 @@ export function getPostBySlug(slug: string): BlogPost | null {
     description: data.description || '',
     date: data.date || '',
     category: data.category || 'Allgemein',
+    type: data.type === 'pillar' ? 'pillar' : 'article',
     readingTime: estimateReadingTime(content),
     image: data.image,
     imageMedium: data.imageMedium,

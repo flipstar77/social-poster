@@ -136,10 +136,14 @@ async function main() {
     query = query.eq('category', flags.category)
   }
 
-  const { data: keywords } = await query as { data: KeywordRow[] | null }
+  const { data: rawKeywords } = await query as { data: KeywordRow[] | null }
 
-  if (!keywords || keywords.length === 0) {
-    console.log('📭 No unwritten keywords found. Run with --research first.')
+  // Filter to German/DACH keywords only — skip English-language keywords
+  const ENGLISH_PATTERN = /\b(for|the|how|your|best|with|and|ideas|business|owner|examples|tips|new york|marketing for|hashtags for)\b/i
+  const keywords = (rawKeywords || []).filter(kw => !ENGLISH_PATTERN.test(kw.keyword))
+
+  if (keywords.length === 0) {
+    console.log('📭 No unwritten German keywords found. Run with --research first.')
     process.exit(0)
   }
 
