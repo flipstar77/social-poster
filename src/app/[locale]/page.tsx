@@ -1244,6 +1244,12 @@ export default function LandingPage() {
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
             <p style={{ color: '#a1a1aa', fontSize: 13, margin: 0 }}>{tc('footer')}</p>
             <Link href="/vergleich" style={{ color: '#6366f1', fontSize: 13, textDecoration: 'none', fontWeight: 600 }}>{t('footerCompare')}</Link>
+            <span style={{ color: '#d4d4d8' }}>·</span>
+            <Link href="/privacy" style={{ color: '#a1a1aa', fontSize: 13, textDecoration: 'none' }}>Privacy Policy</Link>
+            <span style={{ color: '#d4d4d8' }}>·</span>
+            <Link href="/terms" style={{ color: '#a1a1aa', fontSize: 13, textDecoration: 'none' }}>Terms & Conditions</Link>
+            <span style={{ color: '#d4d4d8' }}>·</span>
+            <Link href="/refund" style={{ color: '#a1a1aa', fontSize: 13, textDecoration: 'none' }}>Refund Policy</Link>
           </div>
         </footer>
 
