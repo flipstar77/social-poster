@@ -136,7 +136,7 @@ export default function VergleichContent() {
         <nav style={{ position: 'sticky', top: 0, zIndex: 50, background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)', borderBottom: '1px solid #e4e4e7', padding: '0 24px' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 56 }}>
             <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-              <img src="/logo.png" alt="FlowingPost" height={32} style={{ display: 'block' }} />
+              <img src="/logo.png" alt="FlowingPost" style={{ display: 'block', height: 32, width: 'auto' }} />
             </Link>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <LanguageSwitcher />

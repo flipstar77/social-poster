@@ -840,7 +840,7 @@ export default function LandingPage() {
         <nav style={{ position: 'sticky', top: 0, zIndex: 50, background: 'rgba(248,250,252,0.92)', backdropFilter: 'blur(14px)', borderBottom: '1px solid #e4e4e7' }}>
           <div style={{ maxWidth: 1080, margin: '0 auto', padding: '0 24px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-              <img src="/logo.png" alt="FlowingPost" height={36} style={{ display: 'block' }} />
+              <img src="/logo.png" alt="FlowingPost" style={{ display: 'block', height: 36, width: 'auto' }} />
             </Link>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
               <LanguageSwitcher />

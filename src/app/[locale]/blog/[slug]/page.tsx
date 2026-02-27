@@ -66,7 +66,7 @@ export default function BlogPostPage() {
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       }}>
         <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-          <img src="/logo.png" alt="FlowingPost" height={32} style={{ display: 'block' }} />
+          <img src="/logo.png" alt="FlowingPost" style={{ display: 'block', height: 32, width: 'auto' }} />
         </Link>
         <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
           <Link href="/blog" style={{ color: '#a78bfa', textDecoration: 'none', fontWeight: 600, fontSize: '0.9rem' }}>
