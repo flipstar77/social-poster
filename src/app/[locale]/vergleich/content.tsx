@@ -135,9 +135,8 @@ export default function VergleichContent() {
         {/* ── NAV ──────────────────────────────────────────────────────────── */}
         <nav style={{ position: 'sticky', top: 0, zIndex: 50, background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)', borderBottom: '1px solid #e4e4e7', padding: '0 24px' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 56 }}>
-            <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 9, fontWeight: 800, fontSize: 18, textDecoration: 'none' }}>
-              <img src="/logo.png" alt="FlowingPost" width={28} height={28} style={{ borderRadius: 5 }} />
-              <span style={{ background: 'linear-gradient(135deg, #6366f1, #a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>FlowingPost</span>
+            <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+              <img src="/logo.png" alt="FlowingPost" height={32} style={{ display: 'block' }} />
             </Link>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <LanguageSwitcher />
