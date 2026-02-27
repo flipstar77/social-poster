@@ -305,6 +305,15 @@ async function startBot(id: number, dryRun: boolean, dmLimit?: number, mode = 'd
   return { ok: true }
 }
 
+/** Wait for a running bot process to exit. Resolves immediately if not running. */
+function waitForBot(id: number): Promise<number | null> {
+  const bp = processes.get(id)
+  if (!bp) return Promise.resolve(null)
+  return new Promise(resolve => {
+    bp.proc.on('exit', code => resolve(code))
+  })
+}
+
 function stopBot(id: number) {
   const bp = processes.get(id)
   if (!bp) return { ok: false, error: 'Not running' }
@@ -384,7 +393,14 @@ function scheduleNextRun(acc: AccountRow) {
   const msUntil = next.getTime() - Date.now()
   console.log(`⏰ Account ${acc.id} (@${acc.username}) scheduled daily at ${acc.schedule} (in ${Math.round(msUntil / 60000)}m)`)
   const timer = setTimeout(async () => {
+    // Run follow mode first to follow new leads, then DM mode to message followed leads
+    console.log(`[Schedule] Account ${acc.id}: starting follow mode...`)
+    await startBot(acc.id, false, undefined, 'follow')
+    await waitForBot(acc.id)
+    console.log(`[Schedule] Account ${acc.id}: follow done, starting DM mode...`)
     await startBot(acc.id, false)
+    await waitForBot(acc.id)
+    console.log(`[Schedule] Account ${acc.id}: DM done.`)
     const updated = await fetchAccounts()
     const updatedAcc = updated.find(a => a.id === acc.id)
     if (updatedAcc?.schedule) scheduleNextRun(updatedAcc)

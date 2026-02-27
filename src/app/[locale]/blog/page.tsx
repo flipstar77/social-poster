@@ -51,7 +51,8 @@ export default function BlogPage() {
         padding: '16px 24px',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       }}>
-        <Link href="/" style={{ color: '#fff', textDecoration: 'none', fontWeight: 700, fontSize: '1.1rem' }}>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 9, color: '#fff', textDecoration: 'none', fontWeight: 700, fontSize: '1.1rem' }}>
+          <img src="/logo.png" alt="FlowingPost" width={28} height={28} style={{ borderRadius: 5 }} />
           FlowingPost
         </Link>
         <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>

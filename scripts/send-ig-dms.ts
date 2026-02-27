@@ -210,6 +210,7 @@ async function addFollowupEntry(lead: Lead) {
   nextDate.setDate(nextDate.getDate() + FOLLOWUP_INTERVALS[0])
   await sbInsert('followups', {
     lead_id: lead.id,
+    username: lead.username,
     account_id: ACCOUNT_IDX >= 0 ? ACCOUNT_IDX : null,
     first_contact_date: today,
     last_contact_date: today,
@@ -782,10 +783,12 @@ async function main() {
     console.log('✓ Eingeloggt\n')
   }
 
-  // Login-only mode: just save session and exit
+  // Login-only mode: keep browser open for manual use
   if (MODE === 'login') {
-    console.log('✓ Session gespeichert — Browser wird geschlossen.')
-    await browser.close()
+    console.log('✓ Session gespeichert — Browser bleibt offen. Schließe das Fenster wenn du fertig bist.')
+    await new Promise<void>(resolve => {
+      browser.on('close', () => resolve())
+    })
     return
   }
 

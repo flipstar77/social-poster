@@ -839,15 +839,10 @@ export default function LandingPage() {
         {/* ── NAV ─────────────────────────────────────────────────────────── */}
         <nav style={{ position: 'sticky', top: 0, zIndex: 50, background: 'rgba(248,250,252,0.92)', backdropFilter: 'blur(14px)', borderBottom: '1px solid #e4e4e7' }}>
           <div style={{ maxWidth: 1080, margin: '0 auto', padding: '0 24px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <defs><linearGradient id="ig-g" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stopColor="#f09433" /><stop offset="100%" stopColor="#bc1888" /></linearGradient></defs>
-                <rect x="2" y="2" width="20" height="20" rx="5" stroke="url(#ig-g)" strokeWidth="2" fill="none" />
-                <circle cx="12" cy="12" r="4" stroke="url(#ig-g)" strokeWidth="2" fill="none" />
-                <circle cx="17.5" cy="6.5" r="1.2" fill="url(#ig-g)" />
-              </svg>
-              <span style={{ fontWeight: 700, fontSize: 16 }}>FlowingPost</span>
-            </div>
+            <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 9, textDecoration: 'none' }}>
+              <img src="/logo.png" alt="FlowingPost" width={32} height={32} style={{ borderRadius: 6 }} />
+              <span style={{ fontWeight: 700, fontSize: 16, color: '#09090b' }}>FlowingPost</span>
+            </Link>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
               <LanguageSwitcher />
               <Link href="/blog" style={{ fontSize: 14, color: '#71717a', textDecoration: 'none', padding: '8px 14px' }}>Blog</Link>

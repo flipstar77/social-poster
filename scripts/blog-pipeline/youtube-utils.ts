@@ -3,25 +3,13 @@
  * Used by scrape-youtube.ts (CLI) and youtube-feeds.ts (RSS auto-scraper).
  */
 
-import { createClient } from '@supabase/supabase-js'
-import OpenAI from 'openai'
 import { execSync } from 'child_process'
 import fs from 'fs'
 import path from 'path'
 import os from 'os'
+import { getSupabase, getXai } from './shared'
 
-let _supabase: ReturnType<typeof createClient>
-let _xai: OpenAI
-
-export function getSupabase() {
-  if (!_supabase) _supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
-  return _supabase
-}
-
-export function getXai() {
-  if (!_xai) _xai = new OpenAI({ apiKey: process.env.XAI_API_KEY!, baseURL: 'https://api.x.ai/v1' })
-  return _xai
-}
+export { getSupabase, getXai }
 
 export function extractVideoId(input: string): string {
   const urlMatch = input.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/)

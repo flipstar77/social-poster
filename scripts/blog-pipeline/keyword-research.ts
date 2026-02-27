@@ -7,14 +7,10 @@
  * Usage: npx tsx scripts/blog-pipeline/keyword-research.ts
  */
 
-import { createClient } from '@supabase/supabase-js'
 import dotenv from 'dotenv'
 dotenv.config({ path: '.env.local' })
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+import { getSupabase } from './shared'
 
 // Seed keywords grouped by blog category
 const SEED_KEYWORDS: Record<string, string[]> = {
@@ -86,9 +82,14 @@ async function googleSuggest(query: string): Promise<string[]> {
     const res = await fetch(url, {
       headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' },
     })
+    if (!res.ok) {
+      console.log(`   ⚠️  Google Suggest returned ${res.status} for "${query}" — may be rate-limited`)
+      return []
+    }
     const data = await res.json() as [string, string[]]
     return data[1] || []
-  } catch {
+  } catch (err) {
+    console.log(`   ⚠️  Google Suggest failed for "${query}": ${(err as Error).message?.slice(0, 100)}`)
     return []
   }
 }
@@ -190,8 +191,8 @@ async function main() {
   console.log(`\n📊 Total unique keywords: ${unique.length}`)
 
   // Save to Supabase
-  const { data, error } = await supabase
-    .from('blog_keywords')
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (getSupabase().from('blog_keywords') as any)
     .upsert(unique, { onConflict: 'keyword', ignoreDuplicates: true })
     .select('id')
 

@@ -11,10 +11,13 @@ type PostData = {
   description: string
   date: string
   category: string
+  type?: string
   readingTime: string
   image?: string
   imageCredit?: string
   imageCreditUrl?: string
+  pillarSlug?: string | null
+  pillarTitle?: string | null
   mdxSource: MDXRemoteSerializeResult
 }
 
@@ -62,7 +65,8 @@ export default function BlogPostPage() {
         padding: '16px 24px',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       }}>
-        <Link href="/" style={{ color: '#fff', textDecoration: 'none', fontWeight: 700, fontSize: '1.1rem' }}>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 9, color: '#fff', textDecoration: 'none', fontWeight: 700, fontSize: '1.1rem' }}>
+          <img src="/logo.png" alt="FlowingPost" width={28} height={28} style={{ borderRadius: 5 }} />
           FlowingPost
         </Link>
         <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
@@ -88,6 +92,30 @@ export default function BlogPostPage() {
         }}>
           ← Alle Artikel
         </Link>
+
+        {/* Pillar back-reference banner */}
+        {post.pillarSlug && post.pillarTitle && (
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: '10px',
+            padding: '12px 16px', marginBottom: '28px',
+            background: 'rgba(167,139,250,0.07)',
+            border: '1px solid rgba(167,139,250,0.18)',
+            borderRadius: '10px',
+          }}>
+            <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.45)' }}>
+              Teil des Leitfadens:
+            </span>
+            <Link
+              href={`/blog/${post.pillarSlug}`}
+              style={{
+                fontSize: '0.85rem', fontWeight: 600,
+                color: '#a78bfa', textDecoration: 'none',
+              }}
+            >
+              {post.pillarTitle} →
+            </Link>
+          </div>
+        )}
 
         {/* Meta */}
         <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
