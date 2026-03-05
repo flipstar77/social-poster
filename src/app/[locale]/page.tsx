@@ -377,7 +377,7 @@ function CalendarSection({ translations }: { translations: CalendarTranslations 
     <section style={{ background: '#f8fafc', borderTop: '1px solid #e4e4e7', padding: '88px 24px' }}>
       <div style={{ maxWidth: 1080, margin: '0 auto' }}>
         <div ref={headRef} style={{ ...headStyle, textAlign: 'center', marginBottom: 56 }}>
-          <div style={{ display: 'inline-block', padding: '5px 16px', borderRadius: 999, background: 'linear-gradient(135deg,#ede9fe,#fce7f3)', border: '1px solid #c4b5fd', color: '#7c3aed', fontSize: 13, fontWeight: 600, marginBottom: 20 }}>
+          <div style={{ display: 'inline-block', padding: '5px 16px', borderRadius: 999, background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.15)', color: '#6366f1', fontSize: 13, fontWeight: 600, marginBottom: 20 }}>
             {translations.badge}
           </div>
           <h2 style={{ fontSize: 'clamp(28px,4vw,42px)', fontWeight: 800, color: '#09090b', lineHeight: 1.15, marginBottom: 14 }}>
@@ -417,7 +417,7 @@ function CalendarSection({ translations }: { translations: CalendarTranslations 
                     const hasPosts = day.length > 0
                     const idx = hasPosts ? cellIndex++ : 0
                     return (
-                      <div key={di} style={{ minHeight: 46, background: day.length ? '#faf5ff' : '#f8fafc', borderRadius: 8, border: `1px solid ${day.length ? '#e9d5ff' : '#f0f0f0'}`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, padding: '4px 2px', position: 'relative' }}>
+                      <div key={di} style={{ minHeight: 46, background: day.length ? 'rgba(99,102,241,0.04)' : '#f8fafc', borderRadius: 8, border: `1px solid ${day.length ? 'rgba(99,102,241,0.15)' : '#f0f0f0'}`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, padding: '4px 2px', position: 'relative' }}>
                         <span style={{ fontSize: 10, color: '#a1a1aa', fontWeight: 500 }}>{wi * 7 + di + 1}</span>
                         <div style={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
                           {day.map(p => <div key={p} style={{ width: 7, height: 7, borderRadius: '50%', background: PLAT_COLOR[p] ?? '#888' }} />)}
@@ -502,7 +502,7 @@ function StatsStrip({ stats }: { stats: StatItem[] }) {
     return () => obs.disconnect()
   }, [])
   return (
-    <div ref={ref} style={{ background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #a855f7 100%)', padding: '56px 24px' }}>
+    <div ref={ref} style={{ background: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)', padding: '56px 24px' }}>
       <div style={{ maxWidth: 900, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 40 }}>
         {stats.map((s, i) => <StatCount key={i} stat={s} visible={visible} delay={i * 120} />)}
       </div>
@@ -540,7 +540,7 @@ function PhoneScreen({ step, progress, translations }: { step: number; progress:
     const noteOpacity = Math.max(0, Math.min(1, (sub - 0.6) * 3))
     return (
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: 16, gap: 12 }}>
-        <div style={{ flex: 1, borderRadius: 16, overflow: 'hidden', position: 'relative', border: '2px solid #c4b5fd' }}>
+        <div style={{ flex: 1, borderRadius: 16, overflow: 'hidden', position: 'relative', border: '2px solid rgba(99,102,241,0.3)' }}>
           <img src="/showcase/food.png" alt="Food photo" style={{
             width: '100%', height: '100%', objectFit: 'cover',
             transform: `translateY(${(1 - imgY) * -40}px) scale(${0.9 + imgY * 0.1})`,
@@ -689,7 +689,7 @@ function StickyShowcase({ scrollY, vh, steps, label, title1, title2, phoneTransl
               <div style={{ position: 'absolute', inset: 3, background: '#f8fafc', borderRadius: 42, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                 {/* App bar */}
                 <div style={{ background: '#fff', padding: '34px 14px 10px', borderBottom: '1px solid #e4e4e7', display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ width: 24, height: 24, borderRadius: 7, background: 'linear-gradient(135deg, #6366f1, #a855f7)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11 }}>✨</div>
+                  <div style={{ width: 24, height: 24, borderRadius: 7, background: '#6366f1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11 }}>✨</div>
                   <span style={{ fontSize: 11, fontWeight: 700, color: '#09090b', flex: 1 }}>FlowingPost</span>
                   <div style={{ display: 'flex', gap: 4 }}>
                     {[0, 1, 2].map(i => (
@@ -705,7 +705,7 @@ function StickyShowcase({ scrollY, vh, steps, label, title1, title2, phoneTransl
 
         {/* Scroll progress bar */}
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 3, background: '#f4f4f5' }}>
-          <div style={{ height: '100%', background: `linear-gradient(90deg, #6366f1, #a855f7, #ec4899)`, width: `${progress * 100}%`, transition: 'width 0.1s linear' }} />
+          <div style={{ height: '100%', background: '#6366f1', width: `${progress * 100}%`, transition: 'width 0.1s linear' }} />
         </div>
       </div>
     </div>
@@ -785,8 +785,8 @@ export default function LandingPage() {
   const showcaseStepsData = t.raw('showcase.steps') as Array<{ title: string; desc: string }>
   const SHOWCASE_STEPS: ShowcaseStep[] = [
     { n: '01', title: showcaseStepsData[0].title, desc: showcaseStepsData[0].desc, color: '#6366f1' },
-    { n: '02', title: showcaseStepsData[1].title, desc: showcaseStepsData[1].desc, color: '#a855f7' },
-    { n: '03', title: showcaseStepsData[2].title, desc: showcaseStepsData[2].desc, color: '#ec4899' },
+    { n: '02', title: showcaseStepsData[1].title, desc: showcaseStepsData[1].desc, color: '#4f46e5' },
+    { n: '03', title: showcaseStepsData[2].title, desc: showcaseStepsData[2].desc, color: '#6366f1' },
   ]
 
   // Phone screen translations
@@ -870,7 +870,7 @@ export default function LandingPage() {
           <div className="hero-split" style={{ maxWidth: 1080, margin: '0 auto', padding: 'clamp(56px, 10vw, 96px) 24px', position: 'relative', transform: `translateY(${heroTextY}px)`, willChange: 'transform', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'center' }}>
             {/* Left: text */}
             <div>
-              <div className="hero-fadeup" style={{ display: 'inline-block', padding: '6px 18px', borderRadius: 999, background: 'linear-gradient(135deg, #eef2ff, #fdf4ff)', border: '1px solid #c7d2fe', color: '#6366f1', fontSize: 13, fontWeight: 700, marginBottom: 28, letterSpacing: '0.02em' }}>
+              <div className="hero-fadeup" style={{ display: 'inline-block', padding: '6px 18px', borderRadius: 999, background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.15)', color: '#6366f1', fontSize: 13, fontWeight: 700, marginBottom: 28, letterSpacing: '0.02em' }}>
                 {t('hero.badge')}
               </div>
               <h1 className="hero-fadeup-2" style={{ fontSize: 'clamp(32px, 5vw, 60px)', fontWeight: 800, lineHeight: 1.08, marginBottom: 24, letterSpacing: '-1.5px', color: '#09090b' }}>
@@ -883,7 +883,7 @@ export default function LandingPage() {
                 {t('hero.subtitle')}
               </p>
               <div className="hero-fadeup-3" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 16 }}>
-                <Link href="/login" className="cta-primary" style={{ background: 'linear-gradient(135deg, #6366f1, #7c3aed)', color: 'white', padding: '16px 40px', borderRadius: 14, fontSize: 17, fontWeight: 700, textDecoration: 'none', boxShadow: '0 6px 28px rgba(99,102,241,0.45)', transition: 'transform 0.2s ease, box-shadow 0.2s ease' }}>
+                <Link href="/login" className="cta-primary" style={{ background: '#6366f1', color: 'white', padding: '16px 40px', borderRadius: 14, fontSize: 17, fontWeight: 700, textDecoration: 'none', boxShadow: '0 6px 28px rgba(99,102,241,0.45)', transition: 'transform 0.2s ease, box-shadow 0.2s ease' }}>
                   {t('hero.ctaPrimary')}
                 </Link>
                 <p style={{ fontSize: 14, color: '#71717a', margin: 0 }}>
@@ -1243,7 +1243,7 @@ export default function LandingPage() {
                   </ul>
                   <Link
                     href="/login"
-                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: 'linear-gradient(135deg, #6366f1, #a855f7)', color: 'white', padding: '13px', borderRadius: 12, fontWeight: 700, fontSize: 15, textDecoration: 'none', boxShadow: '0 4px 20px rgba(99,102,241,0.35)' }}
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: '#6366f1', color: 'white', padding: '13px', borderRadius: 12, fontWeight: 700, fontSize: 15, textDecoration: 'none', boxShadow: '0 4px 20px rgba(99,102,241,0.35)' }}
                   >
                     {t('pricing.cta')}
                   </Link>
@@ -1260,14 +1260,14 @@ export default function LandingPage() {
                 <div style={{ fontSize: 13, color: '#a1a1aa', marginBottom: 28 }}>
                   {yearly ? t('pricing.pro.yearlyNote') : t('pricing.cancelMonthly')}
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24, padding: '10px 14px', background: '#fdf4ff', borderRadius: 10, border: '1px solid #e9d5ff' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24, padding: '10px 14px', background: 'rgba(99,102,241,0.06)', borderRadius: 10, border: '1px solid rgba(99,102,241,0.15)' }}>
                   <span style={{ fontSize: 18 }}>🌍</span>
-                  <span style={{ fontSize: 14, fontWeight: 600, color: '#7e22ce' }}>{t('pricing.pro.highlight')}</span>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: '#6366f1' }}>{t('pricing.pro.highlight')}</span>
                 </div>
                 <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px', display: 'flex', flexDirection: 'column', gap: 11, flex: 1 }}>
                   {proFeatures.map(item => (
                     <li key={item} style={{ display: 'flex', gap: 10, fontSize: 14 }}>
-                      <span style={{ color: '#a855f7', fontWeight: 700, flexShrink: 0 }}>✓</span>
+                      <span style={{ color: '#6366f1', fontWeight: 700, flexShrink: 0 }}>✓</span>
                       <span style={{ color: '#18181b' }}>{item}</span>
                     </li>
                   ))}
