@@ -122,66 +122,66 @@
       "videoReels": "Video Reels"
     },
     "steps": {
-      "upload": "Upload",
-      "captions": "AI Captions",
-      "schedule": "Schedule",
-      "post": "Post"
+      "upload": "Hochladen",
+      "captions": "KI-Captions",
+      "schedule": "Planen",
+      "post": "Posten"
     },
     "upload": {
-      "businessType": "Business Type",
-      "businessPlaceholder": "e.g. ice cream shop, bakery, restaurant...",
-      "tone": "Tone",
-      "tonePlaceholder": "e.g. friendly, professional, playful...",
-      "language": "Language",
-      "timezone": "Timezone",
+      "businessType": "Art des Betriebs",
+      "businessPlaceholder": "z.B. Eisdiele, Bäckerei, Restaurant...",
+      "tone": "Tonalität",
+      "tonePlaceholder": "z.B. freundlich, professionell, locker...",
+      "language": "Sprache",
+      "timezone": "Zeitzone",
       "platforms": "Plattformen",
       "platformLimit": "Plan-Limit erreicht. Upgrade für mehr Plattformen.",
       "platformRequired": "Wähle mindestens eine Plattform.",
       "whatsappNumber": "WhatsApp-Nummer",
       "whatsappPlaceholder": "+49 151 12345678",
       "whatsappCta": "WhatsApp-CTA in Captions",
-      "exampleCaptions": "Example Captions",
-      "exampleOptional": "(optional — paste captions you like so the AI matches the style)",
-      "examplePlaceholder": "Paste 2-3 example captions you've written before or found inspiring...",
-      "dropzone": "Drop photos here or click to upload",
-      "dropzoneHint": "Upload up to 20 photos at once. JPG, PNG, WebP supported.",
-      "describePlaceholder": "Describe this photo...",
+      "exampleCaptions": "Beispiel-Captions",
+      "exampleOptional": "(optional — füge Captions ein, die dir gefallen, damit die KI den Stil übernimmt)",
+      "examplePlaceholder": "Füge 2–3 Beispiel-Captions ein, die du geschrieben oder inspirierend gefunden hast...",
+      "dropzone": "Fotos hierher ziehen oder klicken zum Hochladen",
+      "dropzoneHint": "Bis zu 20 Fotos gleichzeitig. JPG, PNG, WebP.",
+      "describePlaceholder": "Beschreibe dieses Foto...",
       "generateButton": "Captions generieren — {count} Foto(s) × {platforms} Plattform(en) →"
     },
     "captionStep": {
-      "backToUpload": "← Back to upload",
+      "backToUpload": "← Zurück zum Upload",
       "generateAll": "Alle generieren ({count} Posts)",
       "generating": "Generiere...",
-      "selected": "✓ selected",
-      "pickFavorites": "Pick your favorites or accept the first suggestion for all",
-      "acceptAll": "Accept All (1st variant) — {count} pending",
-      "schedulePosts": "Schedule {count} posts →"
+      "selected": "✓ ausgewählt",
+      "pickFavorites": "Wähle deine Favoriten oder übernimm den ersten Vorschlag für alle",
+      "acceptAll": "Alle übernehmen (1. Variante) — {count} offen",
+      "schedulePosts": "{count} Posts einplanen →"
     },
     "scheduleStep": {
-      "backToCaptions": "← Back to captions",
-      "dragHint": "Drag posts to dates or use auto-distribute",
-      "autoDistribute": "Auto-Distribute Evenly",
-      "unscheduled": "Unscheduled ({count})",
-      "weekdays": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-      "delete": "Delete?",
-      "yes": "Yes",
-      "no": "No",
-      "scheduleAll": "Schedule All {count} Posts ✓",
-      "dragAllHint": "Drag all posts to calendar dates to continue"
+      "backToCaptions": "← Zurück zu Captions",
+      "dragHint": "Posts auf Tage ziehen oder automatisch verteilen",
+      "autoDistribute": "Gleichmäßig verteilen",
+      "unscheduled": "Nicht eingeplant ({count})",
+      "weekdays": ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"],
+      "delete": "Löschen?",
+      "yes": "Ja",
+      "no": "Nein",
+      "scheduleAll": "Alle {count} Posts einplanen ✓",
+      "dragAllHint": "Ziehe alle Posts auf Kalendertage, um fortzufahren"
     },
     "confirm": {
-      "allPublished": "All Posts Published!",
-      "scheduled": "Posts Scheduled!",
+      "allPublished": "Alle Posts veröffentlicht!",
+      "scheduled": "Posts eingeplant!",
       "postsSummary": "{posts} Posts auf {platforms} Plattform(en)",
       "published": "wurden veröffentlicht.",
       "readyToPost": "— bereit zum Posten.",
-      "upcomingSchedule": "Upcoming Schedule",
-      "publishing": "Publishing...",
-      "publishNow": "Publish Now",
+      "upcomingSchedule": "Kommende Posts",
+      "publishing": "Wird veröffentlicht...",
+      "publishNow": "Jetzt veröffentlichen",
       "locked": "🔒 Posten wird nach Account-Freischaltung möglich",
       "checkPayment": "Zahlungsstatus prüfen →",
-      "newBatch": "New Batch",
-      "someFailed": "Some posts failed:"
+      "newBatch": "Neuer Batch",
+      "someFailed": "Einige Posts fehlgeschlagen:"
     },
     "subscription": {
       "manage": "Abo verwalten"
@@ -520,6 +520,17 @@
         "highlight": "Alle 9 Plattformen",
         "features": ["Alles aus Growth", "Alle 9 Plattformen (IG, TT, FB, LinkedIn, X, ...)", "Telegram Bot — posten per Sprachnachricht", "Persönlicher Ansprechpartner"]
       }
+    },
+    "telegram": {
+      "badge": "Noch einfacher",
+      "title": "Posten per Chat",
+      "subtitle": "Kein Login, kein Browser. Schickt einfach ein Foto an unseren Telegram-Bot — den Rest erledigt die KI.",
+      "steps": [
+        { "icon": "📷", "title": "Foto senden", "desc": "Schickt ein Foto an den Bot — die KI erkennt automatisch, was drauf ist." },
+        { "icon": "🎨", "title": "Template wählen", "desc": "Tagesmenü, Happy Hour, Event — tippt einfach auf euer Template." },
+        { "icon": "📅", "title": "Termin wählen", "desc": "Jetzt posten oder für später einplanen — mit einem Tipp." },
+        { "icon": "🚀", "title": "Fertig", "desc": "Post geht auf bis zu 9 Plattformen raus. Automatisch." }
+      ]
     },
     "faq": {
       "title": "Häufige Fragen",

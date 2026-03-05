@@ -521,6 +521,17 @@
         "features": ["Everything in Growth", "All 9 platforms (IG, TT, FB, LinkedIn, X, ...)", "Telegram Bot — post via voice message", "Dedicated account manager"]
       }
     },
+    "telegram": {
+      "badge": "Even easier",
+      "title": "Post via chat",
+      "subtitle": "No login, no browser. Just send a photo to our Telegram bot — AI handles the rest.",
+      "steps": [
+        { "icon": "📷", "title": "Send a photo", "desc": "Send a photo to the bot — AI automatically recognizes what's in it." },
+        { "icon": "🎨", "title": "Pick a template", "desc": "Daily special, happy hour, event — just tap your template." },
+        { "icon": "📅", "title": "Choose a time", "desc": "Post now or schedule for later — with one tap." },
+        { "icon": "🚀", "title": "Done", "desc": "Your post goes out to up to 9 platforms. Automatically." }
+      ]
+    },
     "faq": {
       "title": "FAQ",
       "subtitle": "Everything you need to know before getting started.",

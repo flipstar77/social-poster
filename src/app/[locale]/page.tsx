@@ -1287,6 +1287,30 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* ── TELEGRAM BOT ───────────────────────────────────────────────── */}
+        <section style={{ background: '#fff', borderTop: '1px solid #e4e4e7', padding: '72px 24px' }}>
+          <div style={{ maxWidth: 720, margin: '0 auto', textAlign: 'center' }}>
+            <div style={{ display: 'inline-block', padding: '5px 16px', borderRadius: 999, background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.15)', color: '#6366f1', fontSize: 13, fontWeight: 600, marginBottom: 16 }}>
+              {t('telegram.badge')}
+            </div>
+            <h2 style={{ fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 800, marginBottom: 10, color: '#09090b' }}>
+              {t('telegram.title')}
+            </h2>
+            <p style={{ color: '#71717a', fontSize: 16, maxWidth: 520, margin: '0 auto 40px' }}>
+              {t('telegram.subtitle')}
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 20, textAlign: 'left' }}>
+              {(t.raw('telegram.steps') as Array<{ icon: string; title: string; desc: string }>).map((step, i) => (
+                <div key={i} style={{ padding: 20, background: '#f8fafc', borderRadius: 14, border: '1px solid #e4e4e7' }}>
+                  <div style={{ fontSize: 28, marginBottom: 10 }}>{step.icon}</div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: '#09090b', marginBottom: 6 }}>{step.title}</div>
+                  <div style={{ fontSize: 13, color: '#71717a', lineHeight: 1.5 }}>{step.desc}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* ── FAQ ──────────────────────────────────────────────────────────── */}
         <section style={{ maxWidth: 720, margin: '0 auto', padding: '80px 24px' }}>
           <h2 style={{ fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 800, textAlign: 'center', marginBottom: 10, color: '#09090b' }}>{t('faq.title')}</h2>

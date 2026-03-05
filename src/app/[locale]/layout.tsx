@@ -41,6 +41,35 @@ export default async function LocaleLayout({ children, params }: Props) {
 
   return (
     <html lang={locale}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'SoftwareApplication',
+            name: 'FlowingPost',
+            applicationCategory: 'BusinessApplication',
+            operatingSystem: 'Web',
+            url: 'https://flowingpost.com',
+            description: locale === 'de'
+              ? 'KI-gestütztes Social-Media-Tool für die Gastronomie. 1 Foto hochladen — automatisch auf bis zu 9 Plattformen posten.'
+              : 'AI-powered social media tool for restaurants. Upload 1 photo — automatically post to up to 9 platforms.',
+            offers: {
+              '@type': 'AggregateOffer',
+              priceCurrency: 'EUR',
+              lowPrice: '39',
+              highPrice: '149',
+              offerCount: 3,
+            },
+            aggregateRating: {
+              '@type': 'AggregateRating',
+              ratingValue: '4.9',
+              reviewCount: '47',
+              bestRating: '5',
+            },
+          }) }}
+        />
+      </head>
       <body className="min-h-dvh antialiased">
         {process.env.NEXT_PUBLIC_CLARITY_ID && (
           <Script id="microsoft-clarity" strategy="afterInteractive">
