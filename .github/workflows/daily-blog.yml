@@ -1,0 +1,83 @@
+name: Daily Blog Article (Backup)
+
+# Runs as backup if the local PC didn't generate an article today.
+# Primary: local PC via Windows Task Scheduler (06:00 local)
+# Backup:  this workflow at 09:00 UTC
+
+on:
+  schedule:
+    - cron: '0 9 * * *'  # 09:00 UTC daily
+  workflow_dispatch: {}   # Manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Check if article was already generated today
+        id: check
+        run: |
+          TODAY=$(date -u +%Y-%m-%d)
+          # Check if any .mdx file was committed today
+          RECENT=$(git log --since="$TODAY" --oneline -- 'content/blog/*.mdx' | head -1)
+          if [ -n "$RECENT" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Article already generated today: $RECENT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            echo "No article today — running pipeline"
+          fi
+
+      - name: Setup Node.js
+        if: steps.check.outputs.skip == 'false'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        if: steps.check.outputs.skip == 'false'
+        run: npm ci
+
+      - name: Create .env.local
+        if: steps.check.outputs.skip == 'false'
+        run: |
+          cat > .env.local <<EOF
+          NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          XAI_API_KEY=${{ secrets.XAI_API_KEY }}
+          PEXELS_API_KEY=${{ secrets.PEXELS_API_KEY }}
+          TAVILY_API_KEY=${{ secrets.TAVILY_API_KEY }}
+          EOF
+
+      - name: Run blog pipeline (1 article)
+        if: steps.check.outputs.skip == 'false'
+        run: npx tsx scripts/blog-pipeline/run-pipeline.ts --count 1
+        timeout-minutes: 10
+
+      - name: Commit and push new article
+        if: steps.check.outputs.skip == 'false'
+        run: |
+          git config user.name "FlowingPost Bot"
+          git config user.email "bot@flowingpost.com"
+
+          # Check if there are new/modified MDX files
+          if git diff --name-only -- 'content/blog/*.mdx' | head -1 | grep -q .; then
+            git add content/blog/*.mdx
+            git commit -m "Add daily blog article (GitHub Actions backup)
+
+          Co-Authored-By: FlowingPost Bot <bot@flowingpost.com>"
+            git push
+            echo "Article committed and pushed!"
+          else
+            echo "No new articles generated — nothing to commit"
+          fi
