@@ -1,8 +1,8 @@
 {
   "common": {
     "meta": {
-      "title": "FlowingPost — KI Social Media Posts für Restaurants",
-      "description": "Bild hochladen, KI schreibt die Caption, direkt auf Instagram & Co. posten. Spart 2–3 Stunden pro Woche – ohne Agentur."
+      "title": "FlowingPost — Foto hochladen, auf 9 Plattformen posten. Automatisch.",
+      "description": "Foto hochladen — KI schreibt die Caption, wählt die beste Zeit und postet auf Instagram, TikTok, Facebook & 6 weitere Kanäle. Gemacht für Restaurants. Ab 39 €/Monat."
     },
     "brand": "FlowingPost",
     "footer": "© 2026 FlowingPost",
@@ -257,15 +257,15 @@
     },
     "hero": {
       "badge": "Für Restaurants · Cafés · Bars",
-      "title1": "Social Media auf Autopilot.",
-      "title2": "Während du kochst.",
-      "subtitle": "Nie wieder stundenlang Captions schreiben. Foto hochladen — KI schreibt, plant und postet automatisch auf bis zu 9 Plattformen.",
+      "title1": "Ein Foto. 9 Plattformen.",
+      "title2": "Null Aufwand.",
+      "subtitle": "Foto hochladen — KI schreibt die Caption und postet automatisch auf Instagram, TikTok, Facebook und 6 weitere Kanäle. Kein Social-Media-Wissen nötig.",
       "ctaPrimary": "Kostenlos testen →",
-      "miniProof": "Bereits von 50+ Gastronomen genutzt"
+      "miniProof": "Gemacht für die DACH-Gastronomie"
     },
     "ticker": [
-      "2–3 Stunden / Woche gespart",
-      "Mehr Reichweite, mehr Gäste",
+      "Bis zu 4 Stunden / Woche gespart",
+      "Mehr Sichtbarkeit, mehr Gäste",
       "9 Plattformen · 1 Upload",
       "Automatisch geplant & gepostet",
       "Instagram",
@@ -273,28 +273,28 @@
       "Facebook",
       "YouTube",
       "X / Twitter",
-      "3 Varianten zur Auswahl",
-      "Euer Ton, eure Stimme",
-      "Günstiger als jede Agentur",
-      "Weltweit nutzbar",
+      "3 Caption-Varianten zur Auswahl",
+      "In eurem Ton, eurer Stimme",
+      "Ab 39 € statt 2.000 € Agentur",
+      "Kein Social-Media-Wissen nötig",
       "In 30 Sekunden gepostet"
     ],
     "painpoint": {
-      "title": "Die Realität für Gastronomen",
+      "title": "Warum das Nachbar-Restaurant voller ist",
       "stats": [
-        { "number": "4h", "text": "pro Woche gehen für Social Media drauf", "subtext": "Statt in der Küche zu stehen." },
-        { "number": "0", "text": "Posts letzte Woche? Deine Konkurrenz hatte 7.", "subtext": "Jeder Tag ohne Post = unsichtbar." },
-        { "number": "2.000€", "text": "kostet eine Social-Media-Agentur pro Monat", "subtext": "FlowingPost: ab 39€." },
-        { "number": "73%", "text": "der Gäste finden Restaurants über Social Media", "subtext": "Wer nicht postet, existiert nicht." }
+        { "number": "73%", "text": "der Gäste entdecken Restaurants über Social Media", "subtext": "Wer nicht postet, wird nicht gefunden." },
+        { "number": "0", "text": "Posts letzte Woche? Eure Konkurrenz hatte 7.", "subtext": "Jeden Tag unsichtbar = jeden Tag Umsatz verloren." },
+        { "number": "4h", "text": "pro Woche für Captions, Hashtags, Posting", "subtext": "Zeit, die euch in der Küche oder am Gast fehlt." },
+        { "number": "2.000€", "text": "kostet eine Social-Media-Agentur pro Monat", "subtext": "FlowingPost liefert dasselbe Ergebnis — ab 39 €." }
       ],
-      "agitate": "Jede Woche ohne Posts = verlorene Gäste an die Konkurrenz.",
-      "solveTitle": "Es gibt einen einfacheren Weg.",
-      "solveText": "Foto hochladen, fertig. FlowingPost schreibt die Caption, plant den Post und veröffentlicht automatisch auf allen Plattformen.",
+      "agitate": "Eure Konkurrenz postet jeden Tag. Eure Gäste sehen deren Gerichte — und reservieren dort.",
+      "solveTitle": "Jeden Tag sichtbar. Ohne jeden Tag etwas zu tun.",
+      "solveText": "Foto hochladen — FlowingPost schreibt für jede Plattform die passende Caption, wählt den besten Zeitpunkt und postet auf bis zu 9 Kanäle. Ihr kümmert euch um eure Gäste — FlowingPost um eure Reichweite.",
       "cta": "Jetzt kostenlos testen →"
     },
     "social": {
-      "title": "Vertraut von Gastronomen",
-      "subtitle": "Was unsere Beta-Tester sagen",
+      "title": "So klingt das für Gastronomen",
+      "subtitle": "Echte Stimmen von Betreibern, die FlowingPost nutzen",
       "testimonials": [
         {
           "name": "Marco R.",
@@ -404,12 +404,12 @@
     ],
     "showcase": {
       "label": "So funktioniert's",
-      "title1": "Drei Schritte.",
-      "title2": "Kein Training.",
+      "title1": "30 Sekunden.",
+      "title2": "9 Plattformen. Fertig.",
       "steps": [
-        { "title": "Bild hochladen", "desc": "Foto oder Video direkt vom Handy. Optional eine kurze Notiz — wir schreiben den Rest." },
-        { "title": "3 Varianten wählen", "desc": "Die KI schreibt drei Versionen in eurem Ton. Ihr wählt den besten — oder postet direkt." },
-        { "title": "Automatisch geplant & gepostet", "desc": "Kein manuelles Planen. Das System postet automatisch auf bis zu 9 Plattformen — zur richtigen Zeit, ohne euer Zutun." }
+        { "title": "Foto hochladen", "desc": "Tagesgericht, neues Dessert, Happy Hour — ein Handyfoto reicht. Optional ein Stichwort dazu, z.B. 'Pasta des Tages'." },
+        { "title": "KI schreibt 3 Caption-Varianten", "desc": "Für jede Plattform den richtigen Ton — mit passenden Hashtags, in eurer Stimme. Ihr wählt eure Lieblingsvariante." },
+        { "title": "Geplant & gepostet — automatisch", "desc": "FlowingPost wählt den besten Zeitpunkt und postet auf bis zu 9 Plattformen. Ihr müsst nichts weiter tun." }
       ],
       "phone": {
         "selectImage": "Bild auswählen",
@@ -427,18 +427,18 @@
     },
     "calendar": {
       "badge": "Auto-Scheduler",
-      "title1": "Bild hochladen.",
-      "title2": "Rest passiert automatisch.",
-      "subtitle": "Kein manuelles Planen. Das System plant und postet automatisch — ihr müsst den Kalender nie anfassen. Ladet einfach Bilder hoch, die KI erledigt den Rest.",
+      "title1": "Die ganze Woche präsent.",
+      "title2": "Mit einem einzigen Upload.",
+      "subtitle": "Fotos hochladen — FlowingPost verteilt eure Posts über die Woche, immer zur besten Zeit, auf allen Plattformen. Eure Gäste denken, ihr habt ein Social-Media-Team.",
       "month": "März 2026",
       "days": ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"],
       "postsPlanned": "16 Posts",
       "planned": "geplant ·",
       "autoPosted": "Automatisch gepostet",
       "benefits": [
-        { "title": "Vollautomatisch — kein Kalender nötig", "desc": "Das System plant und postet selbstständig. Ihr ladet Bilder hoch — wann und wie oft gepostet wird, entscheidet die KI." },
-        { "title": "Optimales Timing, immer", "desc": "Posts gehen raus wenn eure Gäste online sind — morgens, mittags, abends. Automatisch, ohne dass ihr dabei sein müsst." },
-        { "title": "Null täglicher Aufwand", "desc": "Kein \u201EIch muss heute noch was posten\u201C. Ladet ein Bild hoch \u2014 alles andere passiert von selbst." }
+        { "title": "Komplett automatisch", "desc": "Ihr ladet Fotos hoch — FlowingPost entscheidet wann und wo gepostet wird. Kein Kalender, kein Nachdenken." },
+        { "title": "Immer zum richtigen Zeitpunkt", "desc": "Posts gehen raus wenn eure Gäste online sind. Morgens, mittags, abends — automatisch." },
+        { "title": "Null täglicher Aufwand", "desc": "Schluss mit 'Ich muss heute noch was posten'. Ein Upload — der Rest läuft von selbst." }
       ],
       "cta": "Jetzt starten →",
       "calendarMonth": "März 2026",
@@ -446,38 +446,38 @@
       "calendarAutoPosted": "Automatisch gepostet"
     },
     "comparison": {
-      "title": "Wie es sich anfühlt",
-      "subtitle": "Der Unterschied zwischen Social Media mit und ohne uns.",
+      "title": "Vorher vs. Nachher",
+      "subtitle": "So verändert sich euer Alltag mit FlowingPost.",
       "without": {
         "label": "Ohne FlowingPost",
         "items": [
-          "Stundenlang nach Ideen suchen",
-          "Posts vergessen oder aufschieben",
-          "Unregelmäßig posten = weniger Reichweite",
-          "2–4 Stunden pro Woche verloren",
-          "Agentur zu teuer, selber zu aufwändig"
+          "Keine Idee was ihr posten sollt",
+          "Wieder 0 Posts diese Woche",
+          "Gäste finden die Konkurrenz — nicht euch",
+          "4 Stunden pro Woche für mittelmäßige Posts",
+          "Agentur für 2.000 €/Monat? Zu teuer. Selbst machen? Keine Zeit."
         ]
       },
       "with": {
         "label": "Mit FlowingPost",
         "items": [
-          "Bild hochladen — fertig. 30 Sekunden.",
-          "Jeden Tag automatisch präsent",
-          "Regelmäßige Posts = mehr neue Gäste",
-          "Stunden zurückgewinnen, Küche im Fokus",
-          "Günstiger als jede Agentur weltweit"
+          "Foto hochladen — KI schreibt den Rest",
+          "Jeden Tag auf bis zu 9 Plattformen präsent",
+          "Neue Gäste: 'Wir haben euch auf Instagram entdeckt!'",
+          "30 Sekunden statt 4 Stunden pro Woche",
+          "Profi-Ergebnisse ab 39 €/Monat"
         ]
       }
     },
     "audience": {
-      "title": "Für wen ist das?",
-      "subtitle": "Für alle, die täglich auf Social Media präsent sein wollen — ohne Stunden dafür zu opfern.",
+      "title": "Gemacht für die Gastronomie",
+      "subtitle": "Ob Imbiss oder Fine Dining — wer Gäste hat, braucht Social Media. FlowingPost macht es so einfach wie ein Foto machen.",
       "platforms": ["📸 Instagram", "🎵 TikTok", "👥 Facebook", "▶️ YouTube", "✖️ X", "💼 LinkedIn", "📌 Pinterest", "✈️ Telegram", "🎬 und mehr"],
       "targets": ["🍝 Restaurants", "☕ Cafés", "🍹 Cocktailbars", "🍦 Eisdielen", "🚚 Food Trucks", "🥐 Bäckereien", "🍣 Sushi", "🍔 Burger", "🌮 Mexican"]
     },
     "pricing": {
-      "title": "Jetzt starten",
-      "subtitle": "Kostet weniger als ein Abendessen — spart euch Stunden pro Woche. Jederzeit kündbar.",
+      "title": "Weniger als ein Abendessen. Mehr als jede Agentur.",
+      "subtitle": "KI-Captions, Auto-Scheduler, unbegrenzte Posts — auf bis zu 9 Plattformen. Monatlich kündbar.",
       "promo": "🚀 Launch-Angebot: Erste 50 Kunden — keine Einrichtungsgebühr (spare 99 €)",
       "monthly": "Monatlich",
       "yearly": "Jährlich",
@@ -510,17 +510,16 @@
       "title": "Häufige Fragen",
       "subtitle": "Alles was ihr wissen müsst, bevor ihr loslegt.",
       "items": [
-        { "q": "Wie lange dauert die Einrichtung?", "a": "Wir richten alles innerhalb von 24 Stunden ein. Ihr bekommt einen persönlichen Zugang und seid sofort startklar — keine technischen Vorkenntnisse nötig." },
-        { "q": "Brauche ich technisches Wissen?", "a": "Nein. Ihr ladet ein Bild hoch, schreibt optional eine kurze Notiz dazu — alles andere passiert automatisch. Kein Coding, kein Setup, kein Aufwand." },
-        { "q": "Welche Plattformen sind in welchem Plan?", "a": "Starter (€39/Monat): bis zu 3 Plattformen nach Wahl (z.B. Instagram, TikTok, Facebook). Growth (€79/Monat): bis zu 6 Plattformen. Pro (€149/Monat): alle 9 Plattformen gleichzeitig (Instagram, TikTok, Facebook, LinkedIn, X, YouTube und mehr). Ihr könnt jederzeit upgraden." },
-        { "q": "Muss ich selbst planen wann gepostet wird?", "a": "Nein. Das System übernimmt das automatisch. Ihr ladet Bilder hoch — wann, wie oft und auf welchen Plattformen gepostet wird, steuert der Auto-Scheduler. Ihr müsst den Kalender nie anfassen." },
-        { "q": "Kann ich kündigen?", "a": "Ja, jederzeit. Monatliche Pläne sind ohne Frist kündbar. Jährliche Pläne laufen 12 Monate und verlängern sich danach automatisch — ihr könnt jederzeit vor Ablauf kündigen." },
-        { "q": "Kann ich meinen Plan wechseln?", "a": "Ja. Upgrade von Starter auf Growth oder Pro jederzeit möglich — ihr zahlt nur die Differenz. Downgrade ist zum nächsten Abrechnungszeitraum möglich." },
-        { "q": "Schreibt die KI auch auf Englisch oder anderen Sprachen?", "a": "Ja. Die KI schreibt in jeder Sprache — Deutsch, Englisch, Türkisch, Arabisch und mehr. Einfach beim Setup angeben." },
-        { "q": "Was ist das Launch-Angebot?", "a": "Die ersten 50 Kunden zahlen keine Einrichtungsgebühr — normalerweise 99 €. Das Angebot gilt bis die 50 Plätze vergeben sind, danach kehren wir zum regulären Preis zurück." },
-        { "q": "Performen geplante Posts genauso gut wie manuelle?", "a": "Ja. Geplante Posts performen genauso gut wie manuell veröffentlichte. Moderne Algorithmen werten Relevanz und Qualität des Contents — nicht ob jemand manuell auf \"Posten\" geklickt hat. Regelmäßigkeit ist sogar ein Vorteil." },
-        { "q": "Ist das sicher für meine Social-Media-Accounts?", "a": "Ja. Wir nutzen ausschließlich die offiziellen, verifizierten APIs von Instagram, TikTok, Facebook und Co. — kein Scraping, keine Bots, keine Workarounds. Eure Accounts sind zu 100% geschützt." },
-        { "q": "Wie viel Zeit spare ich wirklich?", "a": "Unsere Nutzer berichten von bis zu 90% Zeitersparnis gegenüber manuellem Posten auf mehreren Plattformen. Statt 2–4 Stunden pro Woche: ein Bild hochladen, fertig." }
+        { "q": "Wie lange dauert die Einrichtung?", "a": "Innerhalb von 24 Stunden seid ihr startklar. Keinerlei technische Vorkenntnisse nötig." },
+        { "q": "Brauche ich technisches Wissen?", "a": "Nein. Wenn ihr ein Foto machen könnt, könnt ihr FlowingPost nutzen. Bild hochladen — alles andere passiert automatisch." },
+        { "q": "Welche Plattformen sind in welchem Plan?", "a": "Starter (€39/Monat): 3 Plattformen nach Wahl. Growth (€79/Monat): bis zu 6. Pro (€149/Monat): alle 9 Plattformen. Jederzeit upgraden möglich." },
+        { "q": "Muss ich selbst planen wann gepostet wird?", "a": "Nein. Der Auto-Scheduler entscheidet automatisch wann, wie oft und wo gepostet wird. Ihr müsst keinen Kalender anfassen." },
+        { "q": "Kann ich jederzeit kündigen?", "a": "Ja. Monatliche Pläne ohne Frist kündbar. Jährliche Pläne laufen 12 Monate — ihr könnt vor Ablauf kündigen." },
+        { "q": "Kann ich meinen Plan wechseln?", "a": "Ja. Upgrade jederzeit möglich, ihr zahlt nur die Differenz. Downgrade zum nächsten Abrechnungszeitraum." },
+        { "q": "In welchen Sprachen schreibt die KI?", "a": "In jeder — Deutsch, Englisch, Türkisch, Arabisch und mehr. Einfach beim Setup angeben." },
+        { "q": "Performen geplante Posts genauso gut?", "a": "Ja. Algorithmen bewerten Qualität und Relevanz — nicht ob manuell oder geplant gepostet wurde. Regelmäßigkeit wird sogar belohnt." },
+        { "q": "Ist das sicher für meine Accounts?", "a": "100%. Wir nutzen ausschließlich offizielle APIs von Instagram, TikTok, Facebook & Co. Kein Scraping, keine Bots." },
+        { "q": "Wie viel Zeit spare ich wirklich?", "a": "Statt 4 Stunden pro Woche für Captions, Hashtags und Posting: ein Foto hochladen, fertig. Bis zu 90% Zeitersparnis." }
       ]
     },
     "footerCompare": "Vergleich"

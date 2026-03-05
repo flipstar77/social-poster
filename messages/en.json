@@ -1,8 +1,8 @@
 {
   "common": {
     "meta": {
-      "title": "FlowingPost — AI Social Media Posts for Restaurants",
-      "description": "Upload a photo, AI writes the caption, post directly to Instagram & more. Saves 2–3 hours per week – no agency needed."
+      "title": "FlowingPost — Upload a photo, post to 9 platforms. Automatically.",
+      "description": "Upload a photo — AI writes the caption, picks the best time and posts to Instagram, TikTok, Facebook & 6 more channels. Built for restaurants. From EUR 39/month."
     },
     "brand": "FlowingPost",
     "footer": "© 2026 FlowingPost",
@@ -257,15 +257,15 @@
     },
     "hero": {
       "badge": "For Restaurants · Cafés · Bars",
-      "title1": "Social media on autopilot.",
-      "title2": "While you cook.",
-      "subtitle": "Never spend hours writing captions again. Upload a photo — AI writes, schedules and posts automatically to up to 9 platforms.",
+      "title1": "One photo. 9 platforms.",
+      "title2": "Zero effort.",
+      "subtitle": "Upload a photo — AI writes the caption and posts automatically to Instagram, TikTok, Facebook and 6 more channels. No social media skills needed.",
       "ctaPrimary": "Try it free →",
-      "miniProof": "Already used by 50+ restaurant owners"
+      "miniProof": "Built for the DACH restaurant industry"
     },
     "ticker": [
-      "2–3 hours / week saved",
-      "More reach, more guests",
+      "Up to 4 hours / week saved",
+      "More visibility, more guests",
       "9 platforms · 1 upload",
       "Automatically scheduled & posted",
       "Instagram",
@@ -273,28 +273,28 @@
       "Facebook",
       "YouTube",
       "X / Twitter",
-      "3 variants to choose from",
+      "3 caption variants to choose from",
       "Your tone, your voice",
-      "Cheaper than any agency",
-      "Available worldwide",
+      "From EUR 39 instead of EUR 2,000 agency",
+      "No social media skills needed",
       "Posted in 30 seconds"
     ],
     "painpoint": {
-      "title": "The reality for restaurant owners",
+      "title": "Why the restaurant next door is busier",
       "stats": [
-        { "number": "4h", "text": "per week wasted on social media", "subtext": "Instead of being in the kitchen." },
-        { "number": "0", "text": "posts last week? Your competitor had 7.", "subtext": "Every day without a post = invisible." },
-        { "number": "2,000€", "text": "per month for a social media agency", "subtext": "FlowingPost: from 39€." },
-        { "number": "73%", "text": "of guests find restaurants via social media", "subtext": "If you don't post, you don't exist." }
+        { "number": "73%", "text": "of guests discover restaurants via social media", "subtext": "If you don't post, you don't get found." },
+        { "number": "0", "text": "posts last week? Your competitor had 7.", "subtext": "Every day invisible = every day revenue lost." },
+        { "number": "4h", "text": "per week on captions, hashtags, posting", "subtext": "Time you're missing in the kitchen or with guests." },
+        { "number": "2,000€", "text": "per month for a social media agency", "subtext": "FlowingPost delivers the same results — from EUR 39." }
       ],
-      "agitate": "Every week without posts = lost guests to the competition.",
-      "solveTitle": "There's an easier way.",
-      "solveText": "Upload a photo, done. FlowingPost writes the caption, schedules the post and publishes automatically to all your platforms.",
+      "agitate": "Your competition posts every day. Your guests see their dishes — and book there.",
+      "solveTitle": "Visible every day. Without doing something every day.",
+      "solveText": "Upload a photo — FlowingPost writes the right caption for each platform, picks the best time and posts to up to 9 channels. You focus on your guests — FlowingPost handles your reach.",
       "cta": "Try it free →"
     },
     "social": {
-      "title": "Trusted by restaurant owners",
-      "subtitle": "What our beta testers say",
+      "title": "What restaurant owners are saying",
+      "subtitle": "Real voices from operators using FlowingPost",
       "testimonials": [
         {
           "name": "Marco R.",
@@ -404,12 +404,12 @@
     ],
     "showcase": {
       "label": "How it works",
-      "title1": "Three steps.",
-      "title2": "No training.",
+      "title1": "30 seconds.",
+      "title2": "9 platforms. Done.",
       "steps": [
-        { "title": "Upload a photo", "desc": "Photo or video straight from your phone. Optionally add a short note — we write the rest." },
-        { "title": "Pick from 3 variants", "desc": "The AI writes three versions in your tone. Pick your favorite — or post right away." },
-        { "title": "Automatically scheduled & posted", "desc": "No manual planning. The system posts automatically to up to 9 platforms — at the right time, without any effort on your part." }
+        { "title": "Upload a photo", "desc": "Daily special, new dessert, happy hour — one phone photo is all it takes. Optionally add a keyword like 'Pasta of the day'." },
+        { "title": "AI writes 3 caption variants", "desc": "The right tone for each platform — with matching hashtags, in your voice. You pick your favorite." },
+        { "title": "Scheduled & posted — automatically", "desc": "FlowingPost picks the best time and posts to up to 9 platforms. You don't have to do anything else." }
       ],
       "phone": {
         "selectImage": "Select image",
@@ -427,18 +427,18 @@
     },
     "calendar": {
       "badge": "Auto-Scheduler",
-      "title1": "Upload a photo.",
-      "title2": "The rest happens automatically.",
-      "subtitle": "No manual planning. The system schedules and posts automatically — you never have to touch the calendar. Just upload photos, the AI handles the rest.",
+      "title1": "Present all week.",
+      "title2": "With a single upload.",
+      "subtitle": "Upload photos — FlowingPost distributes your posts across the week, always at the best time, on all platforms. Your guests will think you have a social media team.",
       "month": "March 2026",
       "days": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
       "postsPlanned": "16 Posts",
       "planned": "planned ·",
       "autoPosted": "Automatically posted",
       "benefits": [
-        { "title": "Fully automatic — no calendar needed", "desc": "The system schedules and posts on its own. You upload photos — the AI decides when and how often to post." },
-        { "title": "Perfect timing, always", "desc": "Posts go out when your guests are online — morning, noon, evening. Automatically, without you being there." },
-        { "title": "Zero daily effort", "desc": "No more \"I still need to post today\". Upload a photo — everything else happens on its own." }
+        { "title": "Fully automatic", "desc": "You upload photos — FlowingPost decides when and where to post. No calendar, no thinking." },
+        { "title": "Always at the right time", "desc": "Posts go out when your guests are online. Morning, noon, evening — automatically." },
+        { "title": "Zero daily effort", "desc": "No more 'I still need to post today'. One upload — the rest runs on its own." }
       ],
       "cta": "Get started →",
       "calendarMonth": "March 2026",
@@ -446,38 +446,38 @@
       "calendarAutoPosted": "Automatically posted"
     },
     "comparison": {
-      "title": "How it feels",
-      "subtitle": "The difference between social media with and without us.",
+      "title": "Before vs. After",
+      "subtitle": "What changes when social media is no longer your problem.",
       "without": {
         "label": "Without FlowingPost",
         "items": [
-          "Spending hours searching for ideas",
-          "Forgetting or postponing posts",
-          "Irregular posting = less reach",
-          "2–4 hours per week lost",
-          "Agency too expensive, doing it yourself too time-consuming"
+          "You don't know what to post",
+          "Zero posts this week — again",
+          "Guests find your competition, not you",
+          "2–4 hours per week for mediocre results",
+          "Agency for 2,000 EUR/month or struggle alone"
         ]
       },
       "with": {
         "label": "With FlowingPost",
         "items": [
-          "Upload a photo — done. 30 seconds.",
-          "Automatically present every day",
-          "Regular posts = more new guests",
-          "Win back hours, focus on the kitchen",
-          "Cheaper than any agency worldwide"
+          "Upload one photo — AI writes the rest",
+          "Present on 9 platforms every day. Automatically.",
+          "New guests say: 'I saw you on Instagram!'",
+          "30 seconds per week instead of 4 hours",
+          "Professional results from 39 EUR/month"
         ]
       }
     },
     "audience": {
-      "title": "Who is this for?",
-      "subtitle": "For everyone who wants to be present on social media every day — without spending hours on it.",
+      "title": "Built for the food industry",
+      "subtitle": "Whether street food or fine dining — if you have guests, you need social media. We make it effortless.",
       "platforms": ["📸 Instagram", "🎵 TikTok", "👥 Facebook", "▶️ YouTube", "✖️ X", "💼 LinkedIn", "📌 Pinterest", "✈️ Telegram", "🎬 and more"],
       "targets": ["🍝 Restaurants", "☕ Cafés", "🍹 Cocktail Bars", "🍦 Ice Cream Shops", "🚚 Food Trucks", "🥐 Bakeries", "🍣 Sushi", "🍔 Burger", "🌮 Mexican"]
     },
     "pricing": {
-      "title": "Get started",
-      "subtitle": "Costs less than a dinner out — saves you hours every week. Cancel anytime.",
+      "title": "Less than a dinner out. More than any agency.",
+      "subtitle": "From 39 EUR/month — post to up to 9 platforms with AI captions, auto-scheduler and unlimited posts. Cancel anytime.",
       "promo": "🚀 Launch offer: First 50 customers — no setup fee (save €99)",
       "monthly": "Monthly",
       "yearly": "Yearly",
