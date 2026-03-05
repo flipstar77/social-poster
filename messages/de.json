@@ -260,7 +260,7 @@
       "title1": "Ein Foto. 9 Plattformen.",
       "title2": "Null Aufwand.",
       "subtitle": "Foto hochladen — KI schreibt die Caption und postet automatisch auf Instagram, TikTok, Facebook und 6 weitere Kanäle. Kein Social-Media-Wissen nötig.",
-      "ctaPrimary": "Kostenlos testen →",
+      "ctaPrimary": "Jetzt starten →",
       "miniProof": "Gemacht für die DACH-Gastronomie"
     },
     "ticker": [
@@ -290,7 +290,7 @@
       "agitate": "Eure Konkurrenz postet jeden Tag. Eure Gäste sehen deren Gerichte — und reservieren dort.",
       "solveTitle": "Jeden Tag sichtbar. Ohne jeden Tag etwas zu tun.",
       "solveText": "Foto hochladen — FlowingPost schreibt für jede Plattform die passende Caption, wählt den besten Zeitpunkt und postet auf bis zu 9 Kanäle. Ihr kümmert euch um eure Gäste — FlowingPost um eure Reichweite.",
-      "cta": "Jetzt kostenlos testen →"
+      "cta": "Jetzt starten →"
     },
     "social": {
       "title": "So klingt das für Gastronomen",
@@ -424,6 +424,21 @@
         "platforms": "Plattformen",
         "postNow": "Jetzt posten →"
       }
+    },
+    "templates": {
+      "badge": "Foto-Posts & Video-Reels",
+      "title": "So sehen eure Posts aus",
+      "subtitle": "Wählt aus professionellen Templates — für jeden Anlass. FlowingPost erstellt Posts UND Video-Reels aus eurem Foto.",
+      "items": [
+        { "name": "Tagesmenü Classic", "category": "Tagesgericht", "desc": "Warm, appetitlich — euer Gericht im Fokus." },
+        { "name": "Happy Hour Bold", "category": "Happy Hour", "desc": "Energisch, auffällig — FOMO pur." },
+        { "name": "Neue Sorte Premium", "category": "Neuheit", "desc": "Elegant, minimalistisch — für besondere Gerichte." },
+        { "name": "Angebot Alarm", "category": "Angebot", "desc": "Rot, urgent — Aufmerksamkeit garantiert." },
+        { "name": "Event Night", "category": "Event", "desc": "Party-Vibe — Datum und Details im Fokus." }
+      ],
+      "cta": "Alle Templates ansehen →",
+      "reelBadge": "Video-Reel",
+      "postBadge": "Foto-Post"
     },
     "calendar": {
       "badge": "Auto-Scheduler",

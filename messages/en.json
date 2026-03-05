@@ -260,7 +260,7 @@
       "title1": "One photo. 9 platforms.",
       "title2": "Zero effort.",
       "subtitle": "Upload a photo — AI writes the caption and posts automatically to Instagram, TikTok, Facebook and 6 more channels. No social media skills needed.",
-      "ctaPrimary": "Try it free →",
+      "ctaPrimary": "Get started →",
       "miniProof": "Built for the DACH restaurant industry"
     },
     "ticker": [
@@ -290,7 +290,7 @@
       "agitate": "Your competition posts every day. Your guests see their dishes — and book there.",
       "solveTitle": "Visible every day. Without doing something every day.",
       "solveText": "Upload a photo — FlowingPost writes the right caption for each platform, picks the best time and posts to up to 9 channels. You focus on your guests — FlowingPost handles your reach.",
-      "cta": "Try it free →"
+      "cta": "Get started →"
     },
     "social": {
       "title": "What restaurant owners are saying",
@@ -425,6 +425,21 @@
         "postNow": "Post now →"
       }
     },
+    "templates": {
+      "badge": "Photo Posts & Video Reels",
+      "title": "This is what your posts look like",
+      "subtitle": "Choose from professional templates — for every occasion. FlowingPost creates posts AND video reels from your photo.",
+      "items": [
+        { "name": "Daily Special Classic", "category": "Daily special", "desc": "Warm, appetizing — your dish in the spotlight." },
+        { "name": "Happy Hour Bold", "category": "Happy Hour", "desc": "Energetic, eye-catching — pure FOMO." },
+        { "name": "New Item Premium", "category": "New item", "desc": "Elegant, minimalist — for special dishes." },
+        { "name": "Deal Alert", "category": "Deal", "desc": "Red, urgent — guaranteed attention." },
+        { "name": "Event Night", "category": "Event", "desc": "Party vibes — date and details front and center." }
+      ],
+      "cta": "See all templates →",
+      "reelBadge": "Video Reel",
+      "postBadge": "Photo Post"
+    },
     "calendar": {
       "badge": "Auto-Scheduler",
       "title1": "Present all week.",
@@ -447,37 +462,37 @@
     },
     "comparison": {
       "title": "Before vs. After",
-      "subtitle": "What changes when social media is no longer your problem.",
+      "subtitle": "How your daily routine changes with FlowingPost.",
       "without": {
         "label": "Without FlowingPost",
         "items": [
-          "You don't know what to post",
+          "No idea what to post",
           "Zero posts this week — again",
-          "Guests find your competition, not you",
-          "2–4 hours per week for mediocre results",
-          "Agency for 2,000 EUR/month or struggle alone"
+          "Guests find the competition — not you",
+          "4 hours per week for mediocre posts",
+          "Agency for EUR 2,000/month? Too expensive. DIY? No time."
         ]
       },
       "with": {
         "label": "With FlowingPost",
         "items": [
-          "Upload one photo — AI writes the rest",
-          "Present on 9 platforms every day. Automatically.",
-          "New guests say: 'I saw you on Instagram!'",
-          "30 seconds per week instead of 4 hours",
-          "Professional results from 39 EUR/month"
+          "Upload a photo — AI writes the rest",
+          "Present on up to 9 platforms every day",
+          "New guests: 'We discovered you on Instagram!'",
+          "30 seconds instead of 4 hours per week",
+          "Pro results from EUR 39/month"
         ]
       }
     },
     "audience": {
       "title": "Built for the food industry",
-      "subtitle": "Whether street food or fine dining — if you have guests, you need social media. We make it effortless.",
+      "subtitle": "Whether street food or fine dining — if you have guests, you need social media. FlowingPost makes it as easy as taking a photo.",
       "platforms": ["📸 Instagram", "🎵 TikTok", "👥 Facebook", "▶️ YouTube", "✖️ X", "💼 LinkedIn", "📌 Pinterest", "✈️ Telegram", "🎬 and more"],
       "targets": ["🍝 Restaurants", "☕ Cafés", "🍹 Cocktail Bars", "🍦 Ice Cream Shops", "🚚 Food Trucks", "🥐 Bakeries", "🍣 Sushi", "🍔 Burger", "🌮 Mexican"]
     },
     "pricing": {
       "title": "Less than a dinner out. More than any agency.",
-      "subtitle": "From 39 EUR/month — post to up to 9 platforms with AI captions, auto-scheduler and unlimited posts. Cancel anytime.",
+      "subtitle": "AI captions, auto-scheduler, unlimited posts — on up to 9 platforms. Cancel anytime.",
       "promo": "🚀 Launch offer: First 50 customers — no setup fee (save €99)",
       "monthly": "Monthly",
       "yearly": "Yearly",
@@ -510,17 +525,16 @@
       "title": "FAQ",
       "subtitle": "Everything you need to know before getting started.",
       "items": [
-        { "q": "How long does setup take?", "a": "We set everything up within 24 hours. You get a personal login and are ready to go immediately — no technical knowledge required." },
-        { "q": "Do I need technical knowledge?", "a": "No. You upload a photo, optionally write a short note — everything else happens automatically. No coding, no setup, no hassle." },
-        { "q": "Which platforms are included in which plan?", "a": "Starter (€39/month): up to 3 platforms of your choice (e.g. Instagram, TikTok, Facebook). Growth (€79/month): up to 6 platforms. Pro (€149/month): all 9 platforms at once (Instagram, TikTok, Facebook, LinkedIn, X, YouTube and more). You can upgrade anytime." },
-        { "q": "Do I have to plan when posts go out?", "a": "No. The system handles that automatically. You upload photos — the Auto-Scheduler controls when, how often, and on which platforms posts go out. You never have to touch the calendar." },
-        { "q": "Can I cancel?", "a": "Yes, anytime. Monthly plans can be cancelled without notice. Yearly plans run for 12 months and renew automatically — you can cancel anytime before the renewal date." },
-        { "q": "Can I switch my plan?", "a": "Yes. Upgrade from Starter to Growth or Pro anytime — you only pay the difference. Downgrade is possible at the next billing cycle." },
-        { "q": "Does the AI also write in English or other languages?", "a": "Yes. The AI writes in any language — German, English, Turkish, Arabic and more. Just specify during setup." },
-        { "q": "What is the launch offer?", "a": "The first 50 customers pay no setup fee — normally €99. The offer is valid until all 50 spots are taken, then we return to the regular price." },
-        { "q": "Do scheduled posts perform as well as manual ones?", "a": "Yes. Scheduled posts perform just as well as manually published ones. Modern algorithms evaluate the relevance and quality of content — not whether someone manually clicked \"Post\". Consistency is actually an advantage." },
-        { "q": "Is this safe for my social media accounts?", "a": "Yes. We exclusively use the official, verified APIs from Instagram, TikTok, Facebook and others — no scraping, no bots, no workarounds. Your accounts are 100% protected." },
-        { "q": "How much time do I really save?", "a": "Our users report up to 90% time savings compared to manual posting across multiple platforms. Instead of 2–4 hours per week: upload a photo, done." }
+        { "q": "How long does setup take?", "a": "You're ready within 24 hours. No technical knowledge required." },
+        { "q": "Do I need technical knowledge?", "a": "No. If you can take a photo, you can use FlowingPost. Upload a photo — everything else happens automatically." },
+        { "q": "Which platforms are in which plan?", "a": "Starter (EUR 39/month): 3 platforms of your choice. Growth (EUR 79/month): up to 6. Pro (EUR 149/month): all 9 platforms. Upgrade anytime." },
+        { "q": "Do I have to plan when posts go out?", "a": "No. The Auto-Scheduler decides automatically when, how often and where to post. You never have to touch a calendar." },
+        { "q": "Can I cancel anytime?", "a": "Yes. Monthly plans cancel without notice. Yearly plans run 12 months — you can cancel before renewal." },
+        { "q": "Can I switch my plan?", "a": "Yes. Upgrade anytime, you only pay the difference. Downgrade at the next billing cycle." },
+        { "q": "What languages does the AI write in?", "a": "Any — German, English, Turkish, Arabic and more. Just specify during setup." },
+        { "q": "Do scheduled posts perform as well?", "a": "Yes. Algorithms evaluate quality and relevance — not whether you posted manually or scheduled. Consistency is actually rewarded." },
+        { "q": "Is this safe for my accounts?", "a": "100%. We use only official APIs from Instagram, TikTok, Facebook & others. No scraping, no bots." },
+        { "q": "How much time do I really save?", "a": "Instead of 4 hours per week on captions, hashtags and posting: upload a photo, done. Up to 90% time saved." }
       ]
     },
     "footerCompare": "Compare"

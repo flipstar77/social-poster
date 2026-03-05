@@ -1018,6 +1018,71 @@ export default function LandingPage() {
           phoneTranslations={phoneTranslations}
         />
 
+        {/* ── TEMPLATE GALLERY ────────────────────────────────────────── */}
+        {(() => {
+          const templateItems = t.raw('templates.items') as Array<{ name: string; category: string; desc: string }>
+          const TEMPLATE_COLORS = ['#f97316', '#e91e63', '#f5f0e8', '#dc2626', '#9333ea']
+          const TEMPLATE_TEXT_COLORS = ['#fff', '#fff', '#3e2723', '#fff', '#fff']
+          const TEMPLATE_HOOKS = ['TAGESMENU', 'HAPPY HOUR', 'NEU', 'NUR HEUTE', 'SAVE THE DATE']
+          const TEMPLATE_TITLES = ['Hausgemachte\nPasta', '2 for 1\nCocktails', 'Matcha\nTiramisu', '-30%\nauf alles', 'Wine &\nDine Night']
+          return (
+            <section style={{ background: '#fff', borderTop: '1px solid #e4e4e7', borderBottom: '1px solid #e4e4e7', padding: '72px 0', overflow: 'hidden' }}>
+              <div style={{ maxWidth: 1080, margin: '0 auto', padding: '0 24px' }}>
+                <div style={{ textAlign: 'center', marginBottom: 48 }}>
+                  <div style={{ display: 'inline-block', padding: '5px 16px', borderRadius: 999, background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.15)', color: '#6366f1', fontSize: 13, fontWeight: 600, marginBottom: 16 }}>
+                    {t('templates.badge')}
+                  </div>
+                  <h2 style={{ fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 800, marginBottom: 10, color: '#09090b' }}>
+                    {t('templates.title')}
+                  </h2>
+                  <p style={{ color: '#71717a', fontSize: 16, maxWidth: 560, margin: '0 auto' }}>
+                    {t('templates.subtitle')}
+                  </p>
+                </div>
+                {/* Template cards — horizontal scroll on mobile, grid on desktop */}
+                <div style={{ display: 'flex', gap: 20, overflowX: 'auto', paddingBottom: 8, scrollSnapType: 'x mandatory' }}>
+                  {templateItems.map((item, i) => (
+                    <div key={i} style={{ minWidth: 200, flex: '0 0 200px', scrollSnapAlign: 'start' }}>
+                      {/* Phone-shaped preview */}
+                      <div style={{
+                        aspectRatio: '9/16',
+                        borderRadius: 20,
+                        background: `linear-gradient(135deg, ${TEMPLATE_COLORS[i]}, ${TEMPLATE_COLORS[i]}dd)`,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        padding: 20,
+                        position: 'relative',
+                        overflow: 'hidden',
+                        marginBottom: 14,
+                        boxShadow: '0 4px 24px rgba(0,0,0,0.1)',
+                      }}>
+                        {/* Hook label */}
+                        <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 2, color: TEMPLATE_TEXT_COLORS[i], opacity: 0.7, marginBottom: 8, textTransform: 'uppercase' }}>
+                          {TEMPLATE_HOOKS[i]}
+                        </div>
+                        {/* Title */}
+                        <div style={{ fontSize: 22, fontWeight: 900, color: TEMPLATE_TEXT_COLORS[i], textAlign: 'center', lineHeight: 1.1, whiteSpace: 'pre-line' }}>
+                          {TEMPLATE_TITLES[i]}
+                        </div>
+                        {/* Reel badge */}
+                        <div style={{ position: 'absolute', top: 12, right: 12, background: 'rgba(0,0,0,0.4)', color: '#fff', fontSize: 9, fontWeight: 700, padding: '3px 8px', borderRadius: 6, backdropFilter: 'blur(4px)' }}>
+                          {t('templates.reelBadge')}
+                        </div>
+                      </div>
+                      {/* Card info */}
+                      <div style={{ fontSize: 14, fontWeight: 700, color: '#09090b', marginBottom: 4 }}>{item.name}</div>
+                      <div style={{ fontSize: 11, color: '#6366f1', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>{item.category}</div>
+                      <div style={{ fontSize: 13, color: '#71717a', lineHeight: 1.5 }}>{item.desc}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )
+        })()}
+
         {/* ── AUTO-SCHEDULER + FLOATING POSTS ──────────────────────────── */}
         <div style={{ position: 'relative' }}>
           <FloatingPosts scrollY={scrollY} />
