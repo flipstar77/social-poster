@@ -1,0 +1,5 @@
+[
+  { "handle": "example_restaurant_berlin", "name": "Example Restaurant", "city": "Berlin", "category": "restaurant" },
+  { "handle": "example_cafe_wien", "name": "Beispiel Café", "city": "Wien", "category": "cafe" },
+  { "handle": "example_bar_zuerich", "name": "Muster Bar", "city": "Zürich", "category": "bar" }
+]

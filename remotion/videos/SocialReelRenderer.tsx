@@ -90,6 +90,11 @@ function textAnimStyle(progress: number, type: TextAnimType): React.CSSPropertie
       return { opacity: progress, transform: `translateX(${(1 - progress) * 60}px)` }
     case 'scale-in':
       return { opacity: progress, transform: `scale(${0.7 + progress * 0.3})` }
+    case 'shake': {
+      const dampen = 1 - progress
+      const shakeX = Math.sin(progress * Math.PI * 8) * dampen * 15
+      return { opacity: Math.min(1, progress * 3), transform: `translateX(${shakeX}px)` }
+    }
     default:
       return { opacity: progress }
   }
@@ -322,6 +327,27 @@ export const SocialReelRenderer: React.FC<{
   const secondaryColor = photoText ? '#ffffffcc' : c.textSecondary
   const textShadow = photoText ? '0 2px 12px rgba(0,0,0,0.7), 0 1px 4px rgba(0,0,0,0.5)' : 'none'
 
+  // Text stroke for readability on any background
+  const strokeStyle: React.CSSProperties = c.textStroke ? {
+    WebkitTextStroke: `2px rgba(0,0,0,0.4)`,
+    paintOrder: 'stroke fill',
+  } : {}
+
+  // Gradient text on title
+  const gradientStyle: React.CSSProperties = c.gradientText ? {
+    background: `linear-gradient(135deg, ${primaryColor}, ${accent})`,
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    backgroundClip: 'text',
+  } : {}
+
+  // Seamless loop: fade in/out at video boundaries
+  const totalDur = 3 * P_DUR
+  const loopOpacity = Math.min(
+    interpolate(frame, [0, 8], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }),
+    interpolate(frame, [totalDur - 8, totalDur], [1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }),
+  )
+
   const cardStyle: React.CSSProperties = isCard ? {
     background: `${c.bg2}dd`,
     borderRadius: 24,
@@ -332,11 +358,15 @@ export const SocialReelRenderer: React.FC<{
     width: '100%',
   } : {}
 
+  // Progress bar config (from content extras)
+  const showProgressBar = (content as any).__progressBar !== false
+
   return (
     <AbsoluteFill style={{
       background: `linear-gradient(${c.gradAngle}deg, ${c.bg1}, ${c.bg2})`,
       fontFamily: c.font,
       overflow: 'hidden',
+      opacity: loopOpacity,
     }}>
       {/* Media background layer — spans ALL phases with Ken Burns zoom */}
       {isPhotoReel && (
@@ -398,6 +428,8 @@ export const SocialReelRenderer: React.FC<{
               textTransform: c.textTransform as React.CSSProperties['textTransform'],
               lineHeight: 1.1,
               textShadow,
+              ...strokeStyle,
+              ...gradientStyle,
             }}>
               {content.title}
             </div>
@@ -512,6 +544,8 @@ export const SocialReelRenderer: React.FC<{
               textTransform: c.textTransform as React.CSSProperties['textTransform'],
               marginBottom: 32,
               textShadow,
+              ...strokeStyle,
+              ...gradientStyle,
             }}>
               {content.ctaLabel}
             </div>
@@ -544,6 +578,48 @@ export const SocialReelRenderer: React.FC<{
 
       {/* Overlay effects */}
       <OverlayFX type={c.overlay} accent={accent} />
+
+      {/* Story-style progress bar */}
+      {showProgressBar && (
+        <div style={{
+          position: 'absolute',
+          top: 16,
+          left: 24,
+          right: 24,
+          display: 'flex',
+          gap: 6,
+          zIndex: 20,
+        }}>
+          {[0, 1, 2].map(i => {
+            const segStart = i * P_DUR
+            const segProgress = interpolate(
+              frame,
+              [segStart, segStart + P_DUR],
+              [0, 1],
+              { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' },
+            )
+            return (
+              <div
+                key={i}
+                style={{
+                  flex: 1,
+                  height: 3,
+                  borderRadius: 2,
+                  background: `rgba(255,255,255,0.25)`,
+                  overflow: 'hidden',
+                }}
+              >
+                <div style={{
+                  width: `${segProgress * 100}%`,
+                  height: '100%',
+                  background: accent,
+                  borderRadius: 2,
+                }} />
+              </div>
+            )
+          })}
+        </div>
+      )}
 
       {/* Business name watermark (bottom-right) */}
       {content.businessName && (

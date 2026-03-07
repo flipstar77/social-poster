@@ -20,6 +20,10 @@ export interface UserStyleChoices {
   photoOverlayOpacity?: number  // 0.1-0.8, default 0.5
   bgPattern?: BgPatternType     // default 'dots'
   photoPosition?: PhotoPosition // default 'full-bleed'
+  textStroke?: boolean          // text outline for readability
+  gradientText?: boolean        // gradient title color
+  aspectRatio?: '9:16' | '1:1' | '4:5'  // canvas shape
+  progressBar?: boolean         // story-style progress bar
 }
 
 // Map text animations to matching transitions
@@ -31,6 +35,7 @@ const ANIM_TO_TRANSITION: Record<TextAnimType, TransitionType> = {
   'slide-in': 'slide-left',
   'scale-in': 'scale',
   'punch': 'scale',
+  'shake': 'glitch',
 }
 
 export function buildStyleConfig(choices: UserStyleChoices): StyleConfig {
@@ -58,6 +63,8 @@ export function buildStyleConfig(choices: UserStyleChoices): StyleConfig {
     overlay: 'vignette',
     photoPosition: choices.photoPosition ?? 'full-bleed',
     photoOverlayOpacity: choices.photoOverlayOpacity ?? 0.5,
+    textStroke: choices.textStroke,
+    gradientText: choices.gradientText,
   }
 }
 
@@ -110,6 +117,7 @@ export const ANIMATION_LABELS: Record<TextAnimType, { de: string; en: string }> 
   'slide-in':   { de: 'Reinsliden', en: 'Slide In' },
   'scale-in':   { de: 'Reinzoomen', en: 'Scale In' },
   'punch':      { de: 'Match & Move', en: 'Match & Move' },
+  'shake':      { de: 'Wackeln', en: 'Shake' },
 }
 
 export const LAYOUT_LABELS: Record<LayoutType, { de: string; en: string; icon: string }> = {

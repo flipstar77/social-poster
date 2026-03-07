@@ -1,0 +1,28 @@
+{
+  "score": 90,
+  "issues": [
+    {
+      "severity": "warning",
+      "rule": "meta-short",
+      "message": "Meta description too short (125/130-155 chars)"
+    },
+    {
+      "severity": "warning",
+      "rule": "word-count",
+      "message": "1901 words — good but 2000+ is ideal"
+    }
+  ],
+  "stats": {
+    "wordCount": 1901,
+    "h2Count": 9,
+    "h3Count": 18,
+    "paragraphCount": 63,
+    "metaDescriptionLength": 125,
+    "hasKeywordInTitle": true,
+    "hasKeywordInIntro": true,
+    "hasKeywordInH2": true,
+    "hasInternalLink": true,
+    "hasSvgDiagram": true,
+    "hasTable": true
+  }
+}

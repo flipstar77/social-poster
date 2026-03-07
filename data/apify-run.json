@@ -1,0 +1,80 @@
+{
+  "id": "U2gWYwW5YkbC7Qb4U",
+  "actId": "dSCLg0C3YEZ83HzYX",
+  "userId": "GDRliRx09vkXbJ1Fb",
+  "startedAt": "2026-02-27T11:43:14.657Z",
+  "finishedAt": null,
+  "status": "READY",
+  "meta": {
+    "origin": "API",
+    "userAgent": "node"
+  },
+  "stats": {
+    "inputBodyLen": 4107,
+    "migrationCount": 0,
+    "rebootCount": 0,
+    "restartCount": 0,
+    "resurrectCount": 0,
+    "computeUnits": 0
+  },
+  "options": {
+    "build": "latest",
+    "timeoutSecs": 30000,
+    "memoryMbytes": 1024,
+    "maxTotalChargeUsd": 5,
+    "diskMbytes": 2048
+  },
+  "buildId": "VK5Fh7dKVcgswp53o",
+  "defaultKeyValueStoreId": "QgfWQNwo7NOYrVouc",
+  "defaultDatasetId": "d8VulJ7stfbAK0TGn",
+  "defaultRequestQueueId": "pte1MDcMJa7uoXGOa",
+  "storageIds": {
+    "keyValueStores": {
+      "default": "QgfWQNwo7NOYrVouc"
+    },
+    "datasets": {
+      "default": "d8VulJ7stfbAK0TGn"
+    },
+    "requestQueues": {
+      "default": "pte1MDcMJa7uoXGOa"
+    }
+  },
+  "pricingInfo": {
+    "minimalMaxTotalChargeUsd": 0.0026,
+    "pricingModel": "PAY_PER_EVENT",
+    "isPriceChangeNotificationSuppressed": true,
+    "createdAt": "2026-02-17T17:10:00.438Z",
+    "startedAt": "2026-02-17T17:10:00.438Z",
+    "apifyMarginPercentage": 0.2,
+    "pricingPerEvent": {
+      "actorChargeEvents": {
+        "profile": {
+          "eventTitle": "Profile",
+          "eventDescription": "Each profile written to the dataset.",
+          "isOneTimeEvent": false,
+          "isPrimaryEvent": true,
+          "eventPriceUsd": 0.0026
+        },
+        "about-account": {
+          "eventTitle": "Add-on: About account",
+          "eventDescription": "Extra cost per profile scraped with account information. This includes the date joined and the country of the account. Be aware that the county is scraped only if the user filled in this information.",
+          "isOneTimeEvent": false,
+          "eventPriceUsd": 0.007
+        }
+      }
+    }
+  },
+  "chargedEventCounts": {
+    "profile": 0,
+    "about-account": 0
+  },
+  "platformUsageBillingModel": "DEVELOPER",
+  "accountedChargedEventCounts": {
+    "profile": 0,
+    "about-account": 0
+  },
+  "generalAccess": "FOLLOW_USER_SETTING",
+  "buildNumber": "0.0.395",
+  "containerUrl": "https://uoqpirigzolw.runs.apify.net",
+  "usageTotalUsd": 0
+}

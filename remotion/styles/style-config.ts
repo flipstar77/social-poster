@@ -4,7 +4,7 @@
 // ============================================================================
 
 export type TransitionType = 'fade' | 'slide-left' | 'slide-right' | 'slide-up' | 'slide-down' | 'scale' | 'blur' | 'wipe' | 'glitch' | 'rotate'
-export type TextAnimType = 'fade-up' | 'instant' | 'typewriter' | 'blur-in' | 'slide-in' | 'scale-in' | 'punch'
+export type TextAnimType = 'fade-up' | 'instant' | 'typewriter' | 'blur-in' | 'slide-in' | 'scale-in' | 'punch' | 'shake'
 export type LayoutType = 'center' | 'left' | 'right' | 'split' | 'card'
 export type BgPatternType = 'none' | 'grid' | 'dots' | 'scanlines' | 'diagonal' | 'circles'
 export type OverlayType = 'none' | 'vignette' | 'border' | 'corner-marks' | 'glow-border'
@@ -22,6 +22,9 @@ export interface StyleConfig {
   // Photo-reel specific
   photoPosition: PhotoPosition
   photoOverlayOpacity: number
+  // Optional enhancements
+  textStroke?: boolean
+  gradientText?: boolean
 }
 
 // ====== CONFIG ARRAYS ======

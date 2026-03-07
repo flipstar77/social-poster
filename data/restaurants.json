@@ -1,0 +1,1346 @@
+[
+  {
+    "handle": "hofbraeu.wirtshaus",
+    "name": "Hofbräu",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "burgermeister.official",
+    "name": "Burgermeister Schlesisches Tor",
+    "city": "Berlin",
+    "category": "fast_food"
+  },
+  {
+    "handle": "maximiliansberlin",
+    "name": "Restaurant Maximilians Berlin",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "block_house_official",
+    "name": "BLOCK HOUSE Am Alexanderplatz",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "cafeamneuensee",
+    "name": "Café am Neuen See",
+    "city": "Berlin",
+    "category": "cafe"
+  },
+  {
+    "handle": "berliner_fernsehturm",
+    "name": "Sphere Tim Raue",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "ristorante_luardi",
+    "name": "Luardi 🥇🇮🇹 »Cucina della Mamma«",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "carambar_berlin",
+    "name": "Carambar",
+    "city": "Berlin",
+    "category": "bar"
+  },
+  {
+    "handle": "terasdonerkebab",
+    "name": "TERAS Döner Kebab",
+    "city": "Berlin",
+    "category": "fast_food"
+  },
+  {
+    "handle": "60secondstonapoli",
+    "name": "60 seconds to napoli Berlin / Oderbergerstr",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "upper_burger_grill",
+    "name": "Upper Burger Grill",
+    "city": "Berlin",
+    "category": "fast_food"
+  },
+  {
+    "handle": "monkeybar_25h",
+    "name": "Monkey Bar",
+    "city": "Berlin",
+    "category": "bar"
+  },
+  {
+    "handle": "schnitzeleimitte",
+    "name": "Schnitzelei Mitte",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "amrit_berlin",
+    "name": "AMRIT - Berlin Mitte",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "wildematildecocktailbar",
+    "name": "Wilde Matilde Deutsches Restaurant Cafe´ Bar und Variete",
+    "city": "Berlin",
+    "category": "cafe"
+  },
+  {
+    "handle": "las_malvinas_steakhouse",
+    "name": "Steakhouse & Restaurant Las Malvinas",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "legal",
+    "name": "Zur Gerichtslaube",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "neni.berlin",
+    "name": "NENI Berlin",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "father.carpenter",
+    "name": "Father Carpenter",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "mioberlinonline",
+    "name": "Mio Berlin",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "100gramm.bar",
+    "name": "100 Gramm Bar",
+    "city": "Berlin",
+    "category": "bar"
+  },
+  {
+    "handle": "uppergrill.bar",
+    "name": "Upper Grill & Bar",
+    "city": "Berlin",
+    "category": "bar"
+  },
+  {
+    "handle": "zen.sushi.lounge",
+    "name": "ZEN Restaurant",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "silocoffee",
+    "name": "Silo Coffee",
+    "city": "Berlin",
+    "category": "cafe"
+  },
+  {
+    "handle": "goldies_smashburger",
+    "name": "goldies",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "cappuccinograndcafe_mitte",
+    "name": "Cappuccino Grand Café - Mitte",
+    "city": "Berlin",
+    "category": "cafe"
+  },
+  {
+    "handle": "burgerturm",
+    "name": "Burger Turm",
+    "city": "Berlin",
+    "category": "fast_food"
+  },
+  {
+    "handle": "standardseriouspizza",
+    "name": "Standard Serious Pizza",
+    "city": "Berlin",
+    "category": "fast_food"
+  },
+  {
+    "handle": "solarberlin",
+    "name": "SOLAR Berlin Sky-Bar & Restaurant",
+    "city": "Berlin",
+    "category": "bar"
+  },
+  {
+    "handle": "grindhouseburger",
+    "name": "Grindhouse Burgers",
+    "city": "Berlin",
+    "category": "fast_food"
+  },
+  {
+    "handle": "ciccio.trattoria",
+    "name": "Lily Burger \"Beef & Vegan Grill-Club",
+    "city": "Berlin",
+    "category": "fast_food"
+  },
+  {
+    "handle": "nightkitchenberlin",
+    "name": "Night Kitchen",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "sticksnsushide",
+    "name": "Sticks'n'Sushi",
+    "city": "Berlin",
+    "category": "fast_food"
+  },
+  {
+    "handle": "lamaisonberlin",
+    "name": "LA MAISON",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "distriktcoffee",
+    "name": "Distrikt",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "firetigerberlin",
+    "name": "Fire Tiger",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "cafekrone.berlin",
+    "name": "Café Krone",
+    "city": "Berlin",
+    "category": "cafe"
+  },
+  {
+    "handle": "boccafelice_berlin",
+    "name": "Ristorante Bocca Felice Berlin-Mitte",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "fiverivers.berlin",
+    "name": "Five Rivers Restaurant",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "mmmagicjohns",
+    "name": "Magic John’s Pizza",
+    "city": "Berlin",
+    "category": "fast_food"
+  },
+  {
+    "handle": "figlmueller",
+    "name": "Figlmüller Bäckerstraße",
+    "city": "Wien",
+    "category": "restaurant"
+  },
+  {
+    "handle": "demel_wien",
+    "name": "Café Demel",
+    "city": "Wien",
+    "category": "cafe"
+  },
+  {
+    "handle": "cafelandtmann",
+    "name": "Café Landtmann",
+    "city": "Wien",
+    "category": "cafe"
+  },
+  {
+    "handle": "restaurant_vienne",
+    "name": "Restaurant Vienne/OnurChefs",
+    "city": "Wien",
+    "category": "restaurant"
+  },
+  {
+    "handle": "mottoamfluss",
+    "name": "Motto am Fluss",
+    "city": "Wien",
+    "category": "restaurant"
+  },
+  {
+    "handle": "lugeck_figlmueller",
+    "name": "Restaurant Lugeck – Figlmüller Wien",
+    "city": "Wien",
+    "category": "restaurant"
+  },
+  {
+    "handle": "vollpension_wien",
+    "name": "Vollpension Generationencafé in der Schleifmühlgasse",
+    "city": "Wien",
+    "category": "cafe"
+  },
+  {
+    "handle": "skybarvienna",
+    "name": "SKY Bar im STEFFL",
+    "city": "Wien",
+    "category": "bar"
+  },
+  {
+    "handle": "fenstercafe",
+    "name": "Fenster Cafe",
+    "city": "Wien",
+    "category": "cafe"
+  },
+  {
+    "handle": "cafemuseum",
+    "name": "Café Museum",
+    "city": "Wien",
+    "category": "cafe"
+  },
+  {
+    "handle": "cafeschwarzenberg",
+    "name": "Café Schwarzenberg",
+    "city": "Wien",
+    "category": "cafe"
+  },
+  {
+    "handle": "glacis_beisl",
+    "name": "Glacis Beisl",
+    "city": "Wien",
+    "category": "restaurant"
+  },
+  {
+    "handle": "dasloftwien",
+    "name": "Das LOFT",
+    "city": "Wien",
+    "category": "restaurant"
+  },
+  {
+    "handle": "cafe_eiles",
+    "name": "Café Eiles",
+    "city": "Wien",
+    "category": "cafe"
+  },
+  {
+    "handle": "cafeprueckel",
+    "name": "Café Prückel",
+    "city": "Wien",
+    "category": "cafe"
+  },
+  {
+    "handle": "pizzamari_wien",
+    "name": "Pizza Mari",
+    "city": "Wien",
+    "category": "fast_food"
+  },
+  {
+    "handle": "bauernbraeu_wien",
+    "name": "Bauernbräu",
+    "city": "Wien",
+    "category": "restaurant"
+  },
+  {
+    "handle": "cafegoldegg",
+    "name": "Café Goldegg",
+    "city": "Wien",
+    "category": "cafe"
+  },
+  {
+    "handle": "huthgastronomie",
+    "name": "Huth Gastwirtschaft",
+    "city": "Wien",
+    "category": "restaurant"
+  },
+  {
+    "handle": "cafesavoyvienna",
+    "name": "Café Savoy",
+    "city": "Wien",
+    "category": "cafe"
+  },
+  {
+    "handle": "mochi_vienna",
+    "name": "Mochi",
+    "city": "Wien",
+    "category": "restaurant"
+  },
+  {
+    "handle": "kitcha.at",
+    "name": "KitchA - Sticks & Rolls",
+    "city": "Wien",
+    "category": "restaurant"
+  },
+  {
+    "handle": "sixtarestaurant",
+    "name": "SIXTA",
+    "city": "Wien",
+    "category": "restaurant"
+  },
+  {
+    "handle": "balthasar_kaffee",
+    "name": "Balthasar Kaffee Bar",
+    "city": "Wien",
+    "category": "cafe"
+  },
+  {
+    "handle": "thellwien",
+    "name": "THELL | Restaurant & Bar",
+    "city": "Wien",
+    "category": "bar"
+  },
+  {
+    "handle": "pizzeria_il_mercato_",
+    "name": "Pizzeria il mercato",
+    "city": "Wien",
+    "category": "restaurant"
+  },
+  {
+    "handle": "o1",
+    "name": "ef16 Restaurant Weinbar",
+    "city": "Wien",
+    "category": "bar"
+  },
+  {
+    "handle": "chezbernardvienna",
+    "name": "CHEZ BERNARD Restaurant et Bar",
+    "city": "Wien",
+    "category": "bar"
+  },
+  {
+    "handle": "imperio_wien",
+    "name": "Pizzeria Il Mare",
+    "city": "Wien",
+    "category": "restaurant"
+  },
+  {
+    "handle": "laspiga_vienna",
+    "name": "Pizzeria La Spiga",
+    "city": "Wien",
+    "category": "restaurant"
+  },
+  {
+    "handle": "hiltl",
+    "name": "Haus Hiltl",
+    "city": "Zürich",
+    "category": "restaurant"
+  },
+  {
+    "handle": "swisschuchi",
+    "name": "Swiss Chuchi Restaurant",
+    "city": "Zürich",
+    "category": "restaurant"
+  },
+  {
+    "handle": "babus_bakeryandcoffeehouse",
+    "name": "Babu's Bakery & Coffeehouse",
+    "city": "Zürich",
+    "category": "cafe"
+  },
+  {
+    "handle": "santaluciaschweiz",
+    "name": "Santa Lucia Niederdorf",
+    "city": "Zürich",
+    "category": "restaurant"
+  },
+  {
+    "handle": "zum_koenigstuhl",
+    "name": "Zum Königstuhl",
+    "city": "Zürich",
+    "category": "restaurant"
+  },
+  {
+    "handle": "noochasiankitchen",
+    "name": "Nooch Asian Kitchen",
+    "city": "Zürich",
+    "category": "restaurant"
+  },
+  {
+    "handle": "neni.zurich",
+    "name": "NENI Zürich",
+    "city": "Zürich",
+    "category": "restaurant"
+  },
+  {
+    "handle": "trattoria.sempre",
+    "name": "Trattoria Sempre Zürich",
+    "city": "Zürich",
+    "category": "restaurant"
+  },
+  {
+    "handle": "1842cafeconfiserie",
+    "name": "Café & Conditorei 1842",
+    "city": "Zürich",
+    "category": "cafe"
+  },
+  {
+    "handle": "terrasse_zuerich",
+    "name": "terrasse Restaurant",
+    "city": "Zürich",
+    "category": "restaurant"
+  },
+  {
+    "handle": "odeonzurich",
+    "name": "Café Bar ODEON",
+    "city": "Zürich",
+    "category": "cafe"
+  },
+  {
+    "handle": "ellokal_zh",
+    "name": "El Lokal",
+    "city": "Zürich",
+    "category": "restaurant"
+  },
+  {
+    "handle": "ooorooftop",
+    "name": "Rooftop",
+    "city": "Zürich",
+    "category": "restaurant"
+  },
+  {
+    "handle": "cafehenrici",
+    "name": "Café Henrici",
+    "city": "Zürich",
+    "category": "cafe"
+  },
+  {
+    "handle": "georgebarandgrill",
+    "name": "George Bar & Grill",
+    "city": "Zürich",
+    "category": "bar"
+  },
+  {
+    "handle": "aura_zurich",
+    "name": "AURA 800° Grill & Bar",
+    "city": "Zürich",
+    "category": "bar"
+  },
+  {
+    "handle": "metropolrestaurant",
+    "name": "Metropol",
+    "city": "Zürich",
+    "category": "restaurant"
+  },
+  {
+    "handle": "julesvernepanoramabar",
+    "name": "Jules Verne Panoramabar",
+    "city": "Zürich",
+    "category": "bar"
+  },
+  {
+    "handle": "negishiurbansushi",
+    "name": "Negishi Urban Sushi, Zürich Niederdorf",
+    "city": "Zürich",
+    "category": "fast_food"
+  },
+  {
+    "handle": "mamespecialtycoffee",
+    "name": "MAME",
+    "city": "Zürich",
+    "category": "restaurant"
+  },
+  {
+    "handle": "dapone.ch",
+    "name": "da PONE",
+    "city": "Zürich",
+    "category": "restaurant"
+  },
+  {
+    "handle": "kafidihei",
+    "name": "Kafi Dihei",
+    "city": "Zürich",
+    "category": "restaurant"
+  },
+  {
+    "handle": "montmartre_zurich",
+    "name": "Franzos",
+    "city": "Zürich",
+    "category": "restaurant"
+  },
+  {
+    "handle": "ristoranteazzurro",
+    "name": "Azzurro",
+    "city": "Zürich",
+    "category": "restaurant"
+  },
+  {
+    "handle": "wolfthemes",
+    "name": "Old Crow",
+    "city": "Zürich",
+    "category": "restaurant"
+  },
+  {
+    "handle": "kasheme",
+    "name": "Kasheme",
+    "city": "Zürich",
+    "category": "restaurant"
+  },
+  {
+    "handle": "restaurant_anna",
+    "name": "Anna Restaurant",
+    "city": "Zürich",
+    "category": "restaurant"
+  },
+  {
+    "handle": "lafontezuerich",
+    "name": "Restaurant La Fonte",
+    "city": "Zürich",
+    "category": "restaurant"
+  },
+  {
+    "handle": "grandezurich",
+    "name": "Grande Café & Bar",
+    "city": "Zürich",
+    "category": "cafe"
+  },
+  {
+    "handle": "widderhotel",
+    "name": "Widder Bar",
+    "city": "Zürich",
+    "category": "bar"
+  },
+  {
+    "handle": "fiveguysde",
+    "name": "Five Guys Frankfurt Zeil",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "jamys_burger",
+    "name": "Jamy’s Burger",
+    "city": "Frankfurt am Main",
+    "category": "fast_food"
+  },
+  {
+    "handle": "losteria.de",
+    "name": "L'Osteria Frankfurt am Main",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "paulaner_am_dom",
+    "name": "Restaurant Paulaner am Dom",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "whatsbeef",
+    "name": "What's Beef",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "cafebarcelonafrankfurt",
+    "name": "Cafe & Bar Celona Frankfurt",
+    "city": "Frankfurt am Main",
+    "category": "cafe"
+  },
+  {
+    "handle": "oostenfrankfurt",
+    "name": "Oosten – Realwirtschaft am Main",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "hans_im_glueck_burgergrill",
+    "name": "HANS IM GLÜCK - FRANKFURT am Main Braubachstraße",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "chicagomeatpackers_frankfurt",
+    "name": "Chicago Meatpackers",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "atschel.sachsenhausen",
+    "name": "Apfelweinwirtschaft Atschel",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "helium.frankfurt",
+    "name": "Bar Helium Frankfurt am Main",
+    "city": "Frankfurt am Main",
+    "category": "bar"
+  },
+  {
+    "handle": "imherzenafrikasfrankfurt",
+    "name": "Im Herzen Afrikas Frankfurt",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "kiwis_frankfurt",
+    "name": "Kiwis – Restaurant • Bar • Events",
+    "city": "Frankfurt am Main",
+    "category": "bar"
+  },
+  {
+    "handle": "restaurantmainnizza",
+    "name": "Main Nizza Gastronomie",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "superbrosfrankfurt",
+    "name": "Super Bro's",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "africanqueen_frankfurt",
+    "name": "African Queen Restaurant",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "heroespremiumburgers",
+    "name": "Heroes Premium Burgers",
+    "city": "Frankfurt am Main",
+    "category": "fast_food"
+  },
+  {
+    "handle": "nft.skybar",
+    "name": "NFT SKYBAR",
+    "city": "Frankfurt am Main",
+    "category": "bar"
+  },
+  {
+    "handle": "mainkaicafe",
+    "name": "Mainkai Café•Bistro",
+    "city": "Frankfurt am Main",
+    "category": "cafe"
+  },
+  {
+    "handle": "pizzeriamontana",
+    "name": "Pizzeria Montana",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "pizzeriagiulio_ffm",
+    "name": "Pizzeria Giulio",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "bergerstreetfood",
+    "name": "Berger Streetfood - Fusion Sushi",
+    "city": "Frankfurt am Main",
+    "category": "fast_food"
+  },
+  {
+    "handle": "aristonfrankfurt",
+    "name": "Ariston Restaurant",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "bullandbearfrankfurt",
+    "name": "Bull & Bear Restaurant & Sportsbar",
+    "city": "Frankfurt am Main",
+    "category": "bar"
+  },
+  {
+    "handle": "kakadus_restaurant",
+    "name": "KAKADU'S Steakhouse & Burger & Bar",
+    "city": "Frankfurt am Main",
+    "category": "bar"
+  },
+  {
+    "handle": "traum_kuh",
+    "name": "Traumkuh",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "cafebuur",
+    "name": "Café Buur",
+    "city": "Frankfurt am Main",
+    "category": "cafe"
+  },
+  {
+    "handle": "mook_group",
+    "name": "Zenzakan",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "the_holy_cross_brewing_society",
+    "name": "The Holy Cross Brewing Society",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "urbanranchofficial",
+    "name": "Urban Ranch",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "quattro_frankfurt",
+    "name": "Quattro Ristorante Italiano",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "lepetitcafefrankfurt",
+    "name": "Le Petit Café",
+    "city": "Frankfurt am Main",
+    "category": "cafe"
+  },
+  {
+    "handle": "frankfurterwirtshaus",
+    "name": "Frankfurter Wirtshaus",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "kabukirestaurant_frankfurt",
+    "name": "Kabuki",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "olbiafrankfurt",
+    "name": "Pizzeria Olbia",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "bunca_barista",
+    "name": "BUNCA Human & Roaster",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "naiv_world",
+    "name": "Bar & Restaurant naïv",
+    "city": "Frankfurt am Main",
+    "category": "bar"
+  },
+  {
+    "handle": "maintower_restaurant_lounge",
+    "name": "Main Tower Restaurant & Lounge",
+    "city": "Frankfurt am Main",
+    "category": "bar"
+  },
+  {
+    "handle": "maingold_bar",
+    "name": "Maingold - Frankfurt am Main",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "gorenshi.ffm",
+    "name": "GORENSHI Frankfurt",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "maindiner",
+    "name": "Maindiner",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "cafe_laumer",
+    "name": "Café Laumer - Frankfurt am Main",
+    "city": "Frankfurt am Main",
+    "category": "cafe"
+  },
+  {
+    "handle": "millelirefrankfurt",
+    "name": "Pizzeria Mille Lire",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "calma_caos",
+    "name": "Pizzeria Calma Caos",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "sushicafe_sakura",
+    "name": "SAKURA Sushi Cafe",
+    "city": "Frankfurt am Main",
+    "category": "cafe"
+  },
+  {
+    "handle": "mainterrasse",
+    "name": "MAIN TERRASSE - Winterterrasse mit Skyline-Blick",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "cafe_im_liebieghaus",
+    "name": "Café im Liebieghaus",
+    "city": "Frankfurt am Main",
+    "category": "cafe"
+  },
+  {
+    "handle": "thelegacyfrankfurt",
+    "name": "The Legacy Bar & Grill",
+    "city": "Frankfurt am Main",
+    "category": "bar"
+  },
+  {
+    "handle": "broskiburger",
+    "name": "Broskiburger",
+    "city": "Frankfurt am Main",
+    "category": "fast_food"
+  },
+  {
+    "handle": "hunkydory.bar",
+    "name": "Hunky Dory Bar",
+    "city": "Frankfurt am Main",
+    "category": "bar"
+  },
+  {
+    "handle": "mysteryofpizza",
+    "name": "Mystery of Pizza - Frankfurt am Main",
+    "city": "Frankfurt am Main",
+    "category": "fast_food"
+  },
+  {
+    "handle": "bidlabu_ffm",
+    "name": "Bidlabu",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "nasushinudelbar",
+    "name": "NA Sushi & Nudelbar",
+    "city": "Frankfurt am Main",
+    "category": "bar"
+  },
+  {
+    "handle": "antonys_bar",
+    "name": "Antony's Bar - Frankfurt am Main",
+    "city": "Frankfurt am Main",
+    "category": "bar"
+  },
+  {
+    "handle": "meliahtlresorts",
+    "name": "Oben Restaurant & Skybar",
+    "city": "Frankfurt am Main",
+    "category": "bar"
+  },
+  {
+    "handle": "restaurant_the_sakai",
+    "name": "The Sakai",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "nonno_pizzeria",
+    "name": "Pizzeria Nonno",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "bminehotels",
+    "name": "THE ROOF Frankfurt",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "theblaskyhotel",
+    "name": "Blasky Restaurant & Bar",
+    "city": "Frankfurt am Main",
+    "category": "bar"
+  },
+  {
+    "handle": "fontanacity_ffm",
+    "name": "Ristorante & Pizzeria - Fontana City",
+    "city": "Frankfurt am Main",
+    "category": "restaurant"
+  },
+  {
+    "handle": "hudsonyards_frankfurt",
+    "name": "Hudson Yards Lounge, Bar & Dining",
+    "city": "Frankfurt am Main",
+    "category": "bar"
+  },
+  {
+    "handle": "klunkerkranich",
+    "name": "Klunkerkranich",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "malafemmena_berlin",
+    "name": "Malafemmena",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "oliveto.berlin",
+    "name": "Oliveto · Ristorante & Pizzeria",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "meinhausamsee",
+    "name": "Mein Haus am See",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "gaffelhausberlin",
+    "name": "Gaffel Haus Berlin - Das Kölsche Konsulat in der Hauptstadt",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "kuchi.kant",
+    "name": "Kuchi Mitte",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "pizzanostra_berlin",
+    "name": "Pizza Nostra",
+    "city": "Berlin",
+    "category": "fast_food"
+  },
+  {
+    "handle": "cafeneundrei",
+    "name": "cafe neundrei",
+    "city": "Berlin",
+    "category": "cafe"
+  },
+  {
+    "handle": "bellboy.berlin",
+    "name": "Bellboy Bar",
+    "city": "Berlin",
+    "category": "bar"
+  },
+  {
+    "handle": "laginorestaurant",
+    "name": "La Gino",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "beast_berlin_official",
+    "name": "Beast Berlin",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "thealchemistde",
+    "name": "The Alchemist",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "evin.pizzapasta",
+    "name": "Ristorante Evin",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "palmbeachberlin",
+    "name": "Palm Beach Restaurant Bar Café",
+    "city": "Berlin",
+    "category": "cafe"
+  },
+  {
+    "handle": "monoabe_music",
+    "name": "KINK Bar & Restaurant",
+    "city": "Berlin",
+    "category": "bar"
+  },
+  {
+    "handle": "restaurant_facil",
+    "name": "FACIL",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "umi.berlin",
+    "name": "UMI x Gendai No Kaishaku Restaurant",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "burgers_berlin",
+    "name": "Burgers Berlin",
+    "city": "Berlin",
+    "category": "fast_food"
+  },
+  {
+    "handle": "law.berlin",
+    "name": "LAWRENCE berlin mitte",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "jederzeit_berlin",
+    "name": "Jederzeit Café - Berlin Kreuzberg",
+    "city": "Berlin",
+    "category": "cafe"
+  },
+  {
+    "handle": "ikesu.restaurant",
+    "name": "I-KE-SU Japanisches Restaurant in Berlin",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "laesperanza_berlin",
+    "name": "La Esperanza Restaurant Tapas Bar",
+    "city": "Berlin",
+    "category": "bar"
+  },
+  {
+    "handle": "sachikosushiberlin",
+    "name": "Sachiko Sushi",
+    "city": "Berlin",
+    "category": "fast_food"
+  },
+  {
+    "handle": "vincentpianobar",
+    "name": "Vincent Piano Bar",
+    "city": "Berlin",
+    "category": "bar"
+  },
+  {
+    "handle": "ama.aroma",
+    "name": "ama Café",
+    "city": "Berlin",
+    "category": "cafe"
+  },
+  {
+    "handle": "aratasushiberlin",
+    "name": "Arata Sushi Berlin",
+    "city": "Berlin",
+    "category": "fast_food"
+  },
+  {
+    "handle": "pizza.storia.berlin",
+    "name": "Storia, Pizza al Taglio",
+    "city": "Berlin",
+    "category": "fast_food"
+  },
+  {
+    "handle": "shinju.berlin",
+    "name": "SHINJU Restaurant",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "thecatch.berlin",
+    "name": "The Catch",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "26shibuya",
+    "name": "26 Shibuya",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "daemonberlin",
+    "name": "Restaurant Dae Mon",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "bundesburger.berlin",
+    "name": "BundesBurger",
+    "city": "Berlin",
+    "category": "fast_food"
+  },
+  {
+    "handle": "bar.tausend.berlin",
+    "name": "BAR TAUSEND",
+    "city": "Berlin",
+    "category": "bar"
+  },
+  {
+    "handle": "johnnysbarberlin",
+    "name": "Johnny's Bar - Karibisches Restaurant",
+    "city": "Berlin",
+    "category": "bar"
+  },
+  {
+    "handle": "sushi.berlin",
+    "name": "Sushi Berlin",
+    "city": "Berlin",
+    "category": "fast_food"
+  },
+  {
+    "handle": "sushipandafi",
+    "name": "Sushi Panda Berlin",
+    "city": "Berlin",
+    "category": "fast_food"
+  },
+  {
+    "handle": "pizza_berlino",
+    "name": "Pizza Berlino",
+    "city": "Berlin",
+    "category": "fast_food"
+  },
+  {
+    "handle": "mr.patty.berlin",
+    "name": "Mr.Patty - Bester Burger Berlin",
+    "city": "Berlin",
+    "category": "fast_food"
+  },
+  {
+    "handle": "mijo_restaurant",
+    "name": "MIJO - Japanese & Vietnamese Restaurant Berlin",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "monsieur_vuong",
+    "name": "Monsieur Vuong",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "umami_restaurants",
+    "name": "Maison Umami",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "mamacook_berlin",
+    "name": "Mama Cook",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "mustafa_demirs_gemuese_kebap",
+    "name": "Mustafa Demir’s Gemüse Kebap",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "delhi6.berlin",
+    "name": "Delhi 6 Indian Indisches Restaurant Berlin",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "tavernaathene",
+    "name": "Taverna Athene",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "nefis.gemusekebap",
+    "name": "Nefis Gemüse Kebap",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "cochuberlin",
+    "name": "Cô Chu",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "saravanaabhavanberlin",
+    "name": "Saravanaa Bhavan",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "quechoa.restaurant",
+    "name": "Restaurant Quê Choa",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "songlam37.restaurant",
+    "name": "Restaurant „Song Lam 37“",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "goodtime.berlin",
+    "name": "Good Time Restaurant",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "eden_berlinstreetfood",
+    "name": "Eden",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "vietbowlberlin",
+    "name": "Viet Bowl",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "royalsandrice_berlin",
+    "name": "Royals & Rice Berlin",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "meenakumaride",
+    "name": "Meena Kumari",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "maharadscha.restaurant",
+    "name": "Maharadscha Indische Restaurant",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "ja_niko_ja_berlin",
+    "name": "Ja! Niko Ja!",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "anjoy_restaurant",
+    "name": "Vietnamesisches Restaurant Anjoy",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "saigoncomnieu",
+    "name": "Saigon Com Nieu",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "restaurant.hoarong",
+    "name": "Hoa Rong",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "taverne.platia",
+    "name": "Taverne Platia",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "kreuzberger.weltlaterne",
+    "name": "Kreuzberger Weltlaterne",
+    "city": "Berlin",
+    "category": "restaurant"
+  },
+  {
+    "handle": "india.club.berlin",
+    "name": "India Club Berlin",
+    "city": "Berlin",
+    "category": "restaurant"
+  }
+]

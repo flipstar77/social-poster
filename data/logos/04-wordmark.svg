@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 200" width="800" height="200">
+  <defs>
+    <linearGradient id="g4" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+  </defs>
+  <!-- Icon: stylized FP monogram with flow -->
+  <circle cx="80" cy="100" r="72" fill="url(#g4)"/>
+  <!-- F inside circle -->
+  <path d="
+    M 52 140
+    L 52 72
+    Q 52 52, 72 52
+    L 112 52
+  " fill="none" stroke="white" stroke-width="12" stroke-linecap="round"/>
+  <path d="
+    M 52 88
+    L 92 88
+  " fill="none" stroke="white" stroke-width="12" stroke-linecap="round"/>
+  <!-- Small wave under F -->
+  <path d="
+    M 52 140
+    Q 68 132, 80 140
+    Q 92 148, 108 140
+  " fill="none" stroke="white" stroke-width="9" stroke-linecap="round" opacity="0.85"/>
+  <!-- Wordmark text -->
+  <text x="175" y="120" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-weight="700" font-size="72" fill="#1a1a2e" letter-spacing="-2">
+    <tspan>Flowing</tspan><tspan fill="url(#g4)">Post</tspan>
+  </text>
+</svg>

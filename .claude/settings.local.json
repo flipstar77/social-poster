@@ -1,0 +1,29 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd c:/Users/Tobias/social-poster && npx tsc --noEmit --pretty 2>&1 | tail -20"
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Skill(ralph-wiggum:ralph-loop)",
+      "Skill(ralph-wiggum:ralph-loop:*)",
+      "Skill(ralph-wiggum:cancel-ralph)",
+      "Skill(ralph-wiggum:cancel-ralph:*)",
+      "mcp__obsidian__list_directory",
+      "mcp__obsidian__read_multiple_notes",
+      "mcp__obsidian__read_note",
+      "mcp__obsidian__write_note",
+      "mcp__obsidian__search_notes",
+      "mcp__obsidian__patch_note"
+    ]
+  }
+}

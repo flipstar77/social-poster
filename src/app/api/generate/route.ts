@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
+import { getPlatformPrompt } from '@/lib/platform-prompts'
 
 export async function POST(request: Request) {
-  const { description, businessType, tone, platform, exampleCaptions, language, whatsappNumber } = await request.json()
+  const { description, businessType, tone, platform, exampleCaptions, language, whatsappNumber, contentDNA } = await request.json()
 
   const apiKey = process.env.XAI_API_KEY
   if (!apiKey) {
@@ -9,47 +10,25 @@ export async function POST(request: Request) {
   }
 
   const exampleBlock = exampleCaptions
-    ? `\n\nHere are example captions the user likes — match this writing style, voice, and structure closely:\n---\n${exampleCaptions}\n---\n`
+    ? `\n\nBeispiel-Captions des Nutzers — passe deinen Stil, Ton und Struktur daran an:\n---\n${exampleCaptions}\n---\n`
     : ''
 
-  const platformRules: Record<string, string> = {
-    instagram: 'Up to 2200 chars, 20-30 relevant hashtags, storytelling style, emojis welcome.',
-    tiktok: 'Short and punchy (under 150 chars), 5-10 trending hashtags, energetic tone, hooks.',
-    facebook: 'Conversational, 0-3 hashtags, can be longer, call-to-action encouraged.',
-    linkedin: 'Professional tone, 3-5 industry hashtags, insightful, no slang. Focus on value.',
-    x: 'Max 280 chars, 1-3 hashtags, punchy and direct. Hook in first line.',
-    threads: 'Casual and conversational, 0-5 hashtags, short, friendly, community feel.',
-    pinterest: 'Descriptive and inspiring, 2-5 keywords as hashtags, appeal to search.',
-    bluesky: 'Casual and authentic, 1-3 hashtags, short to medium length.',
-    reddit: 'Community-focused, no hashtags, genuine and informative tone.',
-  }
-  const platformRule = platformRules[platform?.toLowerCase()] || platformRules.instagram
+  const whatsappCTA = whatsappNumber
+    ? (['instagram', 'tiktok'].includes(platform?.toLowerCase())
+        ? `Füge am Ende jeder Caption (vor den Hashtags) einen WhatsApp-CTA ein, z.B. "Schreib uns auf WhatsApp: ${whatsappNumber}" (kein Link, nur Nummer)`
+        : `Füge einen klickbaren WhatsApp-Link ein: https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')} mit CTA wie "Reserviere per WhatsApp"`)
+    : ''
 
-  const systemPrompt = `You are a social media expert for a ${businessType || 'small business'}.
-Generate engaging social media captions and hashtags.
+  const dnaBlock = contentDNA ? `\n${contentDNA}\n` : ''
 
-Rules:
-- IMPORTANT: Write ALL captions in ${language || 'German'}.
-- Never mention filenames or technical image names in the caption.
-- Keep it authentic, warm, and engaging
-- Platform-specific rules for ${platform}: ${platformRule}
-- Include emojis naturally (except for LinkedIn and Reddit — use sparingly there)
-- Match the requested tone${exampleBlock}${whatsappNumber ? `
-- IMPORTANT: Include a WhatsApp call-to-action naturally at the end of each caption (before hashtags).
-  ${['instagram', 'tiktok'].includes(platform?.toLowerCase())
-    ? `Use plain text with the phone number: e.g. "Schreib uns auf WhatsApp: ${whatsappNumber}" or "Fragen? WhatsApp: ${whatsappNumber}". Do NOT use a URL link.`
-    : `Use a clickable WhatsApp link: https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')} with a natural CTA like "Reserviere per WhatsApp" or "Fragen? Schreib uns auf WhatsApp".`
-  }` : ''}
+  const platformConfig = getPlatformPrompt(platform)
+  const systemPrompt = platformConfig.systemPrompt({ businessType, language, whatsappCTA, exampleBlock }) + dnaBlock
 
-Return ONLY valid JSON (no markdown, no code blocks) in this exact format:
-{"variants": [{"caption": "caption 1", "hashtags": ["tag1", "tag2"]}, {"caption": "caption 2", "hashtags": ["tag1", "tag2"]}, {"caption": "caption 3", "hashtags": ["tag1", "tag2"]}]}
-`
+  const userPrompt = `Plattform: ${platform || 'Instagram'}
+Ton-Präferenz: ${tone || 'freundlich und einladend'}
+Beschreibung des Fotos / Inhalts: ${description}
 
-  const userPrompt = `Platform: ${platform || 'Instagram'}
-Tone: ${tone || 'friendly and inviting'}
-Photo/content description: ${description}
-
-Generate 3 different caption variants with hashtags for this post. Each should have a distinct style/angle.`
+Erstelle 3 Caption-Varianten (eine pro Content-Strategie) mit Hashtags.`
 
   try {
     const res = await fetch('https://api.x.ai/v1/chat/completions', {

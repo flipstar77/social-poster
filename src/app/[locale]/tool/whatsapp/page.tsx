@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Link } from '@/i18n/navigation'
 import { useTranslations } from 'next-intl'
 
 interface WaMessage {
@@ -169,10 +168,7 @@ export default function WhatsAppDashboard() {
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
           <div>
-            <Link href="/tool" style={{ color: 'var(--text-muted)', fontSize: 14, textDecoration: 'none' }}>
-              {t('backToTool')}
-            </Link>
-            <h1 style={{ fontSize: 24, fontWeight: 700, marginTop: 4 }}>{t('title')}</h1>
+            <h2 style={{ fontSize: 24, fontWeight: 700 }}>{t('title')}</h2>
             <p style={{ color: 'var(--text-muted)', fontSize: 14, marginTop: 2 }}>{t('description')}</p>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>

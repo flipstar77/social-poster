@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="g5" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f97316"/>
+      <stop offset="60%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+  </defs>
+  <!-- F letterform with flowing tail — no background -->
+  <!-- Vertical stem -->
+  <path d="
+    M 64 210
+    L 64 70
+    Q 64 36, 100 36
+    L 196 36
+  " fill="none" stroke="url(#g5)" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Horizontal bar -->
+  <path d="
+    M 64 116
+    L 160 116
+  " fill="none" stroke="url(#g5)" stroke-width="28" stroke-linecap="round"/>
+  <!-- Flowing tail wave -->
+  <path d="
+    M 64 210
+    Q 104 210, 124 190
+    Q 144 170, 184 170
+    Q 210 170, 224 186
+  " fill="none" stroke="url(#g5)" stroke-width="22" stroke-linecap="round"/>
+</svg>

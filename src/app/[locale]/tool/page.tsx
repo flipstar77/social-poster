@@ -5,6 +5,12 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter, Link } from '@/i18n/navigation'
 import { useTranslations } from 'next-intl'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
+import PostSwiper from '@/components/PostSwiper'
+import HookGenerator from '@/components/HookGenerator'
+import ContentBalance from '@/components/ContentBalance'
+import ContentRecycler from '@/components/ContentRecycler'
+import WeeklyStrategy from '@/components/WeeklyStrategy'
+import CompetitorScanner from '@/components/CompetitorScanner'
 
 // --- Types ---
 
@@ -18,6 +24,7 @@ interface UploadedPhoto {
 interface CaptionVariant {
   caption: string
   hashtags: string[]
+  category?: string
 }
 
 interface GeneratedPost {
@@ -418,6 +425,14 @@ export default function Home() {
   const [publishProgress, setPublishProgress] = useState(0)
   const [publishErrors, setPublishErrors] = useState<string[]>([])
   const [dragOver, setDragOver] = useState(false)
+  const [swipeMode, setSwipeMode] = useState(false)
+  const [hookMode, setHookMode] = useState(false)
+  const [recycleMode, setRecycleMode] = useState(false)
+  const [strategyMode, setStrategyMode] = useState(false)
+  const [competitorMode, setCompetitorMode] = useState(false)
+  const [hookPlatform, setHookPlatform] = useState('')
+  const [autoQueueLoading, setAutoQueueLoading] = useState(false)
+  const [autoQueueProgress, setAutoQueueProgress] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(['instagram', 'tiktok'])
   const [whatsappNumber, setWhatsappNumber] = useState('')
@@ -545,6 +560,23 @@ export default function Home() {
 
   // --- AI Generation ---
 
+  // Get Content DNA prompt block (client-side, from localStorage)
+  const getDNABlock = () => {
+    try {
+      // Dynamic import not needed — just read localStorage directly
+      const raw = localStorage.getItem('flowingpost-content-dna')
+      if (!raw) return undefined
+      const dna = JSON.parse(raw)
+      if (dna.totalPosts < 10) return undefined
+      const lines = ['CONTENT-DNA DES NUTZERS (passe deinen Stil daran an):']
+      if (dna.avgCaptionLength) lines.push(`- Bevorzugte Caption-Laenge: ~${dna.avgCaptionLength} Zeichen`)
+      if (dna.usesEmojis === false) lines.push('- Bevorzugt wenige/keine Emojis')
+      if (dna.topCategories?.length) lines.push(`- Lieblings-Content-Typen: ${dna.topCategories.join(', ')}`)
+      if (dna.favoriteHookStyles?.length) lines.push(`- Bevorzugte Hook-Stile: ${dna.favoriteHookStyles.join(', ')}`)
+      return lines.join('\n')
+    } catch { return undefined }
+  }
+
   const generateCaption = async (photo: UploadedPhoto, platform: string) => {
     const key = `${photo.id}-${platform}`
     setGenerating(prev => new Set(prev).add(key))
@@ -561,6 +593,7 @@ export default function Home() {
           exampleCaptions,
           language,
           ...(whatsappCtaEnabled && whatsappNumber ? { whatsappNumber } : {}),
+          contentDNA: getDNABlock(),
         }),
       })
 
@@ -650,6 +683,70 @@ export default function Home() {
       for (const k of keysToRemove) delete next[k]
       return next
     })
+  }
+
+  // --- Auto-Queue: Generate full week in one click ---
+
+  const handleAutoQueue = async () => {
+    if (photos.length === 0 || selectedPlatforms.length === 0) return
+    setAutoQueueLoading(true)
+    setAutoQueueProgress('Generiere Content-Plan...')
+
+    try {
+      const platConfigs = selectedPlatforms.map(id => {
+        const p = getPlatform(id)
+        return { id: p.id, bestTime: p.bestTime }
+      })
+
+      const res = await fetch('/api/auto-queue', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          photos: photos.map(p => ({ description: p.description || 'ein Foto des Restaurants' })),
+          platforms: platConfigs,
+          businessType,
+          tone,
+          language,
+          ...(whatsappCtaEnabled && whatsappNumber ? { whatsappNumber } : {}),
+          exampleCaptions: exampleCaptions || undefined,
+        }),
+      })
+
+      const data = await res.json()
+      if (data.error) throw new Error(data.error)
+
+      const captions: { photoIndex: number; platform: string; caption: string; hashtags: string[]; category: string }[] = data.captions || []
+
+      if (captions.length === 0) {
+        setAutoQueueProgress('Keine Captions generiert — bitte erneut versuchen.')
+        setAutoQueueLoading(false)
+        return
+      }
+
+      // Convert captions into SwipeCard-ready variants
+      const newVariants: Record<string, CaptionVariant[]> = {}
+      for (const cap of captions) {
+        const photo = photos[cap.photoIndex]
+        if (!photo) continue
+        const key = `${photo.id}-${cap.platform}`
+        if (!newVariants[key]) newVariants[key] = []
+        newVariants[key].push({
+          caption: cap.caption,
+          hashtags: cap.hashtags,
+          category: cap.category,
+        })
+      }
+
+      setVariants(newVariants)
+      setAutoQueueProgress('')
+      setSwipeMode(true)
+      setStep(2)
+    } catch (err) {
+      console.error('[AutoQueue] Error:', err)
+      setAutoQueueProgress('Fehler bei der Generierung. Bitte erneut versuchen.')
+    } finally {
+      setAutoQueueLoading(false)
+    }
   }
 
   // --- Schedule ---
@@ -761,16 +858,9 @@ export default function Home() {
         </div>
       )}
 
-      {/* Header */}
+      {/* Toolbar */}
       <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold">
-            Flowing<span className="text-[var(--accent)]">Post</span>
-          </h1>
-          <p className="text-[var(--text-muted)] text-sm mt-1">
-            {t('header.subtitle')}
-          </p>
-        </div>
+        <h2 className="text-xl font-bold">{t('tabs.photoPosts') || 'Photo Posts'}</h2>
         <div className="flex items-center gap-3 shrink-0">
           {userUsername && (
             <button
@@ -805,19 +895,6 @@ export default function Home() {
       {connectError && (
         <p className="text-xs text-red-400 text-center mb-4">{connectError}</p>
       )}
-
-      {/* Tab navigation: Photo Posts | Video Reels */}
-      <div className="flex gap-1 mb-8 bg-[var(--card)] rounded-xl p-1 border border-[var(--border)] w-fit">
-        <div className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-white">
-          {t('tabs.photoPosts') || 'Photo Posts'}
-        </div>
-        <Link
-          href="/tool/video"
-          className="px-4 py-2 rounded-lg text-sm font-medium text-[var(--text-muted)] hover:text-white transition-colors"
-        >
-          {t('tabs.videoReels') || 'Video Reels'}
-        </Link>
-      </div>
 
       <StepIndicator current={step} labels={stepLabels} />
 
@@ -1027,11 +1104,45 @@ export default function Home() {
                 ))}
               </div>
 
-              <div className="flex justify-center">
+              <div className="flex flex-col items-center gap-3">
+                {/* Auto-Queue: Plan whole week */}
+                <button
+                  onClick={handleAutoQueue}
+                  disabled={selectedPlatforms.length === 0 || autoQueueLoading}
+                  className="px-8 py-3.5 rounded-xl font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
+                  style={{
+                    background: 'linear-gradient(135deg, var(--accent), #8b5cf6)',
+                    boxShadow: '0 4px 15px rgba(99, 102, 241, 0.3)',
+                  }}
+                >
+                  {autoQueueLoading ? (
+                    <span className="flex items-center gap-2">
+                      <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full loading-spin" />
+                      {autoQueueProgress || 'Generiere...'}
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                      </svg>
+                      Woche planen ({photos.length} Fotos, {selectedPlatforms.length} Plattformen)
+                    </span>
+                  )}
+                </button>
+                <span className="text-xs text-[var(--text-muted)]">AI erstellt Content-Plan + Swipe Review</span>
+
+                {/* Divider */}
+                <div className="flex items-center gap-3 w-full max-w-xs">
+                  <div className="flex-1 h-px bg-[var(--border)]" />
+                  <span className="text-xs text-[var(--text-muted)]">oder</span>
+                  <div className="flex-1 h-px bg-[var(--border)]" />
+                </div>
+
+                {/* Manual flow */}
                 <button
                   onClick={() => setStep(2)}
                   disabled={selectedPlatforms.length === 0}
-                  className="px-8 py-3 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-6 py-2.5 rounded-xl bg-[var(--card)] border border-[var(--border)] hover:border-[var(--accent)] text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {t('upload.generateButton', { count: photos.length, platforms: selectedPlatforms.length })}
                 </button>
@@ -1048,140 +1159,346 @@ export default function Home() {
             <button onClick={() => setStep(1)} className="text-sm text-[var(--text-muted)] hover:text-white transition-colors">
               {t('captionStep.backToUpload')}
             </button>
-            <button
-              onClick={generateAll}
-              disabled={generating.size > 0}
-              className="px-6 py-2.5 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] font-medium text-sm transition-colors disabled:opacity-50"
-            >
-              {generating.size > 0 ? (
-                <span className="flex items-center gap-2">
-                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full loading-spin" />
-                  {t('captionStep.generating')}
-                </span>
-              ) : (
-                t('captionStep.generateAll', { count: photos.length * selectedPlatforms.length })
-              )}
-            </button>
-          </div>
-
-          <div className="space-y-4">
-            {photos.map(photo => (
-              <div key={photo.id} className="post-card p-4 fade-in">
-                <div className="flex gap-4">
-                  <img src={photo.preview} alt="" className="w-24 h-24 rounded-xl object-cover shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium mb-2 truncate">{photo.description || photo.file.name}</p>
-
-                    <div className="flex gap-2 flex-wrap mb-3">
-                      {selectedPlatforms.map(plat => {
-                        const key = `${photo.id}-${plat}`
-                        const hasVariants = !!variants[key]
-                        const hasPost = posts.some(p => p.photoId === photo.id && p.platform === plat)
-                        const isGen = generating.has(key)
-                        return (
-                          <button
-                            key={plat}
-                            onClick={() => generateCaption(photo, plat)}
-                            disabled={isGen}
-                            className="platform-badge flex items-center gap-1.5 disabled:opacity-50"
-                            style={(hasPost || hasVariants) ? { borderColor: 'var(--accent)', background: 'rgba(99,102,241,0.15)' } : {}}
-                          >
-                            {isGen ? (
-                              <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full loading-spin" />
-                            ) : (
-                              <PlatformIcon platform={plat} size={14} />
-                            )}
-                            {getPlatform(plat).label}
-                            {hasPost && ' \u2713'}
-                            {hasVariants && !hasPost && ' \u25CF'}
-                          </button>
-                        )
-                      })}
-                    </div>
-
-                    {/* Variant selection */}
-                    {selectedPlatforms.map(plat => {
-                      const key = `${photo.id}-${plat}`
-                      const variantList = variants[key]
-                      const selectedPost = posts.find(p => p.photoId === photo.id && p.platform === plat)
-
-                      if (!variantList && !selectedPost) return null
-
-                      return (
-                        <div key={plat} className="mb-3">
-                          <div className="flex items-center gap-1.5 mb-1.5 text-[var(--text-muted)] text-xs">
-                            <PlatformIcon platform={plat} size={12} /> {plat}
-                            {selectedPost && <span className="text-[var(--success)] ml-1">{t('captionStep.selected')}</span>}
-                          </div>
-
-                          {/* Show variants to pick from */}
-                          {variantList && variantList.length > 0 && (
-                            <div className="space-y-1.5">
-                              {variantList.map((v, vi) => (
-                                <button
-                                  key={vi}
-                                  onClick={() => selectVariant(photo, plat, v)}
-                                  className="w-full text-left text-xs bg-white/5 hover:bg-white/10 rounded-lg p-2.5 border border-transparent hover:border-[var(--accent)]/50 transition-all"
-                                >
-                                  <div className="flex items-start gap-2">
-                                    <span className="shrink-0 w-5 h-5 rounded-full bg-[var(--accent)]/20 text-[var(--accent)] flex items-center justify-center text-[10px] font-bold mt-0.5">
-                                      {vi + 1}
-                                    </span>
-                                    <div className="min-w-0">
-                                      <p className="line-clamp-2">{v.caption}</p>
-                                      <p className="text-[var(--accent)] mt-1 truncate">
-                                        {(v.hashtags || []).slice(0, 5).map(h => `#${h}`).join(' ')}
-                                        {(v.hashtags || []).length > 5 && ` +${v.hashtags.length - 5}`}
-                                      </p>
-                                    </div>
-                                  </div>
-                                </button>
-                              ))}
-                            </div>
-                          )}
-
-                          {/* Show selected caption */}
-                          {selectedPost && !variantList && (
-                            <div className="text-xs bg-[var(--accent)]/10 rounded-lg p-2.5 border border-[var(--accent)]/30">
-                              <p className="line-clamp-2">{selectedPost.caption}</p>
-                              <p className="text-[var(--accent)] mt-1 truncate">
-                                {selectedPost.hashtags.slice(0, 5).map(h => `#${h}`).join(' ')}
-                                {selectedPost.hashtags.length > 5 && ` +${selectedPost.hashtags.length - 5}`}
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                      )
-                    })}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {(posts.length > 0 || Object.keys(variants).length > 0) && (
-            <div className="flex flex-col items-center mt-6 gap-3">
-              {Object.keys(variants).length > 0 && (
-                <>
-                  <p className="text-xs text-[var(--text-muted)]">
-                    {t('captionStep.pickFavorites')}
-                  </p>
+            <div className="flex items-center gap-3">
+              {/* View toggle: Grid | Swipe | Hooks | Recycle | Strategy */}
+              <div className="flex items-center bg-[var(--card)] border border-[var(--border)] rounded-lg overflow-hidden">
+                <button
+                  onClick={() => { setSwipeMode(false); setHookMode(false); setRecycleMode(false); setStrategyMode(false); setCompetitorMode(false) }}
+                  className={`px-3 py-1.5 text-xs font-medium transition-colors ${!swipeMode && !hookMode && !recycleMode && !strategyMode && !competitorMode ? 'bg-[var(--accent)] text-white' : 'text-[var(--text-muted)] hover:text-white'}`}
+                >
+                  Grid
+                </button>
+                <button
+                  onClick={() => { setSwipeMode(true); setHookMode(false); setRecycleMode(false); setStrategyMode(false); setCompetitorMode(false) }}
+                  className={`px-3 py-1.5 text-xs font-medium transition-colors ${swipeMode ? 'bg-[var(--accent)] text-white' : 'text-[var(--text-muted)] hover:text-white'}`}
+                >
+                  Swipe
+                </button>
+                <button
+                  onClick={() => { setHookMode(true); setSwipeMode(false); setRecycleMode(false); setStrategyMode(false); setCompetitorMode(false); if (!hookPlatform) setHookPlatform(selectedPlatforms[0] || 'instagram') }}
+                  className={`px-3 py-1.5 text-xs font-medium transition-colors ${hookMode ? 'bg-[var(--accent)] text-white' : 'text-[var(--text-muted)] hover:text-white'}`}
+                >
+                  Hooks
+                </button>
+                {posts.length > 0 && (
                   <button
-                    onClick={acceptAllVariants}
-                    className="px-6 py-2.5 rounded-xl bg-[var(--card)] border border-[var(--border)] hover:border-[var(--accent)] font-medium text-sm transition-colors"
+                    onClick={() => { setRecycleMode(true); setSwipeMode(false); setHookMode(false); setStrategyMode(false); setCompetitorMode(false) }}
+                    className={`px-3 py-1.5 text-xs font-medium transition-colors ${recycleMode ? 'bg-[var(--accent)] text-white' : 'text-[var(--text-muted)] hover:text-white'}`}
                   >
-                    {t('captionStep.acceptAll', { count: Object.keys(variants).length })}
+                    Recycle
                   </button>
-                </>
-              )}
+                )}
+                <button
+                  onClick={() => { setStrategyMode(true); setSwipeMode(false); setHookMode(false); setRecycleMode(false); setCompetitorMode(false) }}
+                  className={`px-3 py-1.5 text-xs font-medium transition-colors ${strategyMode ? 'bg-[var(--accent)] text-white' : 'text-[var(--text-muted)] hover:text-white'}`}
+                >
+                  Strategie
+                </button>
+                <button
+                  onClick={() => { setCompetitorMode(true); setSwipeMode(false); setHookMode(false); setRecycleMode(false); setStrategyMode(false) }}
+                  className={`px-3 py-1.5 text-xs font-medium transition-colors ${competitorMode ? 'bg-[var(--accent)] text-white' : 'text-[var(--text-muted)] hover:text-white'}`}
+                >
+                  Competitor
+                </button>
+              </div>
               <button
-                onClick={() => { handleAutoDistribute(); setStep(3) }}
-                disabled={Object.keys(variants).length > 0 || posts.length === 0}
-                className="px-8 py-3 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={generateAll}
+                disabled={generating.size > 0}
+                className="px-6 py-2.5 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] font-medium text-sm transition-colors disabled:opacity-50"
               >
-                {t('captionStep.schedulePosts', { count: posts.length })}
+                {generating.size > 0 ? (
+                  <span className="flex items-center gap-2">
+                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full loading-spin" />
+                    {t('captionStep.generating')}
+                  </span>
+                ) : (
+                  t('captionStep.generateAll', { count: photos.length * selectedPlatforms.length })
+                )}
               </button>
             </div>
+          </div>
+
+          {/* Recycle mode */}
+          {competitorMode ? (
+            <CompetitorScanner
+              platforms={selectedPlatforms.map(id => { const p = getPlatform(id); return { id: p.id, label: p.label, color: p.color } })}
+              businessType={businessType}
+              language={language}
+              onIdeaAccepted={(caption, hashtags, category, platform) => {
+                setPosts(prev => [...prev, {
+                  id: crypto.randomUUID(),
+                  photoId: 'competitor',
+                  preview: '',
+                  caption,
+                  hashtags,
+                  platform,
+                  scheduledDate: '',
+                  scheduledTime: getPlatform(platform).bestTime,
+                  status: 'draft',
+                }])
+              }}
+            />
+          ) : strategyMode ? (
+            <WeeklyStrategy
+              platforms={selectedPlatforms.map(id => { const p = getPlatform(id); return { id: p.id, label: p.label, color: p.color } })}
+              businessType={businessType}
+              language={language}
+              onApplyStrategy={(slots) => {
+                // Strategy approved — switch to auto-queue with these slots as guide
+                setStrategyMode(false)
+                // Store strategy info, then trigger auto-queue
+                handleAutoQueue()
+              }}
+            />
+          ) : recycleMode ? (
+            <ContentRecycler
+              posts={posts.map(p => ({ id: p.id, caption: p.caption, platform: p.platform, preview: p.preview }))}
+              platforms={selectedPlatforms.map(id => { const p = getPlatform(id); return { id: p.id, label: p.label, color: p.color } })}
+              businessType={businessType}
+              language={language}
+              tone={tone}
+              onVariantAccepted={(originalId, platform, caption, hashtags, category, preview) => {
+                setPosts(prev => [...prev, {
+                  id: crypto.randomUUID(),
+                  photoId: originalId,
+                  preview,
+                  caption,
+                  hashtags,
+                  platform,
+                  scheduledDate: '',
+                  scheduledTime: getPlatform(platform).bestTime,
+                  status: 'draft',
+                }])
+              }}
+            />
+          ) : hookMode ? (
+            <div>
+              {/* Platform selector for hooks */}
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-xs text-[var(--text-muted)]">Plattform:</span>
+                {selectedPlatforms.map(plat => {
+                  const p = getPlatform(plat)
+                  return (
+                    <button
+                      key={plat}
+                      onClick={() => setHookPlatform(plat)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                        hookPlatform === plat
+                          ? 'border-[var(--accent)] bg-[var(--accent)]/15 text-white'
+                          : 'border-[var(--border)] bg-[var(--card)] text-[var(--text-muted)]'
+                      } border`}
+                    >
+                      {p.label}
+                    </button>
+                  )
+                })}
+              </div>
+              <HookGenerator
+                photos={photos.map(p => ({ id: p.id, preview: p.preview, description: p.description || p.file.name }))}
+                platform={hookPlatform || selectedPlatforms[0] || 'instagram'}
+                businessType={businessType}
+                tone={tone}
+                language={language}
+                whatsappNumber={whatsappCtaEnabled ? whatsappNumber : undefined}
+                onCaptionGenerated={(photoId, plat, caption, hashtags, category) => {
+                  const photo = photos.find(p => p.id === photoId)
+                  if (!photo) return
+                  setPosts(prev => [
+                    ...prev.filter(p => !(p.photoId === photoId && p.platform === plat)),
+                    {
+                      id: crypto.randomUUID(),
+                      photoId,
+                      preview: photo.preview,
+                      caption,
+                      hashtags,
+                      platform: plat,
+                      scheduledDate: '',
+                      scheduledTime: getPlatform(plat).bestTime,
+                      status: 'draft',
+                    },
+                  ])
+                }}
+                platformColor={getPlatform(hookPlatform || selectedPlatforms[0] || 'instagram').color}
+                platformLabel={getPlatform(hookPlatform || selectedPlatforms[0] || 'instagram').label}
+              />
+            </div>
+          ) : swipeMode && Object.keys(variants).length > 0 ? (
+            <PostSwiper
+              cards={Object.entries(variants).flatMap(([key, variantList]) => {
+                if (!variantList || variantList.length === 0) return []
+                const [photoId, platform] = key.split('-') as [string, string]
+                const photo = photos.find(p => p.id === photoId)
+                if (!photo) return []
+                return variantList.map((v, vi) => ({
+                  photo: { id: photo.id, preview: photo.preview, description: photo.description || photo.file.name },
+                  platform,
+                  variant: v,
+                  variantIndex: vi,
+                  totalVariants: variantList.length,
+                }))
+              })}
+              onAccept={(card) => {
+                const photo = photos.find(p => p.id === card.photo.id)
+                if (photo) selectVariant(photo, card.platform, card.variant)
+              }}
+              onSkip={(card) => {
+                // Remove this specific variant from the list
+                const key = `${card.photo.id}-${card.platform}`
+                setVariants(prev => {
+                  const list = prev[key]
+                  if (!list) return prev
+                  const filtered = list.filter((_, i) => i !== card.variantIndex)
+                  if (filtered.length === 0) {
+                    const next = { ...prev }
+                    delete next[key]
+                    return next
+                  }
+                  return { ...prev, [key]: filtered }
+                })
+              }}
+              onEdit={(card, edited) => {
+                card.variant.caption = edited.caption
+                card.variant.hashtags = edited.hashtags
+              }}
+              onComplete={(accepted) => {
+                setSwipeMode(false)
+                // If posts were accepted, auto-distribute and go to calendar
+                if (accepted > 0 && posts.length > 0) {
+                  setPosts(prev => autoDistribute(prev))
+                  setStep(3)
+                }
+              }}
+              platformColors={Object.fromEntries(PLATFORMS.map(p => [p.id, p.color]))}
+              platformLabels={Object.fromEntries(PLATFORMS.map(p => [p.id, p.label]))}
+            />
+          ) : (
+            /* Grid mode (existing) */
+            <>
+              <div className="space-y-4">
+                {photos.map(photo => (
+                  <div key={photo.id} className="post-card p-4 fade-in">
+                    <div className="flex gap-4">
+                      <img src={photo.preview} alt="" className="w-24 h-24 rounded-xl object-cover shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium mb-2 truncate">{photo.description || photo.file.name}</p>
+
+                        <div className="flex gap-2 flex-wrap mb-3">
+                          {selectedPlatforms.map(plat => {
+                            const key = `${photo.id}-${plat}`
+                            const hasVariants = !!variants[key]
+                            const hasPost = posts.some(p => p.photoId === photo.id && p.platform === plat)
+                            const isGen = generating.has(key)
+                            return (
+                              <button
+                                key={plat}
+                                onClick={() => generateCaption(photo, plat)}
+                                disabled={isGen}
+                                className="platform-badge flex items-center gap-1.5 disabled:opacity-50"
+                                style={(hasPost || hasVariants) ? { borderColor: 'var(--accent)', background: 'rgba(99,102,241,0.15)' } : {}}
+                              >
+                                {isGen ? (
+                                  <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full loading-spin" />
+                                ) : (
+                                  <PlatformIcon platform={plat} size={14} />
+                                )}
+                                {getPlatform(plat).label}
+                                {hasPost && ' \u2713'}
+                                {hasVariants && !hasPost && ' \u25CF'}
+                              </button>
+                            )
+                          })}
+                        </div>
+
+                        {/* Variant selection */}
+                        {selectedPlatforms.map(plat => {
+                          const key = `${photo.id}-${plat}`
+                          const variantList = variants[key]
+                          const selectedPost = posts.find(p => p.photoId === photo.id && p.platform === plat)
+
+                          if (!variantList && !selectedPost) return null
+
+                          return (
+                            <div key={plat} className="mb-3">
+                              <div className="flex items-center gap-1.5 mb-1.5 text-[var(--text-muted)] text-xs">
+                                <PlatformIcon platform={plat} size={12} /> {plat}
+                                {selectedPost && <span className="text-[var(--success)] ml-1">{t('captionStep.selected')}</span>}
+                              </div>
+
+                              {/* Show variants to pick from */}
+                              {variantList && variantList.length > 0 && (
+                                <div className="space-y-1.5">
+                                  {variantList.map((v, vi) => (
+                                    <button
+                                      key={vi}
+                                      onClick={() => selectVariant(photo, plat, v)}
+                                      className="w-full text-left text-xs bg-white/5 hover:bg-white/10 rounded-lg p-2.5 border border-transparent hover:border-[var(--accent)]/50 transition-all"
+                                    >
+                                      <div className="flex items-start gap-2">
+                                        <span className="shrink-0 w-5 h-5 rounded-full bg-[var(--accent)]/20 text-[var(--accent)] flex items-center justify-center text-[10px] font-bold mt-0.5">
+                                          {vi + 1}
+                                        </span>
+                                        <div className="min-w-0">
+                                          {v.category && (
+                                            <span className="inline-block text-[10px] font-medium text-[var(--accent)] bg-[var(--accent)]/10 rounded px-1.5 py-0.5 mb-1">
+                                              {v.category}
+                                            </span>
+                                          )}
+                                          <p className="line-clamp-2">{v.caption}</p>
+                                          <p className="text-[var(--accent)] mt-1 truncate">
+                                            {(v.hashtags || []).slice(0, 5).map(h => `#${h}`).join(' ')}
+                                            {(v.hashtags || []).length > 5 && ` +${v.hashtags.length - 5}`}
+                                          </p>
+                                        </div>
+                                      </div>
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
+
+                              {/* Show selected caption */}
+                              {selectedPost && !variantList && (
+                                <div className="text-xs bg-[var(--accent)]/10 rounded-lg p-2.5 border border-[var(--accent)]/30">
+                                  <p className="line-clamp-2">{selectedPost.caption}</p>
+                                  <p className="text-[var(--accent)] mt-1 truncate">
+                                    {selectedPost.hashtags.slice(0, 5).map(h => `#${h}`).join(' ')}
+                                    {selectedPost.hashtags.length > 5 && ` +${selectedPost.hashtags.length - 5}`}
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {(posts.length > 0 || Object.keys(variants).length > 0) && (
+                <div className="flex flex-col items-center mt-6 gap-3">
+                  {Object.keys(variants).length > 0 && (
+                    <>
+                      <p className="text-xs text-[var(--text-muted)]">
+                        {t('captionStep.pickFavorites')}
+                      </p>
+                      <button
+                        onClick={acceptAllVariants}
+                        className="px-6 py-2.5 rounded-xl bg-[var(--card)] border border-[var(--border)] hover:border-[var(--accent)] font-medium text-sm transition-colors"
+                      >
+                        {t('captionStep.acceptAll', { count: Object.keys(variants).length })}
+                      </button>
+                    </>
+                  )}
+                  <button
+                    onClick={() => { handleAutoDistribute(); setStep(3) }}
+                    disabled={Object.keys(variants).length > 0 || posts.length === 0}
+                    className="px-8 py-3 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {t('captionStep.schedulePosts', { count: posts.length })}
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       )}
@@ -1196,15 +1513,33 @@ export default function Home() {
             <span className="text-sm text-[var(--text-muted)]">{posts.length} posts</span>
           </div>
 
-          <CalendarScheduler
-            posts={posts}
-            onUpdatePost={updatePost}
-            onAutoDistribute={handleAutoDistribute}
-            deleteConfirm={deleteConfirm}
-            onDeleteConfirm={setDeleteConfirm}
-            onDeletePost={deletePost}
-            strings={calendarStrings}
-          />
+          <div className="flex gap-6">
+            <div className="flex-1 min-w-0">
+              <CalendarScheduler
+                posts={posts}
+                onUpdatePost={updatePost}
+                onAutoDistribute={handleAutoDistribute}
+                deleteConfirm={deleteConfirm}
+                onDeleteConfirm={setDeleteConfirm}
+                onDeletePost={deletePost}
+                strings={calendarStrings}
+              />
+            </div>
+            {/* Content Balance sidebar */}
+            {posts.length >= 3 && (
+              <div className="hidden lg:block w-64 shrink-0">
+                <ContentBalance
+                  posts={posts.map(p => {
+                    // Try to find category from variants or post caption
+                    const key = Object.keys(variants).find(k => k.startsWith(p.photoId))
+                    const variantList = key ? variants[key] : undefined
+                    const category = variantList?.[0]?.category
+                    return { category, platform: p.platform }
+                  })}
+                />
+              </div>
+            )}
+          </div>
 
           {allScheduled && (
             <div className="flex justify-center mt-6">
