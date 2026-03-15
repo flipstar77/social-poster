@@ -10,7 +10,8 @@ import {
 import { POSTING_TEMPLATES, getTemplate } from './templates'
 import { describePhoto, downloadTelegramPhoto } from './vision'
 import { parseNaturalDate, getNextAvailableSlot, formatDateDE } from './scheduler'
-import { publishPost, generateCaption } from './publisher'
+import { publishPost, generateCaptions } from './publisher'
+import type { CaptionVariant } from './publisher'
 
 const DEFAULT_PLATFORMS = ['instagram', 'tiktok', 'facebook']
 
@@ -62,12 +63,12 @@ function descriptionKeyboard(): InlineKeyboard {
     .text('✏️ Bearbeiten', 'desc:edit')
 }
 
-function captionKeyboard(): InlineKeyboard {
+function variantKeyboard(): InlineKeyboard {
   return new InlineKeyboard()
-    .text('✅ Nehmen', 'cap:ok')
+    .text('1️⃣', 'var:1').text('2️⃣', 'var:2').text('3️⃣', 'var:3')
     .row()
-    .text('🔄 Neu generieren', 'cap:regen')
-    .text('✏️ Bearbeiten', 'cap:edit')
+    .text('🔄 Nochmal', 'var:redo')
+    .text('✏️ Eigene', 'var:custom')
 }
 
 function scheduleKeyboard(): InlineKeyboard {
@@ -81,29 +82,39 @@ function scheduleKeyboard(): InlineKeyboard {
 
 // ── Caption generation helper ─────────────────────────────────────────────────
 
-async function generateAndShowCaption(ctx: Context, chatId: number, session: BotSession) {
+function formatVariant(v: CaptionVariant, index: number): string {
+  const hashtagStr = v.hashtags.map(h => `#${h}`).join(' ')
+  const preview = hashtagStr ? `${v.caption}\n\n${hashtagStr}` : v.caption
+  return `*Variante ${index}:*\n\n${preview}`
+}
+
+async function generateAndShowVariants(ctx: Context, chatId: number, session: BotSession) {
   const template = session.data.template_id ? getTemplate(session.data.template_id) : null
   const tone = template?.tone ?? 'warm, friendly and inviting for a restaurant'
   const hashtagCount = template?.hashtagCount ?? 15
 
-  const { caption, hashtags } = await generateCaption(
+  const variants = await generateCaptions(
     session.data.description ?? '',
     tone,
     hashtagCount,
-    'Restaurant'
+    'Restaurant',
+    3
   )
 
-  const hashtagStr = hashtags.map(h => `#${h}`).join(' ')
-  const preview = hashtagStr ? `${caption}\n\n${hashtagStr}` : caption
+  // Send each variant as a separate message
+  for (let i = 0; i < variants.length; i++) {
+    await ctx.reply(formatVariant(variants[i], i + 1), { parse_mode: 'Markdown' })
+  }
 
-  const captionMsg = await ctx.reply(
-    `📝 *Generierte Caption:*\n\n${preview}`,
-    { parse_mode: 'Markdown', reply_markup: captionKeyboard() }
+  // Send selection keyboard
+  const selectMsg = await ctx.reply(
+    '👆 *Welche Variante nehmen?*',
+    { parse_mode: 'Markdown', reply_markup: variantKeyboard() }
   )
 
   await setSession(chatId, {
     state: 'awaiting_caption_confirm',
-    data: { ...session.data, caption, hashtags, caption_msg_id: captionMsg.message_id },
+    data: { ...session.data, variants, caption_msg_id: selectMsg.message_id },
   })
 }
 
@@ -129,7 +140,7 @@ async function publishAndConfirm(
     const buffer = await downloadTelegramPhoto(session.data.photo_file_id)
     const platforms = session.data.platforms ?? DEFAULT_PLATFORMS
 
-    await publishPost({
+    const result = await publishPost({
       photoBuffer: buffer,
       caption: session.data.caption ?? '',
       hashtags: session.data.hashtags ?? [],
@@ -141,11 +152,22 @@ async function publishAndConfirm(
     await clearSession(chatId)
     await ctx.api.deleteMessage(chatId, thinkingMsg.message_id).catch(() => {})
 
-    const platformStr = platforms.map(p => PLATFORM_LABELS[p] ?? p).join(', ')
-    await ctx.reply(
-      `✅ *Post eingeplant!*\n\n📅 ${formatDateDE(scheduledAt)}\n📱 ${platformStr}\n\nSende ein neues Foto für den nächsten Post. 🚀`,
-      { parse_mode: 'Markdown' }
-    )
+    if (result.failed.length === 0) {
+      const platformStr = result.succeeded.map(p => PLATFORM_LABELS[p] ?? p).join(', ')
+      await ctx.reply(
+        `✅ *Post eingeplant!*\n\n📅 ${formatDateDE(scheduledAt)}\n📱 ${platformStr}\n\nSende ein neues Foto für den nächsten Post. 🚀`,
+        { parse_mode: 'Markdown' }
+      )
+    } else if (result.succeeded.length > 0) {
+      const okStr = result.succeeded.map(p => PLATFORM_LABELS[p] ?? p).join(', ')
+      const failStr = result.failed.map(p => PLATFORM_LABELS[p] ?? p).join(', ')
+      await ctx.reply(
+        `⚠️ *Post teilweise eingeplant*\n\n📅 ${formatDateDE(scheduledAt)}\n✅ ${okStr}\n❌ Fehlgeschlagen: ${failStr}\n\nSende ein neues Foto für den nächsten Post.`,
+        { parse_mode: 'Markdown' }
+      )
+    } else {
+      await ctx.reply('❌ Post konnte auf keiner Plattform eingeplant werden. Bitte versuche es erneut oder tippe /cancel.')
+    }
   } catch (err) {
     console.error('[Bot] Publish error:', err)
     await ctx.api.deleteMessage(chatId, thinkingMsg.message_id).catch(() => {})
@@ -365,7 +387,7 @@ function registerHandlers(bot: Bot) {
       return
     }
 
-    // Platform confirm
+    // Platform confirm → generate 3 variants
     if (data === 'plt:confirm' && session.state === 'awaiting_platforms') {
       const platforms = session.data.platforms ?? DEFAULT_PLATFORMS
       if (platforms.length === 0) {
@@ -373,9 +395,9 @@ function registerHandlers(bot: Bot) {
         return
       }
 
-      const generatingMsg = await ctx.reply('⏳ Generiere Caption...')
+      const generatingMsg = await ctx.reply('⏳ Generiere 3 Caption-Varianten...')
       try {
-        await generateAndShowCaption(ctx, chatId, session)
+        await generateAndShowVariants(ctx, chatId, session)
       } catch (err) {
         console.error('[Bot] Caption gen error:', err)
         await ctx.reply('❌ Fehler beim Generieren. Bitte /cancel und erneut versuchen.')
@@ -385,37 +407,48 @@ function registerHandlers(bot: Bot) {
       return
     }
 
-    // Caption accept
-    if (data === 'cap:ok' && session.state === 'awaiting_caption_confirm') {
-      await setSession(chatId, { state: 'awaiting_schedule', data: session.data })
+    // Variant selection (1, 2, 3)
+    if (data.startsWith('var:') && session.state === 'awaiting_caption_confirm') {
+      const variants = session.data.variants ?? []
+
+      if (data === 'var:redo') {
+        const regenMsg = await ctx.reply('🔄 Generiere 3 neue Varianten...')
+        try {
+          await generateAndShowVariants(ctx, chatId, session)
+        } catch (err) {
+          console.error('[Bot] Caption regen error:', err)
+          await ctx.reply('❌ Fehler. Bitte erneut versuchen.')
+        } finally {
+          await ctx.api.deleteMessage(chatId, regenMsg.message_id).catch(() => {})
+        }
+        return
+      }
+
+      if (data === 'var:custom') {
+        await setSession(chatId, { state: 'awaiting_caption_edit', data: session.data })
+        await ctx.reply('✏️ Bitte gib deine eigene Caption ein (Hashtags werden automatisch ergänzt):')
+        return
+      }
+
+      const varIndex = parseInt(data.split(':')[1]) - 1
+      if (varIndex < 0 || varIndex >= variants.length) {
+        await ctx.answerCallbackQuery({ text: 'Ungültige Auswahl.' })
+        return
+      }
+
+      const chosen = variants[varIndex]
+      await setSession(chatId, {
+        state: 'awaiting_schedule',
+        data: { ...session.data, caption: chosen.caption, hashtags: chosen.hashtags },
+      })
+
       const platformList = (session.data.platforms ?? DEFAULT_PLATFORMS)
         .map(p => PLATFORM_LABELS[p] ?? p)
         .join(', ')
       await ctx.reply(
-        `🕐 *Wann posten?*\n_${platformList}_`,
+        `✅ *Variante ${varIndex + 1} gewählt!*\n\n🕐 *Wann posten?*\n_${platformList}_`,
         { parse_mode: 'Markdown', reply_markup: scheduleKeyboard() }
       )
-      return
-    }
-
-    // Caption regenerate
-    if (data === 'cap:regen' && session.state === 'awaiting_caption_confirm') {
-      const regenMsg = await ctx.reply('🔄 Generiere neue Caption...')
-      try {
-        await generateAndShowCaption(ctx, chatId, session)
-      } catch (err) {
-        console.error('[Bot] Caption regen error:', err)
-        await ctx.reply('❌ Fehler. Bitte erneut versuchen.')
-      } finally {
-        await ctx.api.deleteMessage(chatId, regenMsg.message_id).catch(() => {})
-      }
-      return
-    }
-
-    // Caption edit
-    if (data === 'cap:edit' && session.state === 'awaiting_caption_confirm') {
-      await setSession(chatId, { state: 'awaiting_caption_edit', data: session.data })
-      await ctx.reply('✏️ Bitte gib deine Caption ein (Hashtags werden automatisch ergänzt):')
       return
     }
 
@@ -465,17 +498,19 @@ function registerHandlers(bot: Bot) {
     }
 
     if (session.state === 'awaiting_caption_edit') {
-      const hashtags = session.data.hashtags ?? []
-      const hashtagStr = hashtags.map(h => `#${h}`).join(' ')
-      const preview = hashtagStr ? `${text}\n\n${hashtagStr}` : text
-      const msg = await ctx.reply(
-        `📝 *Deine Caption:*\n\n${preview}`,
-        { parse_mode: 'Markdown', reply_markup: captionKeyboard() }
-      )
+      // User typed their own caption — go straight to scheduling
       await setSession(chatId, {
-        state: 'awaiting_caption_confirm',
-        data: { ...session.data, caption: text, caption_msg_id: msg.message_id },
+        state: 'awaiting_schedule',
+        data: { ...session.data, caption: text, hashtags: [] },
       })
+
+      const platformList = (session.data.platforms ?? DEFAULT_PLATFORMS)
+        .map(p => PLATFORM_LABELS[p] ?? p)
+        .join(', ')
+      await ctx.reply(
+        `✅ *Caption gespeichert!*\n\n🕐 *Wann posten?*\n_${platformList}_`,
+        { parse_mode: 'Markdown', reply_markup: scheduleKeyboard() }
+      )
       return
     }
 

@@ -860,7 +860,15 @@ export default function Home() {
 
       {/* Toolbar */}
       <div className="flex items-center justify-between mb-8">
-        <h2 className="text-xl font-bold">{t('tabs.photoPosts') || 'Photo Posts'}</h2>
+        <div className="flex items-center gap-3">
+          <h2 className="text-xl font-bold">{t('tabs.photoPosts') || 'Photo Posts'}</h2>
+          <Link
+            href="/tool/telegram"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)] hover:border-[var(--accent)] text-xs font-medium transition-colors"
+          >
+            ✈️ Telegram Bot
+          </Link>
+        </div>
         <div className="flex items-center gap-3 shrink-0">
           {userUsername && (
             <button

@@ -26,6 +26,7 @@ export interface SessionData {
   platforms?: string[]
   caption?: string
   hashtags?: string[]
+  variants?: { caption: string; hashtags: string[] }[]
   scheduled_at?: string
   caption_msg_id?: number
 }
