@@ -1,0 +1,659 @@
+[
+  {
+    "email": "contact@burgermeister.com",
+    "company_name": "Burgermeister",
+    "subject": "Burgermeister vs. Berlin: Euer Instagram-Score",
+    "body": "Hallo,\n\nIhr Instagram (@burgermeister.official) hat 24.772 Follower — aber Sie posten selten — obwohl die Fotos gut sind.\n\nDas sehe ich bei vielen Restaurants in Berlin: starkes Profil, aber die Reichweite bleibt hinter dem Potenzial.\n\nIch hab mich auf Instagram für Restaurants spezialisiert — soll ich Ihnen kurz zeigen wo die grössten Quick Wins bei Ihrem Profil liegen?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie posten selten — obwohl die Fotos gut sind",
+    "segment": "large",
+    "hook": "reichweite"
+  },
+  {
+    "email": "info@upperburgergrill.com",
+    "company_name": "UPPER Grill & Bar",
+    "subject": "UPPER Grill & Bar: 7229 Google-Bewertungen vs. Instagram",
+    "body": "Hallo,\n\nIhre Gäste lieben Sie laut Google — Ihr Instagram (@uppergrill.bar) erzählt diese Geschichte aber noch nicht.\n\nSie posten ca. einmal pro Woche — da geht noch was.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie posten ca. einmal pro Woche — da geht noch was",
+    "segment": "medium",
+    "hook": "social_proof"
+  },
+  {
+    "email": "ristoranteluardi@yahoo.de",
+    "company_name": "Ristorante Luardi",
+    "subject": "Ristorante Luardi: 8209 Google-Bewertungen vs. Instagram",
+    "body": "Hallo,\n\nIhre Gäste lieben Sie laut Google — Ihr Instagram (@ristorante_luardi) erzählt diese Geschichte aber noch nicht.\n\nSie sind aktiv, aber die Hashtags und Texte verschenken Reichweite.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie sind aktiv, aber die Hashtags und Texte verschenken Reichweite",
+    "segment": "small",
+    "hook": "social_proof"
+  },
+  {
+    "email": "restaurant@mioberlin.de",
+    "company_name": "Restaurant, Mio",
+    "subject": "Restaurant, Mio — 4.3 Sterne auf Google, aber auf Instagram?",
+    "body": "Hallo,\n\nIhre Google-Bewertungen zeigen dass die Gäste zufrieden sind — Ihr Instagram (@mioberlinonline) erzählt diese Geschichte aber noch nicht.\n\nSie posten nur alle paar Wochen.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie posten nur alle paar Wochen",
+    "segment": "medium",
+    "hook": "social_proof"
+  },
+  {
+    "email": "roastery@fathercarpenter.com",
+    "company_name": "Father Carpenter",
+    "subject": "Father Carpenter — 22.075 Follower, aber wer sieht die Posts?",
+    "body": "Hallo,\n\nIhr Instagram (@father.carpenter) hat 22.075 Follower — aber Sie posten etwa einmal die Woche.\n\nDas sehe ich bei vielen Restaurants in Berlin: starkes Profil, aber die Reichweite bleibt hinter dem Potenzial.\n\nIch hab mich auf Instagram für Restaurants spezialisiert — soll ich Ihnen kurz zeigen wo die grössten Quick Wins bei Ihrem Profil liegen?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie posten etwa einmal die Woche",
+    "segment": "large",
+    "hook": "reichweite"
+  },
+  {
+    "email": "bar@100gramm.berlin",
+    "company_name": "100 Gramm Bar & Lounge",
+    "subject": "100 Gramm Bar & Lounge — 4.8 Sterne auf Google, aber auf Instagram?",
+    "body": "Hallo,\n\nIhre Google-Bewertungen zeigen dass die Gäste zufrieden sind — Ihr Instagram (@100gramm.bar) erzählt diese Geschichte aber noch nicht.\n\nIhre Posts erreichen nur einen Bruchteil Ihrer Follower.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Ihre Posts erreichen nur einen Bruchteil Ihrer Follower",
+    "segment": "medium",
+    "hook": "social_proof"
+  },
+  {
+    "email": "info@amrit.de",
+    "company_name": "AMRIT Restaurants",
+    "subject": "AMRIT Restaurants — 11.133 Follower, aber wer sieht die Posts?",
+    "body": "Hallo,\n\nIhr Instagram (@amrit_berlin) hat 11.133 Follower — aber Ihr letzter Post ist schon eine Weile her.\n\nDas sehe ich bei vielen Restaurants in Berlin: starkes Profil, aber die Reichweite bleibt hinter dem Potenzial.\n\nIch hab mich auf Instagram für Restaurants spezialisiert — soll ich Ihnen kurz zeigen wo die grössten Quick Wins bei Ihrem Profil liegen?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Ihr letzter Post ist schon eine Weile her",
+    "segment": "large",
+    "hook": "reichweite"
+  },
+  {
+    "email": "mitte@schnitzelei.de",
+    "company_name": "Schnitzelei Mitte",
+    "subject": "Schnitzelei Mitte: 7139 Google-Bewertungen vs. Instagram",
+    "body": "Hallo,\n\nIhre Gäste lieben Sie laut Google — Ihr Instagram (@schnitzeleimitte) erzählt diese Geschichte aber noch nicht.\n\nSie haben seit Wochen nichts gepostet.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie haben seit Wochen nichts gepostet",
+    "segment": "small",
+    "hook": "social_proof"
+  },
+  {
+    "email": "berlin@hardrock.com",
+    "company_name": "Legal",
+    "subject": "Legal vs. Berlin: Euer Instagram-Score",
+    "body": "Hallo,\n\nIhr Instagram (@legal) hat 44.747 Follower — aber Sie posten selten — obwohl die Fotos gut sind.\n\nDas sehe ich bei vielen Restaurants in Berlin: starkes Profil, aber die Reichweite bleibt hinter dem Potenzial.\n\nIch hab mich auf Instagram für Restaurants spezialisiert — soll ich Ihnen kurz zeigen wo die grössten Quick Wins bei Ihrem Profil liegen?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie posten selten — obwohl die Fotos gut sind",
+    "segment": "large",
+    "hook": "reichweite"
+  },
+  {
+    "email": "work@standard-berlin.de",
+    "company_name": "Standard - serious pizza",
+    "subject": "Standard - serious pizza: 3006 Google-Bewertungen vs. Instagram",
+    "body": "Hallo,\n\nIhre Gäste lieben Sie laut Google — Ihr Instagram (@standardseriouspizza) erzählt diese Geschichte aber noch nicht.\n\nSie posten selten — obwohl die Fotos gut sind.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie posten selten — obwohl die Fotos gut sind",
+    "segment": "large",
+    "hook": "social_proof"
+  },
+  {
+    "email": "info@zenrestaurant-berlin.de",
+    "company_name": "ZEN",
+    "subject": "ZEN: 3472 Google-Bewertungen vs. Instagram",
+    "body": "Hallo,\n\nIhre Gäste lieben Sie laut Google — Ihr Instagram (@zen.sushi.lounge) erzählt diese Geschichte aber noch nicht.\n\nSie posten ca. einmal pro Woche — da geht noch was.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie posten ca. einmal pro Woche — da geht noch was",
+    "segment": "medium",
+    "hook": "social_proof"
+  },
+  {
+    "email": "info@burgerturm.com",
+    "company_name": "Burger Turm",
+    "subject": "Burger Turm: 3014 Google-Bewertungen vs. Instagram",
+    "body": "Hallo,\n\nIhre Gäste lieben Sie laut Google — Ihr Instagram (@burgerturm) erzählt diese Geschichte aber noch nicht.\n\nIhre Fotos sind gut, aber die Reichweite stimmt nicht.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Ihre Fotos sind gut, aber die Reichweite stimmt nicht",
+    "segment": "large",
+    "hook": "social_proof"
+  },
+  {
+    "email": "info@krone-berlin.com",
+    "company_name": "Café-Krone",
+    "subject": "Café-Krone — 9.318 Follower, aber wer sieht die Posts?",
+    "body": "Hallo,\n\nIhr Instagram (@cafekrone.berlin) hat 9.318 Follower — aber Ihr letzter Post ist schon eine Weile her.\n\nDas sehe ich bei vielen Restaurants in Berlin: starkes Profil, aber die Reichweite bleibt hinter dem Potenzial.\n\nIch hab mich auf Instagram für Restaurants spezialisiert — soll ich Ihnen kurz zeigen wo die grössten Quick Wins bei Ihrem Profil liegen?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Ihr letzter Post ist schon eine Weile her",
+    "segment": "medium",
+    "hook": "reichweite"
+  },
+  {
+    "email": "info@fire-tiger-berlin.de",
+    "company_name": "Fire Tiger",
+    "subject": "Fire Tiger: 2485 Google-Bewertungen vs. Instagram",
+    "body": "Hallo,\n\nIhre Gäste lieben Sie laut Google — Ihr Instagram (@firetigerberlin) erzählt diese Geschichte aber noch nicht.\n\nSie haben seit Wochen nichts gepostet.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie haben seit Wochen nichts gepostet",
+    "segment": "small",
+    "hook": "social_proof"
+  },
+  {
+    "email": "info@amacafe.co",
+    "company_name": "amacafe",
+    "subject": "amacafe: 29575 Google-Bewertungen vs. Instagram",
+    "body": "Hallo,\n\nIhre Gäste lieben Sie laut Google — Ihr Instagram (@ama.aroma) erzählt diese Geschichte aber noch nicht.\n\nSie haben seit Wochen nichts gepostet.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie haben seit Wochen nichts gepostet",
+    "segment": "small",
+    "hook": "social_proof"
+  },
+  {
+    "email": "info@mama-cook.de",
+    "company_name": "Mama Cook",
+    "subject": "Mama Cook: 3383 Google-Bewertungen vs. Instagram",
+    "body": "Hallo,\n\nIhre Gäste lieben Sie laut Google — Ihr Instagram (@mamacook_berlin) erzählt diese Geschichte aber noch nicht.\n\nSie haben seit Wochen nichts gepostet.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie haben seit Wochen nichts gepostet",
+    "segment": "medium",
+    "hook": "social_proof"
+  },
+  {
+    "email": "info@malafemmena.restaurant",
+    "company_name": "Malafemmena",
+    "subject": "Malafemmena: 4053 Google-Bewertungen vs. Instagram",
+    "body": "Hallo,\n\nIhre Gäste lieben Sie laut Google — Ihr Instagram (@malafemmena_berlin) erzählt diese Geschichte aber noch nicht.\n\nIhre Fotos sind gut, aber die Reichweite stimmt nicht.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Ihre Fotos sind gut, aber die Reichweite stimmt nicht",
+    "segment": "medium",
+    "hook": "social_proof"
+  },
+  {
+    "email": "info@las-malvinas.de",
+    "company_name": "Steakhouse Las",
+    "subject": "Steakhouse Las: 5000 Google-Bewertungen vs. Instagram",
+    "body": "Hallo,\n\nIhre Gäste lieben Sie laut Google — Ihr Instagram (@las_malvinas_steakhouse) erzählt diese Geschichte aber noch nicht.\n\nDie meisten Ihrer Follower sehen Ihre Posts gar nicht.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "die meisten Ihrer Follower sehen Ihre Posts gar nicht",
+    "segment": "medium",
+    "hook": "social_proof"
+  },
+  {
+    "email": "welcome@facil.de",
+    "company_name": "Restaurant FACIL",
+    "subject": "Restaurant FACIL vs. Berlin: Euer Instagram-Score",
+    "body": "Hallo,\n\nIhr Instagram (@restaurant_facil) hat 11.712 Follower — aber Sie posten selten — obwohl die Fotos gut sind.\n\nDas sehe ich bei vielen Restaurants in Berlin: starkes Profil, aber die Reichweite bleibt hinter dem Potenzial.\n\nIch hab mich auf Instagram für Restaurants spezialisiert — soll ich Ihnen kurz zeigen wo die grössten Quick Wins bei Ihrem Profil liegen?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie posten selten — obwohl die Fotos gut sind",
+    "segment": "large",
+    "hook": "reichweite"
+  },
+  {
+    "email": "jobs@goldies-smashburger.de",
+    "company_name": "Goldies",
+    "subject": "Goldies vs. Berlin: Euer Instagram-Score",
+    "body": "Hallo,\n\nIhr Instagram (@goldies_smashburger) hat 75.602 Follower — aber Sie posten selten — obwohl die Fotos gut sind.\n\nDas sehe ich bei vielen Restaurants in Berlin: starkes Profil, aber die Reichweite bleibt hinter dem Potenzial.\n\nIch hab mich auf Instagram für Restaurants spezialisiert — soll ich Ihnen kurz zeigen wo die grössten Quick Wins bei Ihrem Profil liegen?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie posten selten — obwohl die Fotos gut sind",
+    "segment": "large",
+    "hook": "reichweite"
+  },
+  {
+    "email": "veranstaltung@berlin-hofbraeu.de",
+    "company_name": "Burgers Berlin",
+    "subject": "Burgers Berlin: 29088 Google-Bewertungen vs. Instagram",
+    "body": "Hallo,\n\nIhre Gäste lieben Sie laut Google — Ihr Instagram (@burgers_berlin) erzählt diese Geschichte aber noch nicht.\n\nSie posten ca. einmal pro Woche — da geht noch was.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie posten ca. einmal pro Woche — da geht noch was",
+    "segment": "tiny",
+    "hook": "social_proof"
+  },
+  {
+    "email": "info@umiberlin.de",
+    "company_name": "Umi x Gendai No Kaishaku",
+    "subject": "Umi x Gendai No Kaishaku: 1146 Google-Bewertungen vs. Instagram",
+    "body": "Hallo,\n\nIhre Gäste lieben Sie laut Google — Ihr Instagram (@umi.berlin) erzählt diese Geschichte aber noch nicht.\n\nSie posten selten — obwohl die Fotos gut sind.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie posten selten — obwohl die Fotos gut sind",
+    "segment": "medium",
+    "hook": "social_proof"
+  },
+  {
+    "email": "restaurant@taverna-athene.de",
+    "company_name": "Taverna Athene",
+    "subject": "Taverna Athene — 4.6 Sterne auf Google, aber auf Instagram?",
+    "body": "Hallo,\n\nIhre Google-Bewertungen zeigen dass die Gäste zufrieden sind — Ihr Instagram (@tavernaathene) erzählt diese Geschichte aber noch nicht.\n\nIhr letzter Post ist schon eine Weile her.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Ihr letzter Post ist schon eine Weile her",
+    "segment": "medium",
+    "hook": "social_proof"
+  },
+  {
+    "email": "contact@pizzastoria.de",
+    "company_name": "Storia",
+    "subject": "Storia — 4.8 Sterne auf Google, aber auf Instagram?",
+    "body": "Hallo,\n\nIhre Google-Bewertungen zeigen dass die Gäste zufrieden sind — Ihr Instagram (@pizza.storia.berlin) erzählt diese Geschichte aber noch nicht.\n\nSie posten nur alle paar Wochen.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie posten nur alle paar Wochen",
+    "segment": "small",
+    "hook": "social_proof"
+  },
+  {
+    "email": "post@ganymed-brasserie.de",
+    "company_name": "Vincent Piano Bar & Grill",
+    "subject": "Vincent Piano Bar & Grill: 986 Google-Bewertungen vs. Instagram",
+    "body": "Hallo,\n\nIhre Gäste lieben Sie laut Google — Ihr Instagram (@vincentpianobar) erzählt diese Geschichte aber noch nicht.\n\nSie haben seit Wochen nichts gepostet.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie haben seit Wochen nichts gepostet",
+    "segment": "tiny",
+    "hook": "social_proof"
+  },
+  {
+    "email": "info@bellboyberlin.com",
+    "company_name": "Bellboy",
+    "subject": "Bellboy: 1714 Google-Bewertungen vs. Instagram",
+    "body": "Hallo,\n\nIhre Gäste lieben Sie laut Google — Ihr Instagram (@bellboy.berlin) erzählt diese Geschichte aber noch nicht.\n\nSie posten selten — obwohl die Fotos gut sind.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie posten selten — obwohl die Fotos gut sind",
+    "segment": "large",
+    "hook": "social_proof"
+  },
+  {
+    "email": "lagino@icloud.com",
+    "company_name": "La Gino Restaurant",
+    "subject": "La Gino Restaurant: 1615 Google-Bewertungen vs. Instagram",
+    "body": "Hallo,\n\nIhre Gäste lieben Sie laut Google — Ihr Instagram (@laginorestaurant) erzählt diese Geschichte aber noch nicht.\n\nSie posten ca. einmal pro Woche — da geht noch was.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie posten ca. einmal pro Woche — da geht noch was",
+    "segment": "tiny",
+    "hook": "social_proof"
+  },
+  {
+    "email": "arata.sushi@web.de",
+    "company_name": "Arata Sushi",
+    "subject": "Arata Sushi: 938 Google-Bewertungen vs. Instagram",
+    "body": "Hallo,\n\nIhre Gäste lieben Sie laut Google — Ihr Instagram (@aratasushiberlin) erzählt diese Geschichte aber noch nicht.\n\nSie haben seit Wochen nichts gepostet.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie haben seit Wochen nichts gepostet",
+    "segment": "tiny",
+    "hook": "social_proof"
+  },
+  {
+    "email": "mail@que-choa.de",
+    "company_name": "Quê Choa Restaurant",
+    "subject": "Quê Choa Restaurant vs. Berlin: Euer Instagram-Score",
+    "body": "Hallo,\n\nIhr Instagram (@quechoa.restaurant) hat 16.684 Follower — aber Sie posten selten — obwohl die Fotos gut sind.\n\nDas sehe ich bei vielen Restaurants in Berlin: starkes Profil, aber die Reichweite bleibt hinter dem Potenzial.\n\nIch hab mich auf Instagram für Restaurants spezialisiert — soll ich Ihnen kurz zeigen wo die grössten Quick Wins bei Ihrem Profil liegen?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie posten selten — obwohl die Fotos gut sind",
+    "segment": "large",
+    "hook": "reichweite"
+  },
+  {
+    "email": "event@tausendberlin.com",
+    "company_name": "BAR TAUSEND",
+    "subject": "BAR TAUSEND: 676 Google-Bewertungen vs. Instagram",
+    "body": "Hallo,\n\nIhre Gäste lieben Sie laut Google — Ihr Instagram (@bar.tausend.berlin) erzählt diese Geschichte aber noch nicht.\n\nDie meisten Ihrer Follower sehen Ihre Posts gar nicht.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "die meisten Ihrer Follower sehen Ihre Posts gar nicht",
+    "segment": "medium",
+    "hook": "social_proof"
+  },
+  {
+    "email": "info@beast-berlin.com",
+    "company_name": "𝘽𝙀𝘼𝙎𝙏 𝘽𝙀𝙍𝙇𝙄𝙉",
+    "subject": "𝘽𝙀𝘼𝙎𝙏 𝘽𝙀𝙍𝙇𝙄𝙉 — 4.7 Sterne auf Google, aber auf Instagram?",
+    "body": "Hallo,\n\nIhre Google-Bewertungen zeigen dass die Gäste zufrieden sind — Ihr Instagram (@beast_berlin_official) erzählt diese Geschichte aber noch nicht.\n\nIhre Posts erreichen nur einen Bruchteil Ihrer Follower.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Ihre Posts erreichen nur einen Bruchteil Ihrer Follower",
+    "segment": "medium",
+    "hook": "social_proof"
+  },
+  {
+    "email": "mail@songlam37.de",
+    "company_name": "Song Lam 37 - Vietnamese",
+    "subject": "Song Lam 37 - Vietnamese — 14.249 Follower, aber wer sieht die Posts?",
+    "body": "Hallo,\n\nIhr Instagram (@songlam37.restaurant) hat 14.249 Follower — aber Sie posten nur alle paar Wochen.\n\nDas sehe ich bei vielen Restaurants in Berlin: starkes Profil, aber die Reichweite bleibt hinter dem Potenzial.\n\nIch hab mich auf Instagram für Restaurants spezialisiert — soll ich Ihnen kurz zeigen wo die grössten Quick Wins bei Ihrem Profil liegen?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie posten nur alle paar Wochen",
+    "segment": "large",
+    "hook": "reichweite"
+  },
+  {
+    "email": "info@johnnys-bar-berlin.com",
+    "company_name": "Johnny's Bar",
+    "subject": "Johnny's Bar — 4.4 Sterne auf Google, aber auf Instagram?",
+    "body": "Hallo,\n\nIhre Google-Bewertungen zeigen dass die Gäste zufrieden sind — Ihr Instagram (@johnnysbarberlin) erzählt diese Geschichte aber noch nicht.\n\nSie posten nur alle paar Wochen.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie posten nur alle paar Wochen",
+    "segment": "small",
+    "hook": "social_proof"
+  },
+  {
+    "email": "info@meenakumari.de",
+    "company_name": "Meena Kumari",
+    "subject": "Meena Kumari — 4.7 Sterne auf Google, aber auf Instagram?",
+    "body": "Hallo,\n\nIhre Google-Bewertungen zeigen dass die Gäste zufrieden sind — Ihr Instagram (@meenakumaride) erzählt diese Geschichte aber noch nicht.\n\nIhr letzter Post ist schon eine Weile her.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Ihr letzter Post ist schon eine Weile her",
+    "segment": "tiny",
+    "hook": "social_proof"
+  },
+  {
+    "email": "veranstaltung@berlin-hofbraeu.de",
+    "company_name": "Hofbräu",
+    "subject": "Hofbräu — 4.3 Sterne auf Google, aber auf Instagram?",
+    "body": "Hallo,\n\nIhre Google-Bewertungen zeigen dass die Gäste zufrieden sind — Ihr Instagram (@hofbraeu.wirtshaus) erzählt diese Geschichte aber noch nicht.\n\nIhr letzter Post ist schon eine Weile her.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Ihr letzter Post ist schon eine Weile her",
+    "segment": "tiny",
+    "hook": "social_proof"
+  },
+  {
+    "email": "gatidis@kabelmail.de",
+    "company_name": "Kreuzbeger Weltlaterne",
+    "subject": "Kreuzbeger Weltlaterne: 1105 Google-Bewertungen vs. Instagram",
+    "body": "Hallo,\n\nIhre Gäste lieben Sie laut Google — Ihr Instagram (@kreuzberger.weltlaterne) erzählt diese Geschichte aber noch nicht.\n\nSie haben seit Wochen nichts gepostet.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie haben seit Wochen nichts gepostet",
+    "segment": "tiny",
+    "hook": "social_proof"
+  },
+  {
+    "email": "info@royalsandriceberlin.de",
+    "company_name": "Royals & Rice",
+    "subject": "Royals & Rice: 1711 Google-Bewertungen vs. Instagram",
+    "body": "Hallo,\n\nIhre Gäste lieben Sie laut Google — Ihr Instagram (@royalsandrice_berlin) erzählt diese Geschichte aber noch nicht.\n\nSie haben seit Wochen nichts gepostet.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie haben seit Wochen nichts gepostet",
+    "segment": "medium",
+    "hook": "social_proof"
+  },
+  {
+    "email": "info@pizzaberlino.de",
+    "company_name": "Pizza Berlino 🇮🇹",
+    "subject": "Pizza Berlino 🇮🇹 — postet ihr bewusst wenig?",
+    "body": "Hallo,\n\nKurze Frage zu Ihrem Instagram (@pizza_berlino) — posten Sie dort bewusst wenig oder fehlt die Zeit?\n\nFrage weil ich einige Restaurants in Berlin beim Thema Instagram unterstütze und Ihr Profil Potenzial hat.\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Ihre Posts bekommen wenig Interaktion für Ihre Follower-Zahl",
+    "segment": "small",
+    "hook": "pattern_interrupt"
+  },
+  {
+    "email": "nguyen.trannhattan@yahoo.com",
+    "company_name": "26 SHIBUYA",
+    "subject": "26 SHIBUYA vs. Berlin: Euer Instagram-Score",
+    "body": "Hallo,\n\nIhr Instagram (@26shibuya) hat 5.847 Follower — aber Sie haben seit Wochen nichts gepostet.\n\nDas sehe ich bei vielen Restaurants in Berlin: starkes Profil, aber die Reichweite bleibt hinter dem Potenzial.\n\nIch hab mich auf Instagram für Restaurants spezialisiert — soll ich Ihnen kurz zeigen wo die grössten Quick Wins bei Ihrem Profil liegen?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie haben seit Wochen nichts gepostet",
+    "segment": "medium",
+    "hook": "reichweite"
+  },
+  {
+    "email": "info@janikoja.com",
+    "company_name": "Ja! Niko Ja!",
+    "subject": "Ja! Niko Ja! — 4.7 Sterne auf Google, aber auf Instagram?",
+    "body": "Hallo,\n\nIhre Google-Bewertungen zeigen dass die Gäste zufrieden sind — Ihr Instagram (@ja_niko_ja_berlin) erzählt diese Geschichte aber noch nicht.\n\nSie posten selten — obwohl die Fotos gut sind.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie posten selten — obwohl die Fotos gut sind",
+    "segment": "tiny",
+    "hook": "social_proof"
+  },
+  {
+    "email": "saigoncomnieu9@gmail.com",
+    "company_name": "Saigon Com",
+    "subject": "Saigon Com vs. Berlin: Euer Instagram-Score",
+    "body": "Hallo,\n\nIhr Instagram (@saigoncomnieu) hat 6.571 Follower — aber Sie posten ca. einmal pro Woche — da geht noch was.\n\nDas sehe ich bei vielen Restaurants in Berlin: starkes Profil, aber die Reichweite bleibt hinter dem Potenzial.\n\nIch hab mich auf Instagram für Restaurants spezialisiert — soll ich Ihnen kurz zeigen wo die grössten Quick Wins bei Ihrem Profil liegen?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie posten ca. einmal pro Woche — da geht noch was",
+    "segment": "medium",
+    "hook": "reichweite"
+  },
+  {
+    "email": "dialog@anjoy-restaurant.de",
+    "company_name": "Restaurant Anjoy",
+    "subject": "Restaurant Anjoy: 1660 Google-Bewertungen vs. Instagram",
+    "body": "Hallo,\n\nIhre Gäste lieben Sie laut Google — Ihr Instagram (@anjoy_restaurant) erzählt diese Geschichte aber noch nicht.\n\nSie haben seit Wochen nichts gepostet.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie haben seit Wochen nichts gepostet",
+    "segment": "medium",
+    "hook": "social_proof"
+  },
+  {
+    "email": "mail@dae-mon.com",
+    "company_name": "Dae Mon",
+    "subject": "Dae Mon — 7.584 Follower, aber wer sieht die Posts?",
+    "body": "Hallo,\n\nIhr Instagram (@daemonberlin) hat 7.584 Follower — aber Sie posten etwa einmal die Woche.\n\nDas sehe ich bei vielen Restaurants in Berlin: starkes Profil, aber die Reichweite bleibt hinter dem Potenzial.\n\nIch hab mich auf Instagram für Restaurants spezialisiert — soll ich Ihnen kurz zeigen wo die grössten Quick Wins bei Ihrem Profil liegen?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie posten etwa einmal die Woche",
+    "segment": "medium",
+    "hook": "reichweite"
+  },
+  {
+    "email": "shop@lamaison.berlin",
+    "company_name": "LA MAISON",
+    "subject": "LA MAISON — 51.400 Follower, aber wer sieht die Posts?",
+    "body": "Hallo,\n\nIhr Instagram (@lamaisonberlin) hat 51.400 Follower — aber Sie posten nur alle paar Wochen.\n\nDas sehe ich bei vielen Restaurants in Berlin: starkes Profil, aber die Reichweite bleibt hinter dem Potenzial.\n\nIch hab mich auf Instagram für Restaurants spezialisiert — soll ich Ihnen kurz zeigen wo die grössten Quick Wins bei Ihrem Profil liegen?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie posten nur alle paar Wochen",
+    "segment": "large",
+    "hook": "reichweite"
+  },
+  {
+    "email": "info@taverne-platia.de",
+    "company_name": "Taverne Platia",
+    "subject": "Taverne Platia — 8.961 Follower, aber wer sieht die Posts?",
+    "body": "Hallo,\n\nIhr Instagram (@taverne.platia) hat 8.961 Follower — aber Sie posten nur alle paar Wochen.\n\nDas sehe ich bei vielen Restaurants in Berlin: starkes Profil, aber die Reichweite bleibt hinter dem Potenzial.\n\nIch hab mich auf Instagram für Restaurants spezialisiert — soll ich Ihnen kurz zeigen wo die grössten Quick Wins bei Ihrem Profil liegen?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie posten nur alle paar Wochen",
+    "segment": "medium",
+    "hook": "reichweite"
+  },
+  {
+    "email": "info@hoa-rong.com",
+    "company_name": "Hoa Rong",
+    "subject": "Hoa Rong: 1254 Google-Bewertungen vs. Instagram",
+    "body": "Hallo,\n\nIhre Gäste lieben Sie laut Google — Ihr Instagram (@restaurant.hoarong) erzählt diese Geschichte aber noch nicht.\n\nSie haben seit Wochen nichts gepostet.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie haben seit Wochen nichts gepostet",
+    "segment": "tiny",
+    "hook": "social_proof"
+  },
+  {
+    "email": "info@five-rivers.de",
+    "company_name": "Five Rivers Restaurant",
+    "subject": "Five Rivers Restaurant: 1975 Google-Bewertungen vs. Instagram",
+    "body": "Hallo,\n\nIhre Gäste lieben Sie laut Google — Ihr Instagram (@fiverivers.berlin) erzählt diese Geschichte aber noch nicht.\n\nSie haben seit Wochen nichts gepostet.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie haben seit Wochen nichts gepostet",
+    "segment": "tiny",
+    "hook": "social_proof"
+  },
+  {
+    "email": "info@nefis-gemusekebap.de",
+    "company_name": "Nefis Gemüse Kebap",
+    "subject": "Nefis Gemüse Kebap — 4.8 Sterne auf Google, aber auf Instagram?",
+    "body": "Hallo,\n\nIhre Google-Bewertungen zeigen dass die Gäste zufrieden sind — Ihr Instagram (@nefis.gemusekebap) erzählt diese Geschichte aber noch nicht.\n\nIhr letzter Post ist schon eine Weile her.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Ihr letzter Post ist schon eine Weile her",
+    "segment": "tiny",
+    "hook": "social_proof"
+  },
+  {
+    "email": "potsdamerplatz@vietbowl.de",
+    "company_name": "Viet Bowl",
+    "subject": "Viet Bowl — 4.8 Sterne auf Google, aber auf Instagram?",
+    "body": "Hallo,\n\nIhre Google-Bewertungen zeigen dass die Gäste zufrieden sind — Ihr Instagram (@vietbowlberlin) erzählt diese Geschichte aber noch nicht.\n\nIhr letzter Post ist schon eine Weile her.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Ihr letzter Post ist schon eine Weile her",
+    "segment": "tiny",
+    "hook": "social_proof"
+  },
+  {
+    "email": "indochina@monsieurvuong.de",
+    "company_name": "Monsieur Vuong",
+    "subject": "Monsieur Vuong — 7.697 Follower, aber wer sieht die Posts?",
+    "body": "Hallo,\n\nIhr Instagram (@monsieur_vuong) hat 7.697 Follower — aber Sie posten nur alle paar Wochen.\n\nDas sehe ich bei vielen Restaurants in Berlin: starkes Profil, aber die Reichweite bleibt hinter dem Potenzial.\n\nIch hab mich auf Instagram für Restaurants spezialisiert — soll ich Ihnen kurz zeigen wo die grössten Quick Wins bei Ihrem Profil liegen?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie posten nur alle paar Wochen",
+    "segment": "medium",
+    "hook": "reichweite"
+  },
+  {
+    "email": "kant@kuchi.de",
+    "company_name": "Kuchi Kant",
+    "subject": "Kuchi Kant — 4.4 Sterne auf Google, aber auf Instagram?",
+    "body": "Hallo,\n\nIhre Google-Bewertungen zeigen dass die Gäste zufrieden sind — Ihr Instagram (@kuchi.kant) erzählt diese Geschichte aber noch nicht.\n\nSie posten nur alle paar Wochen.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie posten nur alle paar Wochen",
+    "segment": "small",
+    "hook": "social_proof"
+  },
+  {
+    "email": "meinhausamsee@gmx.de",
+    "company_name": "Mein Haus am See",
+    "subject": "Mein Haus am See vs. Berlin: Euer Instagram-Score",
+    "body": "Hallo,\n\nIhr Instagram (@meinhausamsee) hat 6.134 Follower — aber Sie haben seit Wochen nichts gepostet.\n\nDas sehe ich bei vielen Restaurants in Berlin: starkes Profil, aber die Reichweite bleibt hinter dem Potenzial.\n\nIch hab mich auf Instagram für Restaurants spezialisiert — soll ich Ihnen kurz zeigen wo die grössten Quick Wins bei Ihrem Profil liegen?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie haben seit Wochen nichts gepostet",
+    "segment": "medium",
+    "hook": "reichweite"
+  },
+  {
+    "email": "cafe@neundrei.com",
+    "company_name": "cafe neundrei",
+    "subject": "cafe neundrei vs. Berlin: Euer Instagram-Score",
+    "body": "Hallo,\n\nIhr Instagram (@cafeneundrei) hat 13.835 Follower — aber Sie posten selten — obwohl die Fotos gut sind.\n\nDas sehe ich bei vielen Restaurants in Berlin: starkes Profil, aber die Reichweite bleibt hinter dem Potenzial.\n\nIch hab mich auf Instagram für Restaurants spezialisiert — soll ich Ihnen kurz zeigen wo die grössten Quick Wins bei Ihrem Profil liegen?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie posten selten — obwohl die Fotos gut sind",
+    "segment": "large",
+    "hook": "reichweite"
+  },
+  {
+    "email": "shinju.mitte@gmail.com",
+    "company_name": "SHINJU - Japanese Kitchen",
+    "subject": "SHINJU - Japanese Kitchen: 836 Google-Bewertungen vs. Instagram",
+    "body": "Hallo,\n\nIhre Gäste lieben Sie laut Google — Ihr Instagram (@shinju.berlin) erzählt diese Geschichte aber noch nicht.\n\nSie posten selten — obwohl die Fotos gut sind.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie posten selten — obwohl die Fotos gut sind",
+    "segment": "tiny",
+    "hook": "social_proof"
+  },
+  {
+    "email": "freunde@klunkerkranich.org",
+    "company_name": "Klunkerkranich",
+    "subject": "Klunkerkranich — 4.4 Sterne auf Google, aber auf Instagram?",
+    "body": "Hallo,\n\nIhre Google-Bewertungen zeigen dass die Gäste zufrieden sind — Ihr Instagram (@klunkerkranich) erzählt diese Geschichte aber noch nicht.\n\nIhre Posts bekommen wenig Interaktion für Ihre Follower-Zahl.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Ihre Posts bekommen wenig Interaktion für Ihre Follower-Zahl",
+    "segment": "large",
+    "hook": "social_proof"
+  },
+  {
+    "email": "info@solarberlin.com",
+    "company_name": "SOLAR Bar & Restaurant",
+    "subject": "SOLAR Bar & Restaurant: 2828 Google-Bewertungen vs. Instagram",
+    "body": "Hallo,\n\nIhre Gäste lieben Sie laut Google — Ihr Instagram (@solarberlin) erzählt diese Geschichte aber noch nicht.\n\nSie posten selten — obwohl die Fotos gut sind.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie posten selten — obwohl die Fotos gut sind",
+    "segment": "large",
+    "hook": "social_proof"
+  },
+  {
+    "email": "info@palm-beach-berlin.de",
+    "company_name": "ℙ𝔸𝕃𝕄 𝔹𝔼𝔸ℂℍ",
+    "subject": "ℙ𝔸𝕃𝕄 𝔹𝔼𝔸ℂℍ: 1316 Google-Bewertungen vs. Instagram",
+    "body": "Hallo,\n\nIhre Gäste lieben Sie laut Google — Ihr Instagram (@palmbeachberlin) erzählt diese Geschichte aber noch nicht.\n\nSie haben seit Wochen nichts gepostet.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie haben seit Wochen nichts gepostet",
+    "segment": "medium",
+    "hook": "social_proof"
+  },
+  {
+    "email": "mr.pattyberlin@gmail.com",
+    "company_name": "Mr.Patty🍔",
+    "subject": "Mr.Patty🍔: 5 Min/Tag reichen für Instagram",
+    "body": "Hallo,\n\nIhr Instagram (@mr.patty.berlin) ist mir aufgefallen — Sie posten selten — obwohl die Fotos gut sind.\n\nKenne das von vielen Gastronomen: die Zeit fehlt einfach.\n\nWürde es helfen wenn ich Ihnen kurz die 2-3 Sachen zeige die bei Ihrem Profil den grössten Unterschied machen würden?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie posten selten — obwohl die Fotos gut sind",
+    "segment": "small",
+    "hook": "zeit_pain"
+  },
+  {
+    "email": "info@upperburgergrill.com",
+    "company_name": "Upper Burger Grill",
+    "subject": "Upper Burger Grill: 7229 Google-Bewertungen vs. Instagram",
+    "body": "Hallo,\n\nIhre Gäste lieben Sie laut Google — Ihr Instagram (@upper_burger_grill) erzählt diese Geschichte aber noch nicht.\n\nSie posten selten — obwohl die Fotos gut sind.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie posten selten — obwohl die Fotos gut sind",
+    "segment": "small",
+    "hook": "social_proof"
+  },
+  {
+    "email": "info@wildematilde.de",
+    "company_name": "Wilde Matilde",
+    "subject": "Wilde Matilde — postet ihr bewusst wenig?",
+    "body": "Hallo,\n\nKurze Frage zu Ihrem Instagram (@wildematildecocktailbar) — posten Sie dort bewusst wenig oder fehlt die Zeit?\n\nFrage weil ich einige Restaurants in Berlin beim Thema Instagram unterstütze und Ihr Profil Potenzial hat.\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Ihre Posts bekommen wenig Interaktion für Ihre Follower-Zahl",
+    "segment": "medium",
+    "hook": "pattern_interrupt"
+  },
+  {
+    "email": "info@carambar.de",
+    "company_name": "Carambar",
+    "subject": "Carambar — 5.093 Follower, aber wer sieht die Posts?",
+    "body": "Hallo,\n\nIhr Instagram (@carambar_berlin) hat 5.093 Follower — aber Sie posten nur alle paar Wochen.\n\nDas sehe ich bei vielen Restaurants in Berlin: starkes Profil, aber die Reichweite bleibt hinter dem Potenzial.\n\nIch hab mich auf Instagram für Restaurants spezialisiert — soll ich Ihnen kurz zeigen wo die grössten Quick Wins bei Ihrem Profil liegen?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie posten nur alle paar Wochen",
+    "segment": "medium",
+    "hook": "reichweite"
+  },
+  {
+    "email": "info.kotovs@gmx.de",
+    "company_name": "BUNDESBURGER",
+    "subject": "BUNDESBURGER — 4.8 Sterne auf Google, aber auf Instagram?",
+    "body": "Hallo,\n\nIhre Google-Bewertungen zeigen dass die Gäste zufrieden sind — Ihr Instagram (@bundesburger.berlin) erzählt diese Geschichte aber noch nicht.\n\nIhr letzter Post ist schon eine Weile her.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Ihr letzter Post ist schon eine Weile her",
+    "segment": "tiny",
+    "hook": "social_proof"
+  },
+  {
+    "email": "hello@co-chu.de",
+    "company_name": "Co Chu",
+    "subject": "Co Chu — 4.6 Sterne auf Google, aber auf Instagram?",
+    "body": "Hallo,\n\nIhre Google-Bewertungen zeigen dass die Gäste zufrieden sind — Ihr Instagram (@cochuberlin) erzählt diese Geschichte aber noch nicht.\n\nSie posten etwa einmal die Woche.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie posten etwa einmal die Woche",
+    "segment": "small",
+    "hook": "social_proof"
+  },
+  {
+    "email": "berlin@gaffel-haus.de",
+    "company_name": "Gaffel Haus",
+    "subject": "Gaffel Haus — 4.5 Sterne auf Google, aber auf Instagram?",
+    "body": "Hallo,\n\nIhre Google-Bewertungen zeigen dass die Gäste zufrieden sind — Ihr Instagram (@gaffelhausberlin) erzählt diese Geschichte aber noch nicht.\n\nSie posten nur alle paar Wochen.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie posten nur alle paar Wochen",
+    "segment": "small",
+    "hook": "social_proof"
+  },
+  {
+    "email": "mustafasgemuesekebap@outlook.de",
+    "company_name": "Mustafa Demir‘s",
+    "subject": "Mustafa Demir‘s — letzter Post ist eine Weile her",
+    "body": "Hallo,\n\nIhr Instagram (@mustafa_demirs_gemuese_kebap) ist mir aufgefallen — Ihr letzter Post ist schon eine Weile her.\n\nKenne das von vielen Gastronomen: die Zeit fehlt einfach.\n\nWürde es helfen wenn ich Ihnen kurz die 2-3 Sachen zeige die bei Ihrem Profil den grössten Unterschied machen würden?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Ihr letzter Post ist schon eine Weile her",
+    "segment": "medium",
+    "hook": "zeit_pain"
+  },
+  {
+    "email": "info@amrit.de",
+    "company_name": "Indian Restaurant",
+    "subject": "Indian Restaurant — 4.7 Sterne auf Google, aber auf Instagram?",
+    "body": "Hallo,\n\nIhre Google-Bewertungen zeigen dass die Gäste zufrieden sind — Ihr Instagram (@maharadscha.restaurant) erzählt diese Geschichte aber noch nicht.\n\nIhr letzter Post ist schon eine Weile her.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Ihr letzter Post ist schon eine Weile her",
+    "segment": "tiny",
+    "hook": "social_proof"
+  },
+  {
+    "email": "info@cappuccinograndcafe.de",
+    "company_name": "Cappuccino Grand",
+    "subject": "Cappuccino Grand — 4.7 Sterne auf Google, aber auf Instagram?",
+    "body": "Hallo,\n\nIhre Google-Bewertungen zeigen dass die Gäste zufrieden sind — Ihr Instagram (@cappuccinograndcafe_mitte) erzählt diese Geschichte aber noch nicht.\n\nIhr letzter Post ist schon eine Weile her.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Ihr letzter Post ist schon eine Weile her",
+    "segment": "tiny",
+    "hook": "social_proof"
+  },
+  {
+    "email": "info@mijoberlin.de",
+    "company_name": "miJo 🍱🥡",
+    "subject": "miJo 🍱🥡: 5 Min/Tag reichen für Instagram",
+    "body": "Hallo,\n\nIhr Instagram (@mijo_restaurant) ist mir aufgefallen — Sie haben seit Wochen nichts gepostet.\n\nKenne das von vielen Gastronomen: die Zeit fehlt einfach.\n\nWürde es helfen wenn ich Ihnen kurz die 2-3 Sachen zeige die bei Ihrem Profil den grössten Unterschied machen würden?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Sie haben seit Wochen nichts gepostet",
+    "segment": "small",
+    "hook": "zeit_pain"
+  },
+  {
+    "email": "edenfoodbooking@gmail.com",
+    "company_name": "Eden",
+    "subject": "Eden — 4.6 Sterne auf Google, aber auf Instagram?",
+    "body": "Hallo,\n\nIhre Google-Bewertungen zeigen dass die Gäste zufrieden sind — Ihr Instagram (@eden_berlinstreetfood) erzählt diese Geschichte aber noch nicht.\n\nIhr letzter Post ist schon eine Weile her.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Ihr letzter Post ist schon eine Weile her",
+    "segment": "tiny",
+    "hook": "social_proof"
+  },
+  {
+    "email": "info@sachikosushi.com",
+    "company_name": "Sachiko Sushi",
+    "subject": "Sachiko Sushi — 4.7 Sterne auf Google, aber auf Instagram?",
+    "body": "Hallo,\n\nIhre Google-Bewertungen zeigen dass die Gäste zufrieden sind — Ihr Instagram (@sachikosushiberlin) erzählt diese Geschichte aber noch nicht.\n\nIhr letzter Post ist schon eine Weile her.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Ihr letzter Post ist schon eine Weile her",
+    "segment": "small",
+    "hook": "social_proof"
+  },
+  {
+    "email": "kontakt@thealchemist.de",
+    "company_name": "The Alchemist DE",
+    "subject": "The Alchemist DE — 4.4 Sterne auf Google, aber auf Instagram?",
+    "body": "Hallo,\n\nIhre Google-Bewertungen zeigen dass die Gäste zufrieden sind — Ihr Instagram (@thealchemistde) erzählt diese Geschichte aber noch nicht.\n\nIhre Posts bekommen wenig Interaktion für Ihre Follower-Zahl.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Ihre Posts bekommen wenig Interaktion für Ihre Follower-Zahl",
+    "segment": "medium",
+    "hook": "social_proof"
+  },
+  {
+    "email": "veranstaltung@berlin-hofbraeu.de",
+    "company_name": "Law Berlin",
+    "subject": "Law Berlin — 4.3 Sterne auf Google, aber auf Instagram?",
+    "body": "Hallo,\n\nIhre Google-Bewertungen zeigen dass die Gäste zufrieden sind — Ihr Instagram (@law.berlin) erzählt diese Geschichte aber noch nicht.\n\nIhr letzter Post ist schon eine Weile her.\n\nIch analysiere Instagram-Profile von Restaurants in Berlin — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Ihr letzter Post ist schon eine Weile her",
+    "segment": "tiny",
+    "hook": "social_proof"
+  },
+  {
+    "email": "contact@25hours-hotels.com",
+    "company_name": "Monkey Bar",
+    "subject": "Monkey Bar — letzter Post ist eine Weile her",
+    "body": "Hallo,\n\nIhr Instagram (@monkeybar_25h) ist mir aufgefallen — Ihr letzter Post ist schon eine Weile her.\n\nKenne das von vielen Gastronomen: die Zeit fehlt einfach.\n\nWürde es helfen wenn ich Ihnen kurz die 2-3 Sachen zeige die bei Ihrem Profil den grössten Unterschied machen würden?\n\nViele Grüße\nTobias Hertfelder\nFlowingPost — Social Media für Restaurants\nflowingpost.com",
+    "observation": "Ihr letzter Post ist schon eine Weile her",
+    "segment": "tiny",
+    "hook": "zeit_pain"
+  }
+]
