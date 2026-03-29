@@ -30,6 +30,7 @@ interface Lead {
   name: string
   handle: string
   email: string
+  owner_name: string | null
   ig_followers: number | null
   ig_posts_count: number | null
   ig_avg_likes: number | null
@@ -248,21 +249,25 @@ function writeEmail1(lead: Lead, city: string): PersonalizedEmail {
   const audit = auditUrl(lead.handle, city)
   const subject = writeSubject(lead, displayName, hook, city)
 
+  // Greeting: use first name if we have owner_name, otherwise generic
+  const firstName = lead.owner_name ? lead.owner_name.split(' ')[0] : null
+  const greeting = firstName ? `Hallo ${firstName},` : 'Hallo,'
+
   // Email 1: NO LINKS. Goal = reply. Personalized observation + question.
   let body: string
 
   if (hook === 'reichweite') {
-    body = `Hallo,\n\nIhr Instagram (@${lead.handle}) hat ${followers.toLocaleString('de')} Follower — aber ${observation}.\n\nDas sehe ich bei vielen Restaurants in ${city}: starkes Profil, aber die Reichweite bleibt hinter dem Potenzial.\n\nIch hab mich auf Instagram für Restaurants spezialisiert — soll ich Ihnen kurz zeigen wo die grössten Quick Wins bei Ihrem Profil liegen?`
+    body = `${greeting}\n\nIhr Instagram (@${lead.handle}) hat ${followers.toLocaleString('de')} Follower — aber ${observation}.\n\nDas sehe ich bei vielen Restaurants in ${city}: starkes Profil, aber die Reichweite bleibt hinter dem Potenzial.\n\nIch hab mich auf Instagram für Restaurants spezialisiert — soll ich Ihnen kurz zeigen wo die grössten Quick Wins bei Ihrem Profil liegen?`
 
   } else if (hook === 'social_proof') {
     const reinforcerLine = reinforcer || 'Ihre Google-Bewertungen zeigen dass die Gäste zufrieden sind'
-    body = `Hallo,\n\n${reinforcerLine} — Ihr Instagram (@${lead.handle}) erzählt diese Geschichte aber noch nicht.\n\n${observation.charAt(0).toUpperCase() + observation.slice(1)}.\n\nIch analysiere Instagram-Profile von Restaurants in ${city} — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?`
+    body = `${greeting}\n\n${reinforcerLine} — Ihr Instagram (@${lead.handle}) erzählt diese Geschichte aber noch nicht.\n\n${observation.charAt(0).toUpperCase() + observation.slice(1)}.\n\nIch analysiere Instagram-Profile von Restaurants in ${city} — soll ich Ihnen kurz zeigen was bei Ihrem Profil am meisten bringen würde?`
 
   } else if (hook === 'zeit_pain') {
-    body = `Hallo,\n\nIhr Instagram (@${lead.handle}) ist mir aufgefallen — ${observation}.\n\nKenne das von vielen Gastronomen: die Zeit fehlt einfach.\n\nWürde es helfen wenn ich Ihnen kurz die 2-3 Sachen zeige die bei Ihrem Profil den grössten Unterschied machen würden?`
+    body = `${greeting}\n\nIhr Instagram (@${lead.handle}) ist mir aufgefallen — ${observation}.\n\nKenne das von vielen Gastronomen: die Zeit fehlt einfach.\n\nWürde es helfen wenn ich Ihnen kurz die 2-3 Sachen zeige die bei Ihrem Profil den grössten Unterschied machen würden?`
 
   } else {
-    body = `Hallo,\n\nKurze Frage zu Ihrem Instagram (@${lead.handle}) — posten Sie dort bewusst wenig oder fehlt die Zeit?\n\nFrage weil ich einige Restaurants in ${city} beim Thema Instagram unterstütze und Ihr Profil Potenzial hat.`
+    body = `${greeting}\n\nKurze Frage zu Ihrem Instagram (@${lead.handle}) — posten Sie dort bewusst wenig oder fehlt die Zeit?\n\nFrage weil ich einige Restaurants in ${city} beim Thema Instagram unterstütze und Ihr Profil Potenzial hat.`
   }
 
   body += `\n\n${SIGNATURE}`
@@ -286,7 +291,7 @@ async function main() {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let query = (supabase.from('restaurant_profiles') as any)
-    .select('name, handle, email, city, ig_followers, ig_posts_count, ig_avg_likes, ig_posting_frequency_per_week, ig_engagement_rate, ig_reel_ratio, google_rating, google_review_count')
+    .select('name, handle, email, city, owner_name, ig_followers, ig_posts_count, ig_avg_likes, ig_posting_frequency_per_week, ig_engagement_rate, ig_reel_ratio, google_rating, google_review_count')
     .not('email', 'is', null)
   if (cityFilter) query = query.eq('city', cityFilter)
   const { data: leads, error } = await query
